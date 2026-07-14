@@ -4,19 +4,19 @@ export default function ProjectCard({ project, onOpenImage }) {
   const mainImage = project.images?.[0];
 
   return (
-    <article className={`project project-${project.number}`}>
+    <article className={`project project-${project.number}`} data-reveal>
       <div className="project-meta">
         <span>{project.number}</span>
         <span>{project.eyebrow}</span>
       </div>
 
-      <div className="project-heading">
+      <div className="project-heading" data-reveal data-reveal-delay="1">
         <h3>{project.title}</h3>
         <p>{project.summary}</p>
       </div>
 
       {mainImage && (
-        <div className="project-visual">
+        <div className="project-visual" data-reveal="scale" data-reveal-delay="2">
           <button type="button" onClick={() => onOpenImage(project.images, 0)} aria-label={`Enlarge ${project.title} screenshot`}>
             <img src={mainImage.src} alt={mainImage.alt} loading="lazy" />
             <span className="expand-label"><Icon name="expand" /> View interface</span>
@@ -36,7 +36,7 @@ export default function ProjectCard({ project, onOpenImage }) {
         </div>
       )}
 
-      <div className="project-details">
+      <div className="project-details" data-reveal data-reveal-delay="2">
         <div><span>Problem</span><p>{project.problem}</p></div>
         <div><span>Approach</span><p>{project.approach}</p></div>
         <div><span>Outcome</span><p>{project.outcome}</p></div>

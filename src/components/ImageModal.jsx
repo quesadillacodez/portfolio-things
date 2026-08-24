@@ -1,13 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Icon from './Icon';
 import Picture from './Picture';
 
 const SWIPE_DISTANCE = 55;
 
-export default function ImageModal({ gallery, initialIndex, onClose }) {
+// Item 12: the modal used to appear instantly, so the relationship between the
+// thumbnail you clicked and the image that filled the screen was lost. The caller
+// hands over the bounding rect of the element that was clicked, we invert the final
+// position back onto that rect, then play it forward.
+//
+// Items 42/43/46: it is now a native <dialog>, which traps Tab and paints the
+// backdrop for free. Focus starts on the close button and returns to whatever opened
+// the viewer, and the image can be zoomed, panned and swiped on touch.
+export default function ImageModal({ gallery, initialIndex, originRect, onClose, reducedMotion }) {
   const [index, setIndex] = useState(initialIndex);
   const [zoomed, setZoomed] = useState(false);
   const dialogRef = useRef(null);
+  const figureRef = useRef(null);
   const closeRef = useRef(null);
   const stageRef = useRef(null);
   const touchStart = useRef(null);
@@ -20,9 +29,8 @@ export default function ImageModal({ gallery, initialIndex, onClose }) {
     [gallery.length],
   );
 
-  // A native dialog traps Tab and paints the backdrop for free. Focus starts on
-  // the close button and returns to whatever opened the viewer.
-  useEffect(() => {
+  // Declared first so the dialog is open (and laid out) before the FLIP measures it.
+  useLayoutEffect(() => {
     const opener = document.activeElement;
     dialogRef.current?.showModal();
     closeRef.current?.focus();
@@ -33,6 +41,27 @@ export default function ImageModal({ gallery, initialIndex, onClose }) {
     };
   }, []);
 
+  useLayoutEffect(() => {
+    if (reducedMotion || !originRect || !figureRef.current) return;
+    const node = figureRef.current;
+    const target = node.getBoundingClientRect();
+    if (!target.width || !target.height) return;
+
+    // First → Last → Invert → Play.
+    const dx = originRect.left + originRect.width / 2 - (target.left + target.width / 2);
+    const dy = originRect.top + originRect.height / 2 - (target.top + target.height / 2);
+    const scale = originRect.width / target.width;
+
+    node.animate(
+      [
+        { transform: `translate(${dx}px, ${dy}px) scale(${scale})`, opacity: 0.4 },
+        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+      ],
+      { duration: 380, easing: 'cubic-bezier(.2,.8,.2,1)' },
+    );
+  }, [originRect, reducedMotion]);
+
+  // Escape is handled by the dialog itself, which fires onClose.
   useEffect(() => {
     const onKeyDown = (event) => {
       if (event.key === 'ArrowRight') go(1);
@@ -42,7 +71,7 @@ export default function ImageModal({ gallery, initialIndex, onClose }) {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [go]);
 
-  // A new image starts unpanned, otherwise it opens scrolled to the last position.
+  // A new image starts unpanned rather than at the previous scroll position.
   useEffect(() => {
     stageRef.current?.scrollTo({ top: 0, left: 0 });
   }, [index]);
@@ -62,11 +91,17 @@ export default function ImageModal({ gallery, initialIndex, onClose }) {
   };
 
   const current = gallery[index];
+  const caption = current.alt || current.caption;
 
   return (
-    <dialog className="modal" ref={dialogRef} onClose={onClose} aria-label="Project screenshot viewer">
+    <dialog
+      className={`modal ${reducedMotion ? '' : 'modal-animated'}`}
+      ref={dialogRef}
+      onClose={onClose}
+      aria-label="Project screenshot viewer"
+    >
       <div className="modal-bar">
-        <span className="modal-count numeric">
+        <span className="modal-count">
           {index + 1} / {gallery.length}
         </span>
         <button
@@ -86,21 +121,22 @@ export default function ImageModal({ gallery, initialIndex, onClose }) {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <figure>
-          {/* Tapping toggles between fit-to-screen and full size; when it is full
-              size the stage itself scrolls, which is how panning works on touch. */}
+        <figure ref={figureRef}>
+          {/* Item 46: on a 390px viewport a dense dashboard rendered at 351px was
+              illegible. Tapping switches to full size, and the stage becomes the pan
+              surface — which is also what makes native pinch-zoom useful here. */}
           <button
             type="button"
             onClick={() => setZoomed((on) => !on)}
-            aria-label={zoomed ? 'Zoom out' : 'Zoom in to pan around this screen'}
+            aria-label={zoomed ? 'Fit image to screen' : 'Zoom in to pan around this screen'}
           >
-            <Picture name={current.image} alt={current.alt} sizes="100vw" loading="eager" />
+            <Picture name={current.image} alt={caption} sizes="100vw" loading="eager" />
           </button>
         </figure>
       </div>
 
       <div className="modal-foot">
-        <p>{current.alt}</p>
+        <p>{caption}</p>
         <button type="button" onClick={() => go(-1)} disabled={gallery.length < 2}>
           Previous
         </button>

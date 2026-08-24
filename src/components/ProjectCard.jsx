@@ -1,69 +1,72 @@
 import Icon from './Icon';
 import Picture from './Picture';
+import TiltFrame from './TiltFrame';
+import Walkthrough from './Walkthrough';
+import TerminalVisual from './TerminalVisual';
+import FlowVisual from './FlowVisual';
 
-const HERO_SIZES = '(min-width: 1050px) 55vw, 90vw';
-const THUMB_SIZES = '(min-width: 1050px) 14vw, 22vw';
+export default function ProjectCard({ project, onOpenImage, reducedMotion }) {
+  const { visual } = project;
 
-export default function ProjectCard({ project, onOpenImage }) {
-  const images = project.images ?? [];
-  const [mainImage, ...rest] = images;
-  const extra = images.length - 4;
+  // Item 16: every project now resolves to something visual. Previously only the two
+  // with screenshots did, and 03 and 04 rendered as walls of grey text.
+  const renderVisual = () => {
+    if (!visual) return null;
+
+    if (visual.kind === 'terminal') return <TerminalVisual visual={visual} reducedMotion={reducedMotion} />;
+    if (visual.kind === 'flow') return <FlowVisual visual={visual} />;
+
+    // Item 23: PulseOps has enough real screens to walk through rather than display.
+    if (project.walkthrough) {
+      return (
+        <Walkthrough
+          steps={project.walkthrough}
+          reducedMotion={reducedMotion}
+          onOpenImage={(index, rect) => onOpenImage(project.walkthrough, index, rect)}
+        />
+      );
+    }
+
+    const [main] = visual.images;
+    return (
+      <TiltFrame
+        label="Enlarge"
+        ariaLabel={`Enlarge ${project.title} screenshot`}
+        reducedMotion={reducedMotion}
+        onActivate={(rect) => onOpenImage(visual.images, 0, rect)}
+      >
+        <Picture
+          name={main.image}
+          alt={main.alt}
+          sizes={project.bleed ? '(min-width: 1050px) 60vw, 92vw' : '(min-width: 1050px) 40vw, 92vw'}
+        />
+      </TiltFrame>
+    );
+  };
 
   return (
     <article className={`project project-${project.number}${project.bleed ? ' project-bleed' : ''}`}>
-      {project.label && <p className="project-label">{project.label}</p>}
+      {project.label && (
+        <p className="project-label" data-reveal>
+          {project.label}
+        </p>
+      )}
 
-      <div className="project-meta">
+      <div className="project-meta" data-reveal>
         <span className="numeric">{project.number}</span>
         <span>{project.eyebrow}</span>
       </div>
 
-      <div className="project-heading">
+      <div className="project-heading" data-reveal>
         <h3>{project.title}</h3>
         <p>{project.summary}</p>
       </div>
 
-      {mainImage && (
-        <div className="project-visual">
-          <button
-            type="button"
-            onClick={() => onOpenImage(images, 0)}
-            aria-label={`Enlarge ${project.title} screenshot`}
-          >
-            <Picture name={mainImage.image} alt={mainImage.alt} sizes={HERO_SIZES} />
-            <span className="expand-label">
-              <Icon name="expand" /> View interface
-            </span>
-          </button>
-          {rest.length > 0 && (
-            <div className="thumbnail-row" aria-label={`More ${project.title} screens`}>
-              {rest.slice(0, 3).map((image, offset) => (
-                <button
-                  key={image.image}
-                  type="button"
-                  onClick={() => onOpenImage(images, offset + 1)}
-                  aria-label={`View screenshot ${offset + 2}: ${image.alt}`}
-                >
-                  <Picture name={image.image} alt="" sizes={THUMB_SIZES} />
-                </button>
-              ))}
-              {extra > 0 && (
-                <button
-                  className="more-images numeric"
-                  type="button"
-                  onClick={() => onOpenImage(images, 4)}
-                  aria-label="View remaining screenshots"
-                >
-                  +{extra}
-                  <small>more</small>
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+      <div className="project-visual" data-reveal>
+        {renderVisual()}
+      </div>
 
-      <div className="project-details">
+      <div className="project-details" data-reveal>
         <div>
           <span>Problem</span>
           <p>{project.problem}</p>
@@ -72,14 +75,30 @@ export default function ProjectCard({ project, onOpenImage }) {
           <span>Approach</span>
           <p>{project.approach}</p>
         </div>
+
+        {/* Item 21: where a project has earned a figure, the figure leads and the
+            honesty caveat becomes a footnote instead of swallowing the result. */}
         <div>
           <span>Outcome</span>
-          <p>{project.outcome}</p>
+          {project.headline ? (
+            <>
+              <p className="outcome-figure">
+                <b className="numeric">{project.headline.figure}</b>
+                <span>
+                  {project.headline.unit} {project.headline.label}
+                </span>
+              </p>
+              <p className="outcome-footnote">{project.footnote}</p>
+            </>
+          ) : (
+            <p>{project.outcome}</p>
+          )}
         </div>
       </div>
 
+      {/* The one feature this project is remembered for, lifted out of the prose. */}
       {project.highlight && (
-        <div className="project-highlight">
+        <div className="project-highlight" data-reveal>
           <h4>
             <em>{project.highlight.eyebrow}</em> {project.highlight.title}
           </h4>
@@ -92,28 +111,44 @@ export default function ProjectCard({ project, onOpenImage }) {
         </div>
       )}
 
-      {project.note && <p className="project-note">Technical note: {project.note}</p>}
+      {/* Item 24: the hard facts, pulled out of prose so a skim catches on something. */}
+      {project.stats && (
+        <ul className="project-stats" data-reveal>
+          {project.stats.map((stat) => (
+            <li key={stat.label}>
+              <b className="numeric">{stat.value}</b>
+              <span>{stat.label}</span>
+            </li>
+          ))}
+        </ul>
+      )}
 
-      <div className="project-footer">
+      {project.note && (
+        <p className="project-note" data-reveal>
+          Technical note: {project.note}
+        </p>
+      )}
+
+      <div className="project-footer" data-reveal>
         <ul className="stack-list" aria-label="Technologies used">
           {project.stack.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </ul>
+
+        {/* Items 19 + 20: "Source coming soon" appeared on all four cards, turning one
+            caveat into a pattern that read as "nothing here is public". The advertised
+            absence is gone; real links stand on their own. */}
         <div className="project-links">
-          {project.demo && (
-            <a href={project.demo} target="_blank" rel="noreferrer">
-              Live demo <Icon name="arrow" />
+          {project.caseStudy && (
+            <a className="link-strong" href={`#/case/${project.slug}`}>
+              Read the case study <Icon name="arrow" />
             </a>
           )}
-          {project.repo ? (
-            <a href={project.repo} target="_blank" rel="noreferrer">
-              Source <Icon name="arrow" />
+          {project.demo && (
+            <a href={project.demo} target="_blank" rel="noreferrer">
+              {project.demoNote || 'Live demo'} <Icon name="arrow" />
             </a>
-          ) : (
-            <span className="coming-soon" title="Repository will be added when available">
-              Source coming soon
-            </span>
           )}
         </div>
       </div>

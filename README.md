@@ -1,14 +1,14 @@
-# Hadi Qusyairi — Portfolio
+# Hadi Qusyairi Portfolio
 
 A responsive, single-page React portfolio focused on practical software, analytics, and
-operational problem solving.
+operational problem solving, with dedicated case study pages for the flagship projects.
 
 Live: <https://portfolio-things-eight.vercel.app/>
 
 ## Featured work
 
-- **NETS Pay Together** — mobile banking prototype; XP Rewards Store (Distinction Presentation)
-- **PulseOps EMS Command Center** — EMS workforce operations (Distinction Presentation)
+- **NETS Pay Together** — Distinction Presentation · XP Rewards Store — [case study](/#/case/nets-pay-together)
+- **PulseOps EMS Command Center** — Distinction Presentation — [case study](/#/case/pulseops)
 - Global Food Insecurity Dashboard
 - FairPrice Shopping Simulation
 - Clinic Digitalisation Concept
@@ -33,24 +33,45 @@ npm run dev
 
 CI runs lint, format check, and build on every push.
 
-## Content
+## Structure
 
-Project content lives in `src/data/projects.js`, separate from presentation, so copy and
-links can change without touching component structure.
+Project content lives in `src/data/projects.js`, separate from presentation, so adding a
+project or a link never means touching component structure. Each project carries:
+
+| field                   | purpose                                                                |
+| ----------------------- | ---------------------------------------------------------------------- |
+| `label`                 | the presentation a project was submitted for, shown as a chip          |
+| `stats`                 | the scannable numbers shown under the case                             |
+| `headline` / `footnote` | an outcome figure and the caveat attached to it                        |
+| `visual`                | `gallery`, `terminal`, or `flow` — every project has one               |
+| `highlight`             | the one feature the project is remembered for                          |
+| `walkthrough`           | ordered steps for the auto-advancing replay                            |
+| `artifacts`             | process artifacts; hidden while empty                                  |
+| `caseStudy`             | long-form content for the `#/case/<slug>` route                        |
+| `bleed`                 | opts one card out of the contained grid so its visual runs to the edge |
+
+Motion is centralised: `src/hooks/useReveal.js` drives every scroll reveal from one
+`IntersectionObserver`, and `src/hooks/useReducedMotion.js` is threaded into every
+animated component so `prefers-reduced-motion` switches off the JavaScript-driven
+effects that CSS alone cannot reach.
 
 ## Images
 
 `assets-src/` holds one master per screenshot. `npm run images` regenerates
 `public/assets/` as AVIF, WebP, and JPEG at 400/800/1200/1600px, and writes
-`src/data/images.json` with intrinsic dimensions so every `<img>` reserves the right space
-before it loads. The generated files are committed so deploys do not need to re-encode
-them; re-run the script after replacing or adding a master.
+`src/data/images.json` with intrinsic dimensions, which `src/components/Picture.jsx`
+turns into a `<picture>` with a full `srcset` and `width`/`height` on every image. The
+generated files are committed so deploys do not re-encode them; re-run the script after
+replacing or adding a master.
 
 ## Accessibility notes
 
-- One `<main>` landmark wraps everything between header and footer, and each section is
-  labelled by its heading.
-- A single global `:focus-visible` ring is used everywhere; inverted surfaces override the
-  ring colour so it stays visible on dark grounds.
-- The screenshot viewer is a native `<dialog>`, so Tab is trapped, Escape closes, and focus
-  returns to the control that opened it.
+- One `<main>` landmark wraps everything between header and footer, and every section is
+  labelled by its own heading.
+- A single global `:focus-visible` ring is used everywhere; inverted surfaces override
+  the ring colour so it stays visible on dark grounds.
+- The screenshot viewer is a native `<dialog>`: Tab is trapped, Escape closes it, focus
+  starts on the close button and returns to the control that opened it, and the image can
+  be zoomed, panned and swiped on touch.
+- The inverted process band uses fixed-role `--invert-*` tokens rather than swapping
+  `--ink` and `--bg`, so it cannot invert into an unreadable slab in dark mode.

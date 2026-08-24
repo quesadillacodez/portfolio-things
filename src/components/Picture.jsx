@@ -6,6 +6,11 @@ import images from '../data/images.json';
  * width/height from the manifest reserves the right space before it arrives.
  *
  * `name` is a key in src/data/images.json, written by `npm run images`.
+ *
+ * `full` opts out of responsive selection and loads the widest variant outright.
+ * Responsive sizing is exactly wrong for a zoomed lightbox: with `sizes="100vw"` a
+ * 390px phone is served the 400px file, so "zoom" had no pixels to magnify — the
+ * image was already at its natural width and the pan surface had nothing to scroll.
  */
 export default function Picture({
   name,
@@ -15,12 +20,34 @@ export default function Picture({
   fetchPriority,
   className,
   ariaHidden,
+  full = false,
 }) {
   const meta = images[name];
   if (!meta) return null;
 
   const srcSet = (ext) => meta.widths.map((width) => `/assets/${name}-${width}.${ext} ${width}w`).join(', ');
   const fallback = meta.widths.includes(1200) ? 1200 : meta.widths.at(-1);
+  const widest = meta.widths.at(-1);
+
+  // No srcSet and no sizes: the browser has one candidate and must take it.
+  if (full) {
+    return (
+      <picture>
+        <source type="image/avif" srcSet={`/assets/${name}-${widest}.avif`} />
+        <source type="image/webp" srcSet={`/assets/${name}-${widest}.webp`} />
+        <img
+          src={`/assets/${name}-${widest}.jpg`}
+          width={meta.width}
+          height={meta.height}
+          alt={alt}
+          loading="eager"
+          decoding="async"
+          className={className}
+          aria-hidden={ariaHidden}
+        />
+      </picture>
+    );
+  }
 
   return (
     <picture>

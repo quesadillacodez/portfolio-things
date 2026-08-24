@@ -49,6 +49,19 @@
     />
     <meta name="twitter:image" content="https://portfolio-things-eight.vercel.app/og-card.png" />
 
+    <!-- The hero screenshot is the LCP element, but it lives in JS-rendered markup,
+         so the browser only discovers it after the bundle parses. Preloading the same
+         srcset here starts the fetch during head parsing instead. -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      href="/assets/pulseops-roster-1200.avif"
+      imagesrcset="/assets/pulseops-roster-400.avif 400w, /assets/pulseops-roster-800.avif 800w, /assets/pulseops-roster-1200.avif 1200w, /assets/pulseops-roster-1600.avif 1600w"
+      imagesizes="(min-width: 1050px) 45vw, 92vw"
+      fetchpriority="high"
+    />
+
     <!-- Fonts resolve in parallel with the CSS instead of waiting behind an @import. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

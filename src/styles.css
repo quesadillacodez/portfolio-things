@@ -20,6 +20,10 @@
   --header: rgba(242, 240, 233, 0.88);
   --surface-raised: #f8f7f2;
   --focus: #101f20;
+  /* The lime accent is unreadable as a 2px bar on the cream header — it only has
+     contrast against the dark ground. The progress bar takes ink in light, accent
+     in dark, so it is visible in both rather than decorative in one. */
+  --progress: #101f20;
   --shot-brightness: 1;
   /* Fixed-role tokens: the inverted band is always a dark ground with light text,
      so swapping the theme can never turn it into a cream slab. */
@@ -49,6 +53,7 @@
   --header: rgba(16, 25, 24, 0.9);
   --surface-raised: #16211f;
   --focus: #d9ff53;
+  --progress: #d9ff53;
   --shot-brightness: 0.88;
   /* Lifted rather than reused so the band still reads as a separate surface. */
   --invert-bg: #1b2a27;
@@ -215,7 +220,7 @@ nav {
   bottom: -1px;
   width: 100%;
   height: 2px;
-  background: var(--accent);
+  background: var(--progress);
   transform: scaleX(0);
   transform-origin: 0 50%;
 }
@@ -237,7 +242,10 @@ nav {
    paragraph to opposite ends of the viewport. It is now a two-column composition
    where the right side carries proof. */
 .hero {
-  min-height: calc(100svh - 72px);
+  /* Was 100svh, which left 111px of dead field between the CTA row and the scroll
+     cue once the right-hand column stopped being the tallest thing here. The hero
+     is now sized by its content with a floor, not stretched to fill the viewport. */
+  min-height: min(calc(100svh - 72px), 46rem);
   padding: clamp(2.5rem, 6vw, 5rem) 5vw 1.5rem;
   display: flex;
   flex-direction: column;
@@ -435,15 +443,19 @@ h2 em {
   padding-top: 1.1rem;
   border-top: 1px solid var(--line);
 }
-/* Item 05: renders the photo if /assets/portrait.jpg exists, a monogram until then. */
+/* Item 05: renders the photo if /assets/portrait.jpg exists, a monogram until then.
+   Sized so a real face is legible rather than avatar-sized — at 62px a portrait reads
+   as a UI chip, at 104px it reads as a person, which is the whole point of having it. */
 .portrait {
-  width: 62px;
-  height: 62px;
+  width: clamp(84px, 8vw, 104px);
+  aspect-ratio: 1;
   flex: none;
   border-radius: 50%;
   overflow: hidden;
   border: 1px solid var(--line);
   background: var(--surface);
+  /* A face on a light ground needs a little separation or it floats. */
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
 }
 .portrait img {
   width: 100%;
@@ -455,7 +467,7 @@ h2 em {
   place-items: center;
   background: var(--ink);
   color: var(--bg);
-  font-size: 1.05rem;
+  font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: -0.04em;
 }
@@ -743,7 +755,8 @@ footer h2 {
   width: 100%;
   background: var(--accent);
   transform-origin: 0 50%;
-  animation: dwell 4.2s linear both;
+  /* Must match DWELL in Walkthrough.jsx or the bar fills early and then waits. */
+  animation: dwell 6.5s linear both;
 }
 @keyframes dwell {
   from {
@@ -2292,22 +2305,20 @@ nav a[aria-current='true'] {
   /* Item 26: every element on the page started at the same 5vw gutter. One project
      now breaks that: it drops the two-column card grid, runs its visual past the card
      edge to the viewport, and sets its case study three-across underneath. */
+  /* The card now spans the full viewport rather than reaching only the right edge.
+     A visual that starts at the same gutter as every other card and stops at the
+     screen edge reads as a layout bug; breaking both sides reads as a decision. */
   .project-bleed {
     display: block;
-    padding-right: 0;
+    margin-left: -5vw;
+    margin-right: -5vw;
+    padding-left: 5vw;
+    padding-right: 5vw;
+    border-left: 0;
     border-right: 0;
   }
-  .project-bleed .project-meta,
-  .project-bleed .project-heading,
-  .project-bleed .project-details,
-  .project-bleed .project-highlight,
-  .project-bleed .project-stats,
-  .project-bleed .project-note,
-  .project-bleed .project-footer {
-    margin-right: clamp(1.5rem, 3vw, 2.6rem);
-  }
   .project-bleed .project-visual {
-    margin: 0 -5vw 2.5rem 0;
+    margin: 0 -5vw 2.5rem;
   }
   .project-bleed .project-details {
     grid-template-columns: repeat(3, 1fr);

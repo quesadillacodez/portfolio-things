@@ -3,7 +3,10 @@ import TiltFrame from './TiltFrame';
 import Picture from './Picture';
 import Icon from './Icon';
 
-const DWELL = 4200;
+// 4200ms was enough to notice a screen had changed and not enough to read the
+// caption and look at the interface underneath it — the motion competed with the
+// content it was presenting.
+const DWELL = 6500;
 
 // Item 23: six real screenshots existed and all six were frozen in a thumbnail row.
 // This walks them in task order — build the week, fill a gap, watch the crew, verify

@@ -182,15 +182,15 @@ export default function Hero({ reducedMotion, onOpenProof }) {
           <b>Work</b>
           <em>5 projects, 2 case studies</em>
         </a>
-        <a href="#notes">
-          <span className="numeric">03</span>
-          <b>Notes</b>
-          <em>3 things I got wrong first</em>
-        </a>
         <a href="#about">
-          <span className="numeric">04</span>
+          <span className="numeric">03</span>
           <b>About</b>
           <em>Where the instinct came from</em>
+        </a>
+        <a href="#notes">
+          <span className="numeric">04</span>
+          <b>Notes</b>
+          <em>3 things I got wrong first</em>
         </a>
       </nav>
     </section>

@@ -162,7 +162,29 @@ export default function App() {
           onOpenProof={() => openImage(getProject('pulseops').visual.images, 1, null)}
         />
 
-        <About />
+        {/* Item 09 (round two): this was at screen six of fifteen, below three project
+            cards and ~6,000px of scroll, so most visitors never reached the one thing on
+            the site worth touching. It is now the first thing under the hero.
+
+            Item 25 — breaking the rhythm, first of two.
+            Every section used to open with the same eyebrow-plus-enormous-heading block,
+            four times running. This one is a full-bleed interactive band instead: no
+            giant heading, no left-aligned intro, and the reader does something rather
+            than reads something. It is also where the signature moment (item 15) lands
+            on the index page. */}
+        <section className="section demo-section" id="try" aria-labelledby="try-heading">
+          <div className="demo-inner" data-reveal>
+            <div className="demo-copy">
+              <p className="section-label">Rather than tell you</p>
+              <h2 id="try-heading">The decision my software exists to&nbsp;support.</h2>
+              <p>
+                Every project on this site started as somebody&rsquo;s awkward Tuesday. This is one of them,
+                rebuilt small enough to play with in your browser.
+              </p>
+            </div>
+            <RosterDemo />
+          </div>
+        </section>
 
         {/* Project cards share one data-backed structure so claims stay consistent. */}
         <section className="section work-section" id="work" aria-labelledby="work-title">
@@ -193,25 +215,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* Item 25 — breaking the rhythm, first of two.
-            Every section used to open with the same eyebrow-plus-enormous-heading block,
-            four times running. This one is a full-bleed interactive band instead: no
-            giant heading, no left-aligned intro, and the reader does something rather
-            than reads something. It is also where the signature moment (item 15) lands
-            on the index page. */}
-        <section className="section demo-section" id="try" aria-labelledby="try-heading">
-          <div className="demo-inner" data-reveal>
-            <div className="demo-copy">
-              <p className="section-label">Rather than tell you</p>
-              <h2 id="try-heading">The decision my software exists to&nbsp;support.</h2>
-              <p>
-                Every project on this site started as somebody&rsquo;s awkward Tuesday. This is one of them,
-                rebuilt small enough to play with in your browser.
-              </p>
-            </div>
-            <RosterDemo />
-          </div>
-        </section>
+        <About />
 
         <section className="section process-section" id="process" aria-labelledby="process-title">
           <div className="section-intro compact">

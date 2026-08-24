@@ -2500,3 +2500,152 @@ nav a[aria-current='true'] {
     border-top-color: var(--accent);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Round two, step 3 — the roster demo. Items 09, 10, 11.
+   --------------------------------------------------------------------------- */
+
+/* Item 11: a status bar, so the block opens as an instrument rather than a table. */
+.roster-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--invert-bg);
+  color: var(--invert-ink);
+  font-size: 0.78rem;
+}
+.roster-unit {
+  padding: 0.2rem 0.5rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+.roster-when {
+  color: var(--invert-muted);
+  letter-spacing: 0.04em;
+}
+.roster-coverage {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+  color: var(--invert-ink);
+  letter-spacing: 0.04em;
+}
+.roster-coverage b {
+  font-size: 1rem;
+}
+.roster-coverage-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f0a33c;
+  transition:
+    background 320ms var(--ease),
+    box-shadow 320ms var(--ease);
+}
+/* Item 10: the shift resolving is the payoff for the click. */
+.roster-coverage.is-full .roster-coverage-dot {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+/* Item 11: rows that look pressable at rest. */
+.roster-list li button {
+  transition:
+    background 180ms ease,
+    transform 180ms var(--ease);
+}
+.roster-list li:not(.is-blocked) button:hover {
+  transform: translateX(2px);
+}
+.roster-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--ink);
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
+}
+.roster-list li:not(.is-blocked) button:hover .roster-action {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Item 10: the chosen row settles, everything else steps back. */
+.roster-list li {
+  transition:
+    opacity 320ms var(--ease),
+    filter 320ms var(--ease);
+}
+.roster-list li.is-dimmed {
+  opacity: 0.4;
+  filter: saturate(0.5);
+}
+.roster-list li.is-chosen button {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.roster-list li.is-chosen .roster-action {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.roster-list li.is-chosen {
+  animation: roster-settle 460ms var(--ease) both;
+}
+@keyframes roster-settle {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+  35% {
+    transform: translateX(4px) scale(1.008);
+  }
+  100% {
+    transform: translateX(0) scale(1);
+  }
+}
+.roster-result {
+  animation: roster-drop 340ms var(--ease) both;
+}
+@keyframes roster-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.roster-demo.is-resolved .roster-list li:not(.is-chosen) button {
+  cursor: default;
+}
+.roster-count {
+  display: inline-block;
+  animation: roster-pop 380ms var(--ease) both;
+}
+@keyframes roster-pop {
+  0% {
+    transform: translateY(4px) scale(0.9);
+    opacity: 0.4;
+  }
+  60% {
+    transform: translateY(0) scale(1.14);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}

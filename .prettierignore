@@ -1,0 +1,5 @@
+dist
+public/assets
+assets-src
+pnpm-lock.yaml
+package-lock.json

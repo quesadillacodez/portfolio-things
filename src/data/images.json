@@ -1,0 +1,52 @@
+{
+  "food-insecurity-dashboard": {
+    "width": 1914,
+    "height": 938,
+    "widths": [400, 800, 1200, 1600, 1914]
+  },
+  "nets-home-history": {
+    "width": 1600,
+    "height": 900,
+    "widths": [400, 800, 1200, 1600]
+  },
+  "nets-wallet-ledger": {
+    "width": 1600,
+    "height": 900,
+    "widths": [400, 800, 1200, 1600]
+  },
+  "nets-xp-rewards": {
+    "width": 1600,
+    "height": 900,
+    "widths": [400, 800, 1200, 1600]
+  },
+  "pulseops-attendance": {
+    "width": 1600,
+    "height": 1000,
+    "widths": [400, 800, 1200, 1600]
+  },
+  "pulseops-coverage": {
+    "width": 1600,
+    "height": 1000,
+    "widths": [400, 800, 1200, 1600]
+  },
+  "pulseops-dashboard": {
+    "width": 1600,
+    "height": 1000,
+    "widths": [400, 800, 1200, 1600]
+  },
+  "pulseops-payroll": {
+    "width": 1600,
+    "height": 1000,
+    "widths": [400, 800, 1200, 1600]
+  },
+  "pulseops-roster": {
+    "width": 1600,
+    "height": 1000,
+    "widths": [400, 800, 1200, 1600]
+  },
+  "pulseops-staff": {
+    "width": 1600,
+    "height": 1000,
+    "widths": [400, 800, 1200, 1600]
+  }
+}

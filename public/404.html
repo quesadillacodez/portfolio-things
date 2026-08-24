@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 — nothing rostered here | Hadi Qusyairi</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap"
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f2f0e9;
+        --ink: #101f20;
+        --muted: #586361;
+        --line: #b8b9b1;
+        --accent: #d9ff53;
+        --coral: #ff674d;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #101918;
+          --ink: #f2f0e9;
+          --muted: #a7b0ac;
+          --line: #3d4945;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 2rem;
+        padding: 3rem 5vw;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'DM Sans', Arial, sans-serif;
+        line-height: 1.55;
+      }
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        opacity: 0.25;
+        background-image:
+          linear-gradient(var(--line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--line) 1px, transparent 1px);
+        background-size: 80px 80px;
+        mask-image: linear-gradient(to bottom, black, transparent 42rem);
+      }
+      .code {
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      h1 {
+        max-width: 16ch;
+        margin: 0;
+        font-size: clamp(3rem, 11vw, 8rem);
+        line-height: 0.88;
+        letter-spacing: -0.075em;
+        font-weight: 500;
+      }
+      h1 em {
+        font-family: 'Instrument Serif', Georgia, serif;
+        color: var(--coral);
+      }
+      p {
+        max-width: 38rem;
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+      a.button {
+        align-self: flex-start;
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0.8rem 1.1rem;
+        border: 1px solid var(--ink);
+        background: var(--ink);
+        color: var(--bg);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.88rem;
+      }
+      a.button:hover {
+        background: var(--accent);
+        color: #101f20;
+      }
+      a.button:focus-visible {
+        outline: 2px solid var(--ink);
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="code">Error 404 · unassigned</p>
+    <h1>No shift <em>rostered</em> at this URL.</h1>
+    <p>
+      The page you asked for is not on the schedule. Nothing is broken — this address just does not map to
+      anything. The work, the notes and the résumé are all one click away.
+    </p>
+    <a class="button" href="/">Back to the command center →</a>
+  </body>
+</html>

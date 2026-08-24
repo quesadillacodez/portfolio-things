@@ -1,0 +1,13 @@
+{
+  "name": "Hadi Qusyairi — FinTech & Data Builder",
+  "short_name": "Hadi Qusyairi",
+  "description": "Portfolio of Hadi Qusyairi: operational software, loyalty systems, and analytics.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f2f0e9",
+  "theme_color": "#f2f0e9",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

@@ -14,6 +14,7 @@ import { site } from './data/site';
 import { useReveal } from './hooks/useReveal';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { useHashRoute } from './hooks/useHashRoute';
+import { usePointerGlow } from './hooks/usePointerGlow';
 
 const skills = [
   {
@@ -89,6 +90,9 @@ export default function App() {
 
   // Item 08: one observer wakes every `data-reveal` element anywhere on the page.
   useReveal(reducedMotion);
+
+  // Items 03 + 14 (round two): the one ambient element the site commits to.
+  usePointerGlow(reducedMotion);
 
   // Item 34: for whoever opens devtools, and for whoever still remembers the code.
   useEffect(() => {
@@ -296,7 +300,13 @@ export default function App() {
             <span className="footer-stamp">Last updated {site.lastUpdated}</span>
           </p>
           <div>
-            <a href="mailto:hadiqbz@gmail.com">Email</a>
+            {/* Item 16, third hover exception: this one tells you the address. */}
+            <a className="email-link" href={`mailto:${site.email}`}>
+              <span className="email-label">Email</span>
+              <span className="email-real" aria-hidden="true">
+                {site.email}
+              </span>
+            </a>
             <a href="https://linkedin.com/in/hadi-qusyairi" target="_blank" rel="noreferrer">
               LinkedIn
             </a>

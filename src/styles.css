@@ -10,6 +10,7 @@
   --muted: #586361;
   --line: #b8b9b1;
   --line-strong: #9a9c93;
+  --glow-line: #8fa62e;
   /* Item 25: the palette had three accents doing one job each. It now has two, with
      rules. --accent (lime) owns every interactive and system signal: focus, active
      nav, progress, hover, availability, list markers. --coral owns editorial
@@ -46,6 +47,7 @@
   --muted: #a7b0ac;
   --line: #3d4945;
   --line-strong: #55635e;
+  --glow-line: #d9ff53;
   --accent: #d9ff53;
   --accent-ink: #101f20;
   --coral: #ff806b;
@@ -2648,4 +2650,119 @@ nav a[aria-current='true'] {
   100% {
     transform: translateY(0) scale(1);
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Round two, step 4 — motion and interaction. Items 03, 12, 13, 14, 15, 16.
+   --------------------------------------------------------------------------- */
+
+/* Items 03 + 14: the grid the layout is built on lights up around the pointer.
+   Only ever active when usePointerGlow has set data-glow, which it does not do for
+   coarse pointers or reduced motion. */
+:root[data-glow='on'] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    linear-gradient(var(--accent) 1px, transparent 1px),
+    linear-gradient(90deg, var(--accent) 1px, transparent 1px);
+  background-size: 80px 80px;
+  /* The glow follows the pointer and breathes slowly, so the page is alive even
+     when the pointer is not moving. */
+  mask-image: radial-gradient(
+    circle var(--glow-radius, 190px) at var(--pointer-x, 50vw) var(--pointer-y, 40vh),
+    #000 0%,
+    transparent 72%
+  );
+  animation: glow-breathe 9s ease-in-out infinite;
+}
+@keyframes glow-breathe {
+  0%,
+  100% {
+    --glow-radius: 175px;
+    opacity: 0.42;
+  }
+  50% {
+    --glow-radius: 225px;
+    opacity: 0.62;
+  }
+}
+@property --glow-radius {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 190px;
+}
+
+/* Item 13: the cross-fade between the index and a case study. */
+::view-transition-old(root) {
+  animation: vt-out 180ms var(--ease) both;
+}
+::view-transition-new(root) {
+  animation: vt-in 260ms var(--ease) both;
+}
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* Item 15: scroll drove one 2px bar. It now also drives the project visuals, which
+   settle as they enter rather than simply appearing. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .project-visual .tilt,
+    .project-visual .walkthrough-frame {
+      animation: shot-settle linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 34%;
+    }
+    @keyframes shot-settle {
+      from {
+        opacity: 0.55;
+        transform: scale(0.965) translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+  }
+}
+
+/* Item 16, third exception: the footer "Email" link tells you the address instead of
+   just promising one. Everything else on the site underlines on hover; this does not. */
+.footer-bottom .email-link {
+  display: inline-grid;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.footer-bottom .email-link span {
+  grid-area: 1 / 1;
+  transition:
+    transform 260ms var(--ease),
+    opacity 200ms ease;
+}
+.footer-bottom .email-link .email-real {
+  transform: translateY(105%);
+  opacity: 0;
+}
+.footer-bottom .email-link:hover .email-label,
+.footer-bottom .email-link:focus-visible .email-label {
+  transform: translateY(-105%);
+  opacity: 0;
+}
+.footer-bottom .email-link:hover .email-real,
+.footer-bottom .email-link:focus-visible .email-real {
+  transform: translateY(0);
+  opacity: 1;
 }

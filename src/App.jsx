@@ -155,9 +155,11 @@ export default function App() {
       {header}
 
       <main id="main-content">
+        {/* The hero shot is a crop of the PulseOps roster, so enlarging it opens that
+            project's gallery rather than whichever project happens to be first. */}
         <Hero
           reducedMotion={reducedMotion}
-          onOpenProof={() => openImage(projects[0].visual.images, 0, null)}
+          onOpenProof={() => openImage(getProject('pulseops').visual.images, 1, null)}
         />
 
         <About />

@@ -441,8 +441,9 @@ h2 em {
 }
 /* Item 05: renders the photo if /assets/portrait.jpg exists, a monogram until then. */
 .portrait {
-  width: 62px;
-  height: 62px;
+  position: relative;
+  width: 92px;
+  height: 92px;
   flex: none;
   border-radius: 50%;
   overflow: hidden;
@@ -450,9 +451,28 @@ h2 em {
   background: var(--surface);
 }
 .portrait img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition:
+    opacity 260ms var(--ease),
+    transform 420ms var(--ease);
+}
+/* Item 16: hold the portrait and you get the other photo. One hover on the site
+   that does something you did not expect. */
+.portrait-alt {
+  opacity: 0;
+}
+.hero-id:hover .portrait-alt,
+.hero-id:focus-within .portrait-alt {
+  opacity: 1;
+  transform: scale(1.04);
+}
+.hero-id:hover .portrait-main,
+.hero-id:focus-within .portrait-main {
+  opacity: 0;
 }
 .portrait.is-monogram {
   display: grid;
@@ -2343,4 +2363,140 @@ nav a[aria-current='true'] {
 }
 .notes-date {
   font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   Round two, step 2 — the hero. Items 01, 02, 04, 05, 06, 07, 08.
+   --------------------------------------------------------------------------- */
+
+/* Item 05 */
+.status-time {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+.status-time time {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Item 06: the résumé is still above the fold, just no longer a third button. */
+.hero-aside {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.hero-aside a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 1px;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease;
+}
+.hero-aside a:hover {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+/* Item 07: what replaced the three static facts. */
+.hero-now {
+  flex: 1;
+  display: grid;
+  gap: 0.35rem;
+  align-content: center;
+  min-width: 0;
+}
+.hero-now-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.hero-now-body {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.hero-now-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+  justify-self: start;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+}
+.hero-now-link:hover {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+/* Item 08: the contents page, replacing a lone "Selected work" cue. */
+.hero-index {
+  display: grid;
+  gap: 1px;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+}
+.hero-index a {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr;
+  align-items: baseline;
+  gap: 0.15rem 0.6rem;
+  padding: 0.85rem 0.5rem 0.85rem 0;
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  transition:
+    padding-left 180ms var(--ease),
+    background 180ms ease;
+}
+.hero-index a:hover {
+  padding-left: 0.6rem;
+  background: var(--surface);
+}
+.hero-index a > span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+.hero-index a b {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.hero-index a em {
+  grid-column: 2;
+  color: var(--muted);
+  font-style: normal;
+  font-size: 0.84rem;
+}
+.hero-index a:hover b {
+  color: var(--ink);
+}
+
+@media (min-width: 700px) {
+  .hero-index {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0 1.5rem;
+  }
+  .hero-index a {
+    border-bottom: 0;
+    border-top: 2px solid var(--line);
+    padding: 0.9rem 0 0;
+  }
+  .hero-index a:hover {
+    padding-left: 0;
+    background: transparent;
+    border-top-color: var(--accent);
+  }
 }

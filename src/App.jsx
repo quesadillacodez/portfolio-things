@@ -97,6 +97,13 @@ export default function App() {
   // Items 03 + 14 (round two): the one ambient element the site commits to.
   usePointerGlow(reducedMotion);
 
+  // A hash route is a same-document navigation, so the browser keeps the scroll
+  // position it had on the index — which drops the reader into the middle of a note.
+  // Entering a page route starts it at the top; leaving one lets the browser restore.
+  useEffect(() => {
+    if (route) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [route]);
+
   // Item 34: for whoever opens devtools, and for whoever still remembers the code.
   useEffect(() => {
     console.log(

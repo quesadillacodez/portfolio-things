@@ -42,14 +42,4 @@ Motion is centralised: `src/hooks/useReveal.js` drives every scroll reveal from 
 animated component so `prefers-reduced-motion` switches off the JavaScript-driven
 effects that CSS alone cannot reach.
 
-## Known gaps
 
-Three things need real assets or information before they are finished:
-
-1. **Portrait.** The hero renders an `HQ` monogram until `public/assets/portrait.jpg`
-   exists. Drop the file in and it swaps itself — no code change needed.
-2. **Process artifacts.** `artifacts: []` on each project is deliberately empty. Add
-   `{ src, label, note }` entries pointing at files in `public/assets/process/` and the
-   "messy middle" section appears on the case study page.
-3. **Demo URL.** The PulseOps demo still points at a `bit.ly` shortener. Replace
-   `demo:` in `src/data/projects.js` with the canonical deployment URL.

@@ -12,6 +12,8 @@
 //   caseStudy   — item 17: long-form content for the dedicated /#/case/<slug> page.
 //   label       — the presentation a project was submitted for, shown as a chip.
 //   highlight   — the one feature a project is remembered for, lifted out of the prose.
+//   year        — item 18: nothing on the site was dated, so a visitor could not
+//                 tell whether the work was recent.
 //   bleed       — item 26: opts this card out of the contained grid so its visual runs
 //                 to the viewport edge. Exactly one project should set it.
 //
@@ -22,6 +24,7 @@ export const projects = [
   {
     number: '01',
     slug: 'nets-pay-together',
+    year: '2026',
     title: 'NETS Pay Together',
     eyebrow: 'Mobile banking prototype · five-person team',
     label: 'Distinction Presentation',
@@ -128,6 +131,7 @@ export const projects = [
   {
     number: '02',
     slug: 'pulseops',
+    year: '2025',
     title: 'PulseOps EMS Command Center',
     eyebrow: 'Operational web application',
     label: 'Distinction Presentation',
@@ -272,6 +276,7 @@ export const projects = [
   {
     number: '03',
     slug: 'food-insecurity',
+    year: '2025',
     title: 'Global Food Insecurity Dashboard',
     eyebrow: 'Business analytics, four-person team',
     summary:
@@ -308,6 +313,7 @@ export const projects = [
   {
     number: '04',
     slug: 'fairprice-sim',
+    year: '2024',
     title: 'FairPrice Shopping Simulation',
     eyebrow: 'Python application',
     summary:
@@ -360,6 +366,7 @@ export const projects = [
   {
     number: '05',
     slug: 'clinic-digitalisation',
+    year: '2024',
     title: 'Clinic Digitalisation Concept',
     eyebrow: 'Python 3.5 web concept',
     summary:

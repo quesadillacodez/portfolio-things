@@ -10,6 +10,7 @@ import RosterDemo from './components/RosterDemo';
 import SplitHeading from './components/SplitHeading';
 import Icon from './components/Icon';
 import { projects, getProject } from './data/projects';
+import { site } from './data/site';
 import { useReveal } from './hooks/useReveal';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { useHashRoute } from './hooks/useHashRoute';
@@ -283,7 +284,11 @@ export default function App() {
           </a>
         </div>
         <div className="footer-bottom">
-          <p>Hadi Qusyairi · Singapore</p>
+          {/* Item 18: freshness is a trust signal the site was giving away. */}
+          <p>
+            Hadi Qusyairi · Singapore
+            <span className="footer-stamp">Last updated {site.lastUpdated}</span>
+          </p>
           <div>
             <a href="mailto:hadiqbz@gmail.com">Email</a>
             <a href="https://linkedin.com/in/hadi-qusyairi" target="_blank" rel="noreferrer">

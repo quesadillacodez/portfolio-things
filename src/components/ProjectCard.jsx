@@ -55,6 +55,8 @@ export default function ProjectCard({ project, onOpenImage, reducedMotion }) {
       <div className="project-meta" data-reveal>
         <span className="numeric">{project.number}</span>
         <span>{project.eyebrow}</span>
+        {/* Item 18 */}
+        {project.year && <span className="numeric project-year">{project.year}</span>}
       </div>
 
       <div className="project-heading" data-reveal>

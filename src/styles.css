@@ -9,12 +9,16 @@
   --ink: #101f20;
   --muted: #586361;
   --line: #b8b9b1;
+  --line-strong: #9a9c93;
+  /* Item 25: the palette had three accents doing one job each. It now has two, with
+     rules. --accent (lime) owns every interactive and system signal: focus, active
+     nav, progress, hover, availability, list markers. --coral owns editorial
+     emphasis only: display italic in headings, and the small uppercase labels.
+     The old --blue, which appeared exactly once as a footer heading colour, is gone. */
   --accent: #d9ff53;
   --accent-ink: #101f20;
-  --blue: #2848ff;
   /* Small labels need 4.5:1, which the display coral cannot reach on cream. Two
-     tokens keep the brand colour for headline-sized text and a legible one for the
-     11px labels that structure every case study. */
+     tuned values of one hue: display size, and 11px label size. */
   --coral: #c2381f;
   --coral-display: #ff674d;
   --header: rgba(242, 240, 233, 0.88);
@@ -41,9 +45,9 @@
   --ink: #f2f0e9;
   --muted: #a7b0ac;
   --line: #3d4945;
+  --line-strong: #55635e;
   --accent: #d9ff53;
   --accent-ink: #101f20;
-  --blue: #8292ff;
   --coral: #ff806b;
   --coral-display: #ff806b;
   --header: rgba(16, 25, 24, 0.9);
@@ -910,7 +914,7 @@ footer h2 {
   color: var(--coral);
 }
 .flow-after {
-  color: var(--blue);
+  color: var(--coral-display);
 }
 .flow-col ol li {
   color: var(--ink);
@@ -919,7 +923,7 @@ footer h2 {
   border-left: 2px solid var(--coral-display);
 }
 .flow-after li {
-  border-left: 2px solid var(--blue);
+  border-left: 2px solid var(--line-strong);
 }
 .flow-arrow {
   display: grid;
@@ -1361,7 +1365,7 @@ footer h2 {
 .skills-grid li::before {
   content: '↳';
   margin-right: 0.35rem;
-  color: var(--blue);
+  color: var(--coral-display);
 }
 
 /* ── Item 17: case study page ───────────────────────────────────────── */
@@ -1535,7 +1539,7 @@ footer {
   gap: 2rem;
 }
 .footer-top h2 em {
-  color: var(--blue);
+  color: var(--coral-display);
 }
 .footer-top .button {
   justify-self: start;
@@ -2320,4 +2324,23 @@ nav a[aria-current='true'] {
   .notes-list article {
     border-bottom: 0;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Round two, step 1 — items 18 and 25.
+   --------------------------------------------------------------------------- */
+
+/* Item 18 */
+.project-year {
+  margin-left: auto;
+  color: var(--muted);
+}
+.footer-stamp {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+.notes-date {
+  font-variant-numeric: tabular-nums;
 }

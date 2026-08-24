@@ -5,12 +5,15 @@ import ProjectCard from './components/ProjectCard';
 import ImageModal from './components/ImageModal';
 import CaseStudy from './components/CaseStudy';
 import About from './components/About';
+import NotePage from './components/NotePage';
+import Colophon from './components/Colophon';
 import Notes from './components/Notes';
 import RosterDemo from './components/RosterDemo';
 import SplitHeading from './components/SplitHeading';
 import Icon from './components/Icon';
 import { projects, getProject } from './data/projects';
 import { site } from './data/site';
+import { getNote } from './data/notes';
 import { useReveal } from './hooks/useReveal';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { useHashRoute } from './hooks/useHashRoute';
@@ -119,7 +122,8 @@ export default function App() {
   // whatever was clicked.
   const openImage = (gallery, index, originRect) => setModal({ gallery, index, originRect });
 
-  const caseProject = route ? getProject(route) : null;
+  const caseProject = route?.kind === 'case' ? getProject(route.slug) : null;
+  const note = route?.kind === 'note' ? getNote(route.slug) : null;
 
   const header = (
     <Header theme={theme} onToggleTheme={() => setTheme((value) => (value === 'light' ? 'dark' : 'light'))} />
@@ -136,16 +140,23 @@ export default function App() {
   );
 
   // Item 17: the case study is a route of its own rather than a longer card.
-  if (caseProject?.caseStudy) {
+  // Round two: notes (item 17) and the colophon (item 22) are routes too.
+  const page =
+    (caseProject?.caseStudy && (
+      <CaseStudy project={caseProject} onOpenImage={openImage} reducedMotion={reducedMotion} />
+    )) ||
+    (note && <NotePage note={note} />) ||
+    (route?.kind === 'colophon' && <Colophon />) ||
+    null;
+
+  if (page) {
     return (
       <>
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>
         {header}
-        <main id="main-content">
-          <CaseStudy project={caseProject} onOpenImage={openImage} reducedMotion={reducedMotion} />
-        </main>
+        <main id="main-content">{page}</main>
         {lightbox}
       </>
     );
@@ -203,8 +214,8 @@ export default function App() {
               reducedMotion={reducedMotion}
             />
             <p data-reveal>
-              Each project starts with an operational question, then turns it into software, analysis, or a
-              clearer workflow.
+              Five of them. Two got a full case study because the decisions were worth writing down; the
+              others are here because they are true, not because they are impressive.
             </p>
           </div>
           <div className="project-list">
@@ -224,7 +235,7 @@ export default function App() {
         <section className="section process-section" id="process" aria-labelledby="process-title">
           <div className="section-intro compact">
             <p className="section-label" data-reveal>
-              How I work
+              How I work — when it goes well
             </p>
             <SplitHeading
               id="process-title"
@@ -298,6 +309,9 @@ export default function App() {
           <p>
             Hadi Qusyairi · Singapore
             <span className="footer-stamp">Last updated {site.lastUpdated}</span>
+            <span className="footer-konami" title="Try it on this page.">
+              ↑ ↑ ↓ ↓ ← → ← → B A
+            </span>
           </p>
           <div>
             {/* Item 16, third hover exception: this one tells you the address. */}
@@ -317,6 +331,11 @@ export default function App() {
             <a href="/Hadi-Qusyairi-Resume.pdf" download>
               Résumé
             </a>
+            {/* Item 22 */}
+            <a href="#/colophon">Colophon</a>
+            {/* Item 21: the 404 page has the best line on the site and lived at a URL
+                nobody visits on purpose. Now it is reachable. */}
+            <a href="/404.html">Lost?</a>
           </div>
         </div>
       </footer>

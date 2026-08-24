@@ -2766,3 +2766,221 @@ nav a[aria-current='true'] {
   transform: translateY(0);
   opacity: 1;
 }
+
+/* ---------------------------------------------------------------------------
+   Round two, step 5 — voice and personality. Items 17, 20, 21, 22, 24.
+   --------------------------------------------------------------------------- */
+
+/* Item 20: the breadcrumb for the grid easter egg. */
+.footer-konami {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  opacity: 0.55;
+  cursor: help;
+  transition:
+    opacity 200ms ease,
+    color 200ms ease;
+}
+.footer-konami:hover {
+  opacity: 1;
+  color: var(--ink);
+}
+
+/* Item 24 */
+.copy-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease;
+}
+.copy-link:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Item 17: notes on the index, and the pages they now lead to. */
+.notes-intro {
+  max-width: 40rem;
+  color: var(--muted);
+}
+.notes-list h3 a {
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: border-color 160ms ease;
+}
+.notes-list h3 a:hover {
+  border-bottom-color: var(--accent);
+}
+.notes-read {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+  justify-self: start;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+}
+.notes-read:hover {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+.note-page,
+.colophon {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 5rem) 5vw clamp(4rem, 8vw, 7rem);
+  display: grid;
+  gap: 2rem;
+}
+.note-head,
+.colophon-head {
+  display: grid;
+  gap: 1rem;
+}
+.note-head h1,
+.colophon-head h1 {
+  margin: 0;
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+  line-height: 1.03;
+  letter-spacing: -0.045em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+.note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.note-dek,
+.colophon-dek {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 38rem;
+}
+.note-body {
+  display: grid;
+  gap: 1.3rem;
+}
+.note-body p {
+  margin: 0;
+  font-size: 1.06rem;
+  line-height: 1.72;
+  max-width: 36rem;
+}
+.note-foot {
+  display: grid;
+  gap: 2rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--line);
+}
+.note-next {
+  display: grid;
+  gap: 0.7rem;
+}
+.note-next-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.note-next a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  justify-self: start;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 2px;
+  transition: border-color 150ms ease;
+}
+.note-next a:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* Item 22 */
+.colophon-block {
+  display: grid;
+  gap: 1.1rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--line);
+}
+.colophon-block h2 {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--coral);
+}
+.colophon-block dl {
+  display: grid;
+  gap: 1.1rem;
+  margin: 0;
+}
+.colophon-block dt {
+  font-weight: 600;
+}
+.colophon-block dd {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  max-width: 36rem;
+}
+.colophon-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.colophon-todo {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  max-width: 36rem;
+}
+.colophon-todo li::marker {
+  color: var(--accent-ink);
+}
+.colophon-foot {
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.colophon-foot p {
+  margin: 0;
+}

@@ -1,49 +1,43 @@
-const notes = [
-  {
-    title: 'What CPF rules taught me about edge cases',
-    date: '2026-06-14',
-    meta: ['Note', 'PulseOps'],
-    body: 'Payroll looks like arithmetic until you write the contribution logic. Age bands, wage ceilings and ordinary-versus-additional wages each move the answer, and none of them are visible in the happy path. It changed how I read a spec: the interesting part is never the formula, it is the boundary the formula stops being true at.',
-  },
-  {
-    title: 'Why I threw out my first roster UI',
-    date: '2026-07-02',
-    meta: ['Note', 'PulseOps'],
-    body: 'The first roster builder let you assign anyone to anything and then complained afterwards. It looked flexible and was useless — a manager filling an urgent gap does not want a warning, they want the three people who can legally take the shift. Moving validation in front of the assignment made the screen smaller and the job faster.',
-  },
-  {
-    title: 'Every rewards system has a loophole',
-    date: '2026-08-09',
-    meta: ['Note', 'NETS'],
-    body: 'The first version of the XP store earned points on every transaction. Two users repaying each other in a loop could mint XP out of nothing. The fix was not a limit or a fraud check — it was deciding that the transaction type, not the amount, is what qualifies. Repayments, top-ups and cashback earn nothing.',
-  },
-];
+import Icon from './Icon';
+import { notes } from '../data/notes';
+
+const shortDate = (iso) =>
+  new Date(iso).toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' });
 
 export default function Notes() {
   return (
     <section className="section notes-section" id="notes" aria-labelledby="notes-title">
       <div className="section-intro compact">
-        <p className="section-label">Notes</p>
-        <h2 id="notes-title">
+        <p className="section-label" data-reveal>
+          Notes
+        </p>
+        <h2 id="notes-title" data-reveal>
           Things I got wrong <em>the first time.</em>
         </h2>
+        <p className="notes-intro" data-reveal>
+          Three that cost me a rewrite each. Writing them down is the cheapest way I have found to not repeat
+          them.
+        </p>
       </div>
+
+      {/* Item 17 (round two): each of these is now a page with a date and a URL. */}
       <div className="notes-list">
         {notes.map((note) => (
-          <article key={note.title}>
+          <article key={note.slug} data-reveal>
             <p className="notes-meta">
-              {note.meta.map((tag, i) => (i === 0 ? <b key={tag}>{tag}</b> : <span key={tag}>{tag}</span>))}
-              {/* Item 18 */}
-              <time className="notes-date" dateTime={note.date}>
-                {new Date(note.date).toLocaleDateString('en-SG', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                })}
+              <time className="notes-date numeric" dateTime={note.date}>
+                {shortDate(note.date)}
               </time>
+              <span>{note.project}</span>
+              <span>{note.minutes} min</span>
             </p>
-            <h3>{note.title}</h3>
-            <p>{note.body}</p>
+            <h3>
+              <a href={`#/note/${note.slug}`}>{note.title}</a>
+            </h3>
+            <p>{note.dek}</p>
+            <a className="notes-read" href={`#/note/${note.slug}`}>
+              Read it <Icon name="arrow" size={14} />
+            </a>
           </article>
         ))}
       </div>

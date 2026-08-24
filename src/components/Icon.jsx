@@ -6,6 +6,10 @@ export default function Icon({ name, size = 18 }) {
     moon: <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />,
     close: <><path d="m6 6 12 12" /><path d="M18 6 6 18" /></>,
     expand: <><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" /></>,
+    play: <path d="M7 4v16l13-8Z" />,
+    pause: <><path d="M9 4v16" /><path d="M15 4v16" /></>,
+    check: <path d="m5 13 4 4L19 7" />,
+    reset: <><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></>,
   };
 
   return (

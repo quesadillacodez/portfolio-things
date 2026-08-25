@@ -8,6 +8,30 @@ import FlowVisual from './FlowVisual';
 export default function ProjectCard({ project, onOpenImage, reducedMotion }) {
   const { visual } = project;
 
+  // Rendering five projects at identical weight made the two strong ones look like
+  // exceptions rather than the pattern. A compact card keeps the claim, the year and
+  // the stack — everything a reader needs to know it exists — and drops the visual,
+  // the prose blocks and the stat row that were buying nothing on work with nothing
+  // to click through to.
+  if (project.compact) {
+    return (
+      <article className="project project-compact" data-reveal>
+        <div className="project-compact-head">
+          <span className="numeric">{project.number}</span>
+          <h3>{project.title}</h3>
+          {project.year && <span className="numeric project-year">{project.year}</span>}
+        </div>
+        <p className="project-compact-eyebrow">{project.eyebrow}</p>
+        <p className="project-compact-summary">{project.summary}</p>
+        <ul className="stack-list" aria-label="Technologies used">
+          {project.stack.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </article>
+    );
+  }
+
   // Item 16: every project now resolves to something visual. Previously only the two
   // with screenshots did, and 03 and 04 rendered as walls of grey text.
   const renderVisual = () => {

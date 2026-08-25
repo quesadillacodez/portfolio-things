@@ -16,14 +16,48 @@ import Icon from './Icon';
 // and the whole block read as a table. It now has a status bar that resolves, a
 // coverage figure that counts, and rows that look like something you can press.
 
-const SHIFT = { code: 'A04', day: 'Tue 14 Jul', window: '07:00 – 19:00', needs: 'Paramedic', seats: 3 };
+// Two scenarios, because the demo appears twice. The index instance teaches the
+// mechanic with a clean answer available; the case-study instance is the version worth
+// meeting a second time — every remaining candidate carries a flag and the tool cannot
+// hand you a right answer. Same rules, different Tuesday.
+export const SCENARIOS = {
+  clean: {
+    shift: { code: 'A04', day: 'Tue 14 Jul', window: '07:00 – 19:00', needs: 'Paramedic', seats: 3 },
+    eyebrow: 'A working model of the matching rules',
+    sub: (
+      <>
+        Four crew could cover it. Two of them legally cannot, and the tool will tell you why — but it will not
+        choose. <strong>That part is yours.</strong>
+      </>
+    ),
+    crew: [
+      { id: 'c1', name: 'Nadia R.', role: 'Paramedic', hours: 38, restHours: 14, available: true },
+      { id: 'c2', name: 'Wei Lun T.', role: 'Paramedic', hours: 56, restHours: 8, available: true },
+      { id: 'c3', name: 'Siti A.', role: 'Emergency medic', hours: 22, restHours: 30, available: true },
+      { id: 'c4', name: 'Daniel O.', role: 'Paramedic', hours: 44, restHours: 26, available: false },
+    ],
+  },
 
-const CREW = [
-  { id: 'c1', name: 'Nadia R.', role: 'Paramedic', hours: 38, restHours: 14, available: true },
-  { id: 'c2', name: 'Wei Lun T.', role: 'Paramedic', hours: 56, restHours: 8, available: true },
-  { id: 'c3', name: 'Siti A.', role: 'Emergency medic', hours: 22, restHours: 30, available: true },
-  { id: 'c4', name: 'Daniel O.', role: 'Paramedic', hours: 44, restHours: 26, available: false },
-];
+  // The one where the rules run out. Both eligible crew are flagged, and the ranking
+  // puts the one nearer the weekly ceiling first because rest is weighted heavier than
+  // hours — which is exactly the judgement the tool refuses to make for you.
+  hard: {
+    shift: { code: 'A07', day: 'Sat 18 Jul', window: '19:00 – 07:00', needs: 'Paramedic', seats: 2 },
+    eyebrow: 'The same rules, on a worse night',
+    sub: (
+      <>
+        A night shift, and nobody left is a clean answer. Both crew who can legally take it are carrying a
+        flag. <strong>The tool ranks them and stops there.</strong>
+      </>
+    ),
+    crew: [
+      { id: 'h1', name: 'Marcus L.', role: 'Paramedic', hours: 54, restHours: 13, available: true },
+      { id: 'h2', name: 'Farah B.', role: 'Paramedic', hours: 51, restHours: 9, available: true },
+      { id: 'h3', name: 'Priya N.', role: 'Emergency medic', hours: 20, restHours: 40, available: true },
+      { id: 'h4', name: 'Jason T.', role: 'Paramedic', hours: 30, restHours: 20, available: false },
+    ],
+  },
+};
 
 // The ranking rules, kept in one place so the explanation under the demo and the
 // behaviour of the demo cannot drift apart.
@@ -45,8 +79,9 @@ function assess(person, shift) {
   return { eligible, blockers, flags, score };
 }
 
-export default function RosterDemo() {
+export default function RosterDemo({ scenario = 'clean' }) {
   const [assigned, setAssigned] = useState(null);
+  const { shift: SHIFT, crew: CREW, eyebrow, sub } = SCENARIOS[scenario] ?? SCENARIOS.clean;
 
   const ranked = CREW.map((person) => ({ person, ...assess(person, SHIFT) })).sort((a, b) => {
     if (a.eligible !== b.eligible) return a.eligible ? -1 : 1;
@@ -76,14 +111,11 @@ export default function RosterDemo() {
 
       <div className="roster-head">
         <div>
-          <p className="roster-eyebrow">A working model of the matching rules</p>
+          <p className="roster-eyebrow">{eyebrow}</p>
           <h3>
             {SHIFT.code} is short a {SHIFT.needs.toLowerCase()}
           </h3>
-          <p className="roster-sub">
-            Four crew could cover it. Two of them legally cannot, and the tool will tell you why — but it will
-            not choose. <strong>That part is yours.</strong>
-          </p>
+          <p className="roster-sub">{sub}</p>
         </div>
         {assigned ? (
           <button type="button" className="roster-reset" onClick={() => setAssigned(null)}>
@@ -99,7 +131,7 @@ export default function RosterDemo() {
           </p>
           <p>
             {chosen.flags.length > 0
-              ? `Logged with a fatigue note: ${chosen.flags.join('; ').toLowerCase()}. In the real system this stays attached to the shift so it surfaces again at payroll and in the weekly report.`
+              ? `Logged with a fatigue note: ${chosen.flags.join('; ').toLowerCase()}. In the real system this stays attached to the shift so it surfaces again at payroll and in the weekly report — a decision someone made, not a rule that fired.`
               : 'Clean match — qualified, rested, and inside the weekly ceiling. The roster, the staff view and the payroll record all update from this one action.'}
           </p>
         </div>

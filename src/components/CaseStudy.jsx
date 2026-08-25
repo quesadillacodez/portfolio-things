@@ -70,9 +70,12 @@ export default function CaseStudy({ project, onOpenImage, reducedMotion }) {
 
         {/* Item 15 lives here as well as on the index: the case study is exactly where a
             reader is most willing to spend thirty seconds on the actual decision. */}
+        {/* The index already carries the clean version of this. Meeting the identical
+            puzzle twice is a re-run, so the case study gets the one where the rules run
+            out and a person has to decide. */}
         <section className="case-block case-block-wide">
-          <h2>The decision this exists to support</h2>
-          <RosterDemo />
+          <h2>Where the rules run out</h2>
+          <RosterDemo scenario="hard" />
         </section>
 
         <section className="case-block">

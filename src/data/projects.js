@@ -74,6 +74,31 @@ export const projects = [
       ],
     },
 
+    // The work section used to open with a single static screenshot, immediately after
+    // the reader had just *used* the roster demo — interactive, then static, then
+    // interactive again. NETS has three real screens and an argument that runs across
+    // them, so it walks in task order like PulseOps does.
+    walkthrough: [
+      {
+        image: 'nets-xp-rewards',
+        step: 'Earn it',
+        caption:
+          'XP accrues from the transaction table itself — only merchant purchases qualify, so nothing can be minted between two users.',
+      },
+      {
+        image: 'nets-wallet-ledger',
+        step: 'Hold it',
+        caption:
+          'The voucher wallet and the XP ledger read the same rows, so what you own and what expires cannot disagree.',
+      },
+      {
+        image: 'nets-home-history',
+        step: 'Spend it',
+        caption:
+          'Cashback posts as a real credit on that ledger, so the home balance moves before you have left the counter.',
+      },
+    ],
+
     highlight: {
       eyebrow: 'Highlighted feature',
       title: 'XP Rewards Store',
@@ -276,6 +301,10 @@ export const projects = [
   {
     number: '03',
     slug: 'food-insecurity',
+    // Item: three projects with no demo, no repo and no case study were costing 25%
+    // of the mobile page at full card weight. They keep their claim and their stack;
+    // they lose the visual, the stat row and the prose blocks.
+    compact: true,
     year: '2025',
     title: 'Global Food Insecurity Dashboard',
     eyebrow: 'Business analytics, four-person team',
@@ -313,6 +342,10 @@ export const projects = [
   {
     number: '04',
     slug: 'fairprice-sim',
+    // Item: three projects with no demo, no repo and no case study were costing 25%
+    // of the mobile page at full card weight. They keep their claim and their stack;
+    // they lose the visual, the stat row and the prose blocks.
+    compact: true,
     year: '2024',
     title: 'FairPrice Shopping Simulation',
     eyebrow: 'Python application',
@@ -366,6 +399,10 @@ export const projects = [
   {
     number: '05',
     slug: 'clinic-digitalisation',
+    // Item: three projects with no demo, no repo and no case study were costing 25%
+    // of the mobile page at full card weight. They keep their claim and their stack;
+    // they lose the visual, the stat row and the prose blocks.
+    compact: true,
     year: '2024',
     title: 'Clinic Digitalisation Concept',
     eyebrow: 'Python 3.5 web concept',

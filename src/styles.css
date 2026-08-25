@@ -196,8 +196,11 @@ nav {
   display: none;
 }
 .theme-toggle {
-  width: 42px;
-  height: 42px;
+  /* Item 34: was 42x42. Nineteen controls measured under the 44px minimum on a
+     390px viewport; most were two or three pixels short, so this is a padding
+     pass rather than a redesign. */
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   border: 1px solid var(--line);
@@ -1885,6 +1888,25 @@ footer {
   }
 }
 
+@media (max-width: 560px) {
+  /* Item 38: the pill ran nearly edge to edge in large uppercase, competing with
+     the headline instead of introducing it. It is a status line, not a banner. */
+  .status-pill {
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    padding: 0.4rem 0.75rem 0.4rem 0.6rem;
+  }
+  /* Item 37: two full-width bordered buttons followed by a borderless Résumé with
+     an icon floating at the right edge read as a styling failure. Give it the same
+     frame as its neighbours. */
+  .hero-actions .button-text {
+    border-color: var(--line);
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
+    color: var(--ink);
+  }
+}
+
 @media (max-width: 430px) {
   .hero-actions .button {
     width: 100%;
@@ -2330,5 +2352,86 @@ nav a[aria-current='true'] {
   }
   .notes-list article {
     border-bottom: 0;
+  }
+}
+
+/* ── Item 34: tap targets ────────────────────────────────────────────────
+   Everything interactive clears 44x44 on touch. Applied at the pointer level so
+   desktop layout is untouched — a coarse pointer is what needs the room. */
+@media (pointer: coarse) {
+  .nav-toggle,
+  .theme-toggle {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .brand,
+  .scroll-cue,
+  .status-pill,
+  .walkthrough-play,
+  .project-links a,
+  .footer-bottom a,
+  .case-back {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .walkthrough-steps button {
+    min-height: 48px;
+  }
+  /* The footer links sit in a row; give them room without stretching the row. */
+  .footer-bottom div {
+    gap: 0.4rem 1.4rem;
+  }
+}
+
+/* ── Item 31: the display headings rag badly at size ─────────────────────
+   The footer headline dropped "tool?" onto its own line with a large gap above
+   it, which at 6.8rem is the most visible thing in the composition. */
+.hero h1,
+.section-intro h2,
+footer h2,
+.case-head h1,
+.demo-copy h2,
+.skills-aside h2 {
+  text-wrap: balance;
+}
+
+/* ── Item 36: a way back from 19,000px of phone scroll ───────────────────
+   Appears once the reader is past the first screen; hidden for keyboard-only
+   flows on desktop, where the header is always in reach anyway. */
+.to-top {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 30;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--header);
+  backdrop-filter: blur(12px);
+  color: var(--ink);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition:
+    opacity 220ms var(--ease),
+    transform 220ms var(--ease);
+}
+.to-top.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.to-top:hover {
+  border-color: var(--ink);
+}
+@media (min-width: 700px) {
+  .to-top {
+    right: 1.5rem;
+    bottom: 1.5rem;
   }
 }

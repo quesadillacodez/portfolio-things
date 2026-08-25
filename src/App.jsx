@@ -6,6 +6,7 @@ import ImageModal from './components/ImageModal';
 import CaseStudy from './components/CaseStudy';
 import About from './components/About';
 import Notes from './components/Notes';
+import ToTop from './components/ToTop';
 import RosterDemo from './components/RosterDemo';
 import SplitHeading from './components/SplitHeading';
 import Icon from './components/Icon';
@@ -74,17 +75,43 @@ const KONAMI = [
   'a',
 ];
 
+const SITE_URL = 'https://portfolio-things-eight.vercel.app/';
+const HOME_TITLE = 'Hadi Qusyairi | FinTech & Data Builder';
+const HOME_OG_TITLE = 'Hadi Qusyairi — I turn operational friction into clear digital tools';
+const HOME_DESCRIPTION =
+  'Digital Business and FinTech student in Singapore. EMS workforce command center, a NETS loyalty engine, and analytics built around real operational decisions.';
+
 export default function App() {
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
+  // Item 46: this used to fall back to 'light', so a visitor whose OS is set to dark
+  // got a cream site no matter what — prefers-color-scheme was never consulted. The
+  // inline bootstrap in index.html has already stamped the right value before paint;
+  // read it back rather than recomputing and risking a mismatch.
+  const [theme, setTheme] = useState(
+    () =>
+      localStorage.getItem('theme') ||
+      document.documentElement.dataset.theme ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+  );
   const [modal, setModal] = useState(null);
   const reducedMotion = useReducedMotion();
   const route = useHashRoute();
 
+  // Applying the theme and *persisting* it are deliberately separate. Writing to
+  // localStorage here would stamp the OS-derived value on first render, which would
+  // make the visitor look like they had chosen it and freeze the preference below.
   useEffect(() => {
-    // Persist the visitor's choice while still rendering a usable light theme by default.
     document.documentElement.dataset.theme = theme;
-    localStorage.setItem('theme', theme);
   }, [theme]);
+
+  // Item 46 continued: if the visitor has never pressed the toggle, follow their OS
+  // when it changes rather than freezing whatever it was at first load.
+  useEffect(() => {
+    if (localStorage.getItem('theme')) return undefined;
+    const query = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = (event) => setTheme(event.matches ? 'dark' : 'light');
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
 
   // Item 08: one observer wakes every `data-reveal` element anywhere on the page.
   useReveal(reducedMotion);
@@ -114,11 +141,52 @@ export default function App() {
   // whatever was clicked.
   const openImage = (gallery, index, originRect) => setModal({ gallery, index, originRect });
 
+  // Item 48: the two case studies are the deepest writing on the site and pasting
+  // either link into Slack produced the homepage card — the title and OG tags never
+  // moved off the root. They are updated here on route change and restored on the way
+  // back, so a case study can be shared as itself.
+  useEffect(() => {
+    const project = route ? getProject(route) : null;
+    const set = (selector, value) => {
+      const tag = document.head.querySelector(selector);
+      if (tag) tag.setAttribute('content', value);
+    };
+
+    if (project?.caseStudy) {
+      const title = `${project.title} — case study | Hadi Qusyairi`;
+      const url = `${SITE_URL}#/case/${project.slug}`;
+      document.title = title;
+      set('meta[property="og:title"]', title);
+      set('meta[name="twitter:title"]', title);
+      set('meta[property="og:description"]', project.summary);
+      set('meta[name="twitter:description"]', project.summary);
+      set('meta[name="description"]', project.summary);
+      set('meta[property="og:url"]', url);
+      document.querySelector('link[rel="canonical"]')?.setAttribute('href', url);
+    } else {
+      document.title = HOME_TITLE;
+      set('meta[property="og:title"]', HOME_OG_TITLE);
+      set('meta[name="twitter:title"]', HOME_OG_TITLE);
+      set('meta[property="og:description"]', HOME_DESCRIPTION);
+      set('meta[name="twitter:description"]', HOME_DESCRIPTION);
+      set('meta[name="description"]', HOME_DESCRIPTION);
+      set('meta[property="og:url"]', SITE_URL);
+      document.querySelector('link[rel="canonical"]')?.setAttribute('href', SITE_URL);
+    }
+  }, [route]);
+
+  // Pressing the toggle is the only thing that counts as an explicit choice, and the
+  // only thing that writes localStorage.
+  const toggleTheme = () =>
+    setTheme((value) => {
+      const next = value === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme', next);
+      return next;
+    });
+
   const caseProject = route ? getProject(route) : null;
 
-  const header = (
-    <Header theme={theme} onToggleTheme={() => setTheme((value) => (value === 'light' ? 'dark' : 'light'))} />
-  );
+  const header = <Header theme={theme} onToggleTheme={toggleTheme} />;
 
   const lightbox = modal && (
     <ImageModal
@@ -141,6 +209,7 @@ export default function App() {
         <main id="main-content">
           <CaseStudy project={caseProject} onOpenImage={openImage} reducedMotion={reducedMotion} />
         </main>
+        <ToTop reducedMotion={reducedMotion} />
         {lightbox}
       </>
     );
@@ -300,6 +369,7 @@ export default function App() {
         </div>
       </footer>
 
+      <ToTop reducedMotion={reducedMotion} />
       {lightbox}
     </>
   );

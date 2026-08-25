@@ -7,10 +7,11 @@ import Icon from './Icon';
 // with a rAF guard everywhere else.
 const SUPPORTS_SCROLL_TIMELINE = typeof CSS !== 'undefined' && CSS.supports?.('animation-timeline: scroll()');
 
+// Item 09: the demo moved above the work section, so the navigation follows it.
 const links = [
-  { id: 'about', label: 'About', number: '01' },
+  { id: 'try', label: 'Try it', number: '01' },
   { id: 'work', label: 'Work', number: '02' },
-  { id: 'try', label: 'Try it', number: '03' },
+  { id: 'about', label: 'About', number: '03' },
   { id: 'process', label: 'Process', number: '04' },
   { id: 'notes', label: 'Notes', number: '05' },
   { id: 'skills', label: 'Skills', number: '06' },

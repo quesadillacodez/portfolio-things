@@ -6,8 +6,8 @@ broke something.
 
 ## What this is
 
-A single-page React portfolio for Hadi Qusyairi, plus hash-routed case study pages.
-No framework beyond React and Vite. It deploys as static files.
+A single-page React portfolio for Hadi Qusyairi, plus hash-routed case study, note
+and colophon pages. No framework beyond React and Vite. It deploys as static files.
 
 ```bash
 npm install
@@ -70,6 +70,26 @@ color: var(--bg)`, which swapped with the theme and rendered a cream slab with
 - `--progress` and `--focus` are separate tokens for the same reason: the lime accent
   only has contrast on a dark ground, so it cannot be the progress bar in light mode.
 
+## Routes
+
+`useHashRoute` returns `{ kind, slug }` for three page routes and `null` for the
+index. Plain fragments like `#work` stay ordinary in-page anchors.
+
+| route           | renders     | data             |
+| --------------- | ----------- | ---------------- |
+| `#/case/<slug>` | `CaseStudy` | `projects.js`    |
+| `#/note/<slug>` | `NotePage`  | `notes.js`       |
+| `#/colophon`    | `Colophon`  | in the component |
+
+Two things that bit already:
+
+- **Entering a route must reset scroll.** A hash route is a same-document navigation,
+  so the browser keeps the index's scroll position. Clicking a note from the notes
+  section dropped the reader into the middle of the article. `App.jsx` scrolls to top
+  whenever `route` becomes non-null.
+- **Route changes go through `startViewTransition`** with `flushSync`, so React
+  commits inside the transition. Browsers without it take the plain path.
+
 ## Motion
 
 Every animation is gated twice — once in CSS via `prefers-reduced-motion`, and once in
@@ -78,6 +98,10 @@ new JS-driven motion must take the hook and honour it.
 
 - `useReveal` runs one shared `IntersectionObserver` for every `[data-reveal]`
   element. Add the attribute; do not add another observer.
+- `usePointerGlow` is the site's one ambient element: the 80px grid lights up around
+  the pointer. It writes two custom properties per animation frame and refuses to run
+  for a coarse pointer or under reduced motion, so the CSS is guarded on
+  `:root[data-glow='on']` and needs no fallback.
 - `SplitHeading` splits headings into words for staggered entry. The spaces between
   words are **real text nodes**, not CSS generated content — `::after { content: ' ' }`
   renders visually but is invisible to `innerText`, so the heading copied and was
@@ -98,8 +122,15 @@ new JS-driven motion must take the hook and honour it.
 
 ## Known gaps
 
-- `public/assets/portrait.jpg` does not exist yet. The hero renders an `HQ` monogram
-  and swaps itself for the photo the moment the file is added — no code change.
+- **The portraits do not exist yet.** The hero renders an `HQ` monogram and swaps
+  itself for the photos the moment they are added — no code change. Two files:
+  `public/portrait.jpg` (shown at rest) and `public/portrait-fun.jpg` (revealed on
+  hover and focus).
+
+  They go in `public/`, **not** `public/assets/`. `npm run images` starts with
+  `rm -rf public/assets`, so anything hand-placed there is deleted on the next image
+  rebuild. Only pipeline output belongs in that folder.
+
 - `artifacts: []` is empty on every project by design. These are real process
   artifacts (whiteboards, rejected layouts) and must not be invented.
 - Three of five projects have no demo or source link.

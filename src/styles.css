@@ -9,12 +9,22 @@
   --ink: #101f20;
   --muted: #586361;
   --line: #b8b9b1;
+  --line-strong: #9a9c93;
+  --glow-line: #8fa62e;
+  /* Item 25: the palette had three accents doing one job each. It now has two, with
+     rules. --accent (lime) owns every interactive and system signal: active nav,
+     hover, availability, list markers, the pointer-following grid. --coral owns
+     editorial emphasis only: display italic in headings, and the small uppercase
+     labels. The old --blue, which appeared exactly once as a footer heading colour
+     and owned nothing, is gone.
+
+     --focus and --progress stay separate tokens rather than aliasing --accent,
+     because lime has almost no contrast on cream — it can only carry those two jobs
+     on a dark ground. Same rule, resolved per theme. */
   --accent: #d9ff53;
   --accent-ink: #101f20;
-  --blue: #2848ff;
   /* Small labels need 4.5:1, which the display coral cannot reach on cream. Two
-     tokens keep the brand colour for headline-sized text and a legible one for the
-     11px labels that structure every case study. */
+     tuned values of one hue: display size, and 11px label size. */
   --coral: #c2381f;
   --coral-display: #ff674d;
   --header: rgba(242, 240, 233, 0.88);
@@ -45,9 +55,10 @@
   --ink: #f2f0e9;
   --muted: #a7b0ac;
   --line: #3d4945;
+  --line-strong: #55635e;
+  --glow-line: #d9ff53;
   --accent: #d9ff53;
   --accent-ink: #101f20;
-  --blue: #8292ff;
   --coral: #ff806b;
   --coral-display: #ff806b;
   --header: rgba(16, 25, 24, 0.9);
@@ -450,6 +461,8 @@ h2 em {
    Sized so a real face is legible rather than avatar-sized — at 62px a portrait reads
    as a UI chip, at 104px it reads as a person, which is the whole point of having it. */
 .portrait {
+  /* main's responsive sizing, plus the containing block the hover swap needs. */
+  position: relative;
   width: clamp(84px, 8vw, 104px);
   aspect-ratio: 1;
   flex: none;
@@ -461,9 +474,28 @@ h2 em {
   box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
 }
 .portrait img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition:
+    opacity 260ms var(--ease),
+    transform 420ms var(--ease);
+}
+/* Item 16: hold the portrait and you get the other photo. One hover on the site
+   that does something you did not expect. */
+.portrait-alt {
+  opacity: 0;
+}
+.hero-id:hover .portrait-alt,
+.hero-id:focus-within .portrait-alt {
+  opacity: 1;
+  transform: scale(1.04);
+}
+.hero-id:hover .portrait-main,
+.hero-id:focus-within .portrait-main {
+  opacity: 0;
 }
 .portrait.is-monogram {
   display: grid;
@@ -926,7 +958,7 @@ footer h2 {
   color: var(--coral);
 }
 .flow-after {
-  color: var(--blue);
+  color: var(--coral-display);
 }
 .flow-col ol li {
   color: var(--ink);
@@ -935,7 +967,7 @@ footer h2 {
   border-left: 2px solid var(--coral-display);
 }
 .flow-after li {
-  border-left: 2px solid var(--blue);
+  border-left: 2px solid var(--line-strong);
 }
 .flow-arrow {
   display: grid;
@@ -1377,7 +1409,7 @@ footer h2 {
 .skills-grid li::before {
   content: '↳';
   margin-right: 0.35rem;
-  color: var(--blue);
+  color: var(--coral-display);
 }
 
 /* ── Item 17: case study page ───────────────────────────────────────── */
@@ -1551,7 +1583,7 @@ footer {
   gap: 2rem;
 }
 .footer-top h2 em {
-  color: var(--blue);
+  color: var(--coral-display);
 }
 .footer-top .button {
   justify-self: start;
@@ -2355,6 +2387,643 @@ nav a[aria-current='true'] {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Round two, step 1 — items 18 and 25.
+   --------------------------------------------------------------------------- */
+
+/* Item 18 */
+.project-year {
+  margin-left: auto;
+  color: var(--muted);
+}
+.footer-stamp {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+.notes-date {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   Round two, step 2 — the hero. Items 01, 02, 04, 05, 06, 07, 08.
+   --------------------------------------------------------------------------- */
+
+/* Item 05 */
+.status-time {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+.status-time time {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Item 06: the résumé is still above the fold, just no longer a third button. */
+.hero-aside {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.hero-aside a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 1px;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease;
+}
+.hero-aside a:hover {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+/* Item 07: what replaced the three static facts. */
+.hero-now {
+  flex: 1;
+  display: grid;
+  gap: 0.35rem;
+  align-content: center;
+  min-width: 0;
+}
+.hero-now-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.hero-now-body {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.hero-now-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+  justify-self: start;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+}
+.hero-now-link:hover {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+/* Item 08: the contents page, replacing a lone "Selected work" cue. */
+.hero-index {
+  display: grid;
+  gap: 1px;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+}
+.hero-index a {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr;
+  align-items: baseline;
+  gap: 0.15rem 0.6rem;
+  padding: 0.85rem 0.5rem 0.85rem 0;
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  transition:
+    padding-left 180ms var(--ease),
+    background 180ms ease;
+}
+.hero-index a:hover {
+  padding-left: 0.6rem;
+  background: var(--surface);
+}
+.hero-index a > span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+.hero-index a b {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.hero-index a em {
+  grid-column: 2;
+  color: var(--muted);
+  font-style: normal;
+  font-size: 0.84rem;
+}
+.hero-index a:hover b {
+  color: var(--ink);
+}
+
+@media (min-width: 700px) {
+  .hero-index {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0 1.5rem;
+  }
+  .hero-index a {
+    border-bottom: 0;
+    border-top: 2px solid var(--line);
+    padding: 0.9rem 0 0;
+  }
+  .hero-index a:hover {
+    padding-left: 0;
+    background: transparent;
+    border-top-color: var(--accent);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Round two, step 3 — the roster demo. Items 09, 10, 11.
+   --------------------------------------------------------------------------- */
+
+/* Item 11: a status bar, so the block opens as an instrument rather than a table. */
+.roster-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--invert-bg);
+  color: var(--invert-ink);
+  font-size: 0.78rem;
+}
+.roster-unit {
+  padding: 0.2rem 0.5rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+.roster-when {
+  color: var(--invert-muted);
+  letter-spacing: 0.04em;
+}
+.roster-coverage {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+  color: var(--invert-ink);
+  letter-spacing: 0.04em;
+}
+.roster-coverage b {
+  font-size: 1rem;
+}
+.roster-coverage-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f0a33c;
+  transition:
+    background 320ms var(--ease),
+    box-shadow 320ms var(--ease);
+}
+/* Item 10: the shift resolving is the payoff for the click. */
+.roster-coverage.is-full .roster-coverage-dot {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+/* Item 11: rows that look pressable at rest. */
+.roster-list li button {
+  transition:
+    background 180ms ease,
+    transform 180ms var(--ease);
+}
+.roster-list li:not(.is-blocked) button:hover {
+  transform: translateX(2px);
+}
+.roster-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--ink);
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
+}
+.roster-list li:not(.is-blocked) button:hover .roster-action {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Item 10: the chosen row settles, everything else steps back. */
+.roster-list li {
+  transition:
+    opacity 320ms var(--ease),
+    filter 320ms var(--ease);
+}
+.roster-list li.is-dimmed {
+  opacity: 0.4;
+  filter: saturate(0.5);
+}
+.roster-list li.is-chosen button {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.roster-list li.is-chosen .roster-action {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.roster-list li.is-chosen {
+  animation: roster-settle 460ms var(--ease) both;
+}
+@keyframes roster-settle {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+  35% {
+    transform: translateX(4px) scale(1.008);
+  }
+  100% {
+    transform: translateX(0) scale(1);
+  }
+}
+.roster-result {
+  animation: roster-drop 340ms var(--ease) both;
+}
+@keyframes roster-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.roster-demo.is-resolved .roster-list li:not(.is-chosen) button {
+  cursor: default;
+}
+.roster-count {
+  display: inline-block;
+  animation: roster-pop 380ms var(--ease) both;
+}
+@keyframes roster-pop {
+  0% {
+    transform: translateY(4px) scale(0.9);
+    opacity: 0.4;
+  }
+  60% {
+    transform: translateY(0) scale(1.14);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Round two, step 4 — motion and interaction. Items 03, 12, 13, 14, 15, 16.
+   --------------------------------------------------------------------------- */
+
+/* Items 03 + 14: the grid the layout is built on lights up around the pointer.
+   Only ever active when usePointerGlow has set data-glow, which it does not do for
+   coarse pointers or reduced motion. */
+:root[data-glow='on'] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    linear-gradient(var(--accent) 1px, transparent 1px),
+    linear-gradient(90deg, var(--accent) 1px, transparent 1px);
+  background-size: 80px 80px;
+  /* The glow follows the pointer and breathes slowly, so the page is alive even
+     when the pointer is not moving. */
+  mask-image: radial-gradient(
+    circle var(--glow-radius, 190px) at var(--pointer-x, 50vw) var(--pointer-y, 40vh),
+    #000 0%,
+    transparent 72%
+  );
+  animation: glow-breathe 9s ease-in-out infinite;
+}
+@keyframes glow-breathe {
+  0%,
+  100% {
+    --glow-radius: 175px;
+    opacity: 0.42;
+  }
+  50% {
+    --glow-radius: 225px;
+    opacity: 0.62;
+  }
+}
+@property --glow-radius {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 190px;
+}
+
+/* Item 13: the cross-fade between the index and a case study. */
+::view-transition-old(root) {
+  animation: vt-out 180ms var(--ease) both;
+}
+::view-transition-new(root) {
+  animation: vt-in 260ms var(--ease) both;
+}
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* Item 15: scroll drove one 2px bar. It now also drives the project visuals, which
+   settle as they enter rather than simply appearing. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .project-visual .tilt,
+    .project-visual .walkthrough-frame {
+      animation: shot-settle linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 34%;
+    }
+    @keyframes shot-settle {
+      from {
+        opacity: 0.55;
+        transform: scale(0.965) translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+  }
+}
+
+/* Item 16, third exception: the footer "Email" link tells you the address instead of
+   just promising one. Everything else on the site underlines on hover; this does not. */
+.footer-bottom .email-link {
+  display: inline-grid;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.footer-bottom .email-link span {
+  grid-area: 1 / 1;
+  transition:
+    transform 260ms var(--ease),
+    opacity 200ms ease;
+}
+.footer-bottom .email-link .email-real {
+  transform: translateY(105%);
+  opacity: 0;
+}
+.footer-bottom .email-link:hover .email-label,
+.footer-bottom .email-link:focus-visible .email-label {
+  transform: translateY(-105%);
+  opacity: 0;
+}
+.footer-bottom .email-link:hover .email-real,
+.footer-bottom .email-link:focus-visible .email-real {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------------------
+   Round two, step 5 — voice and personality. Items 17, 20, 21, 22, 24.
+   --------------------------------------------------------------------------- */
+
+/* Item 20: the breadcrumb for the grid easter egg. */
+.footer-konami {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  opacity: 0.55;
+  cursor: help;
+  transition:
+    opacity 200ms ease,
+    color 200ms ease;
+}
+.footer-konami:hover {
+  opacity: 1;
+  color: var(--ink);
+}
+
+/* Item 24 */
+.copy-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease;
+}
+.copy-link:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Item 17: notes on the index, and the pages they now lead to. */
+.notes-intro {
+  max-width: 40rem;
+  color: var(--muted);
+}
+.notes-list h3 a {
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: border-color 160ms ease;
+}
+.notes-list h3 a:hover {
+  border-bottom-color: var(--accent);
+}
+.notes-read {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 2px;
+  justify-self: start;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+}
+.notes-read:hover {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+.note-page,
+.colophon {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 5rem) 5vw clamp(4rem, 8vw, 7rem);
+  display: grid;
+  gap: 2rem;
+}
+.note-head,
+.colophon-head {
+  display: grid;
+  gap: 1rem;
+}
+.note-head h1,
+.colophon-head h1 {
+  margin: 0;
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+  line-height: 1.03;
+  letter-spacing: -0.045em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+.note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.note-dek,
+.colophon-dek {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 38rem;
+}
+.note-body {
+  display: grid;
+  gap: 1.3rem;
+}
+.note-body p {
+  margin: 0;
+  font-size: 1.06rem;
+  line-height: 1.72;
+  max-width: 36rem;
+}
+.note-foot {
+  display: grid;
+  gap: 2rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--line);
+}
+.note-next {
+  display: grid;
+  gap: 0.7rem;
+}
+.note-next-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.note-next a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  justify-self: start;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 2px;
+  transition: border-color 150ms ease;
+}
+.note-next a:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* Item 22 */
+.colophon-block {
+  display: grid;
+  gap: 1.1rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--line);
+}
+.colophon-block h2 {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--coral);
+}
+.colophon-block dl {
+  display: grid;
+  gap: 1.1rem;
+  margin: 0;
+}
+.colophon-block dt {
+  font-weight: 600;
+}
+.colophon-block dd {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  max-width: 36rem;
+}
+.colophon-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.colophon-todo {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  max-width: 36rem;
+}
+.colophon-todo li::marker {
+  color: var(--accent-ink);
+}
+.colophon-foot {
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.colophon-foot p {
+  margin: 0;
+}
+
 /* ── Item 34: tap targets ────────────────────────────────────────────────
    Everything interactive clears 44x44 on touch. Applied at the pointer level so
    desktop layout is untouched — a coarse pointer is what needs the room. */
@@ -2370,7 +3039,11 @@ nav a[aria-current='true'] {
   .walkthrough-play,
   .project-links a,
   .footer-bottom a,
-  .case-back {
+  .case-back,
+  .colophon-back,
+  .hero-now-link,
+  .notes-read,
+  .notes-list h3 a {
     min-height: 44px;
     display: inline-flex;
     align-items: center;
@@ -2382,6 +3055,9 @@ nav a[aria-current='true'] {
   .footer-bottom div {
     gap: 0.4rem 1.4rem;
   }
+  /* Deliberately not listed above: the résumé link in .hero-aside sits inside a
+     sentence. WCAG 2.5.8 exempts inline links in a block of text, and padding it to
+     44px would break the line it belongs to. */
 }
 
 /* ── Item 31: the display headings rag badly at size ─────────────────────
@@ -2397,8 +3073,7 @@ footer h2,
 }
 
 /* ── Item 36: a way back from 19,000px of phone scroll ───────────────────
-   Appears once the reader is past the first screen; hidden for keyboard-only
-   flows on desktop, where the header is always in reach anyway. */
+   Appears once the reader is past the first screen. */
 .to-top {
   position: fixed;
   right: 1rem;

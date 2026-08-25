@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Icon from './Icon';
 
-// Item 15 — the signature moment.
+// Item 15 (round one) — the signature moment.
 //
 // The brief was: pick one hook and go deep, and prefer the version that doubles as
 // proof. A particle field would have been decorative; this is the actual decision
@@ -11,42 +11,18 @@ import Icon from './Icon';
 // not a slice of the real product. The rules below are the ones described in the case
 // study — qualification is a hard gate, fatigue is a safety constraint rather than a
 // preference, and the tool ranks candidates but never chooses for you.
+//
+// Round two, items 10 and 11: assigning used to change state instantly and silently,
+// and the whole block read as a table. It now has a status bar that resolves, a
+// coverage figure that counts, and rows that look like something you can press.
 
-const SHIFT = { code: 'A04', day: 'Tue 14 Jul', window: '07:00 – 19:00', needs: 'Paramedic' };
+const SHIFT = { code: 'A04', day: 'Tue 14 Jul', window: '07:00 – 19:00', needs: 'Paramedic', seats: 3 };
 
 const CREW = [
-  {
-    id: 'c1',
-    name: 'Nadia R.',
-    role: 'Paramedic',
-    hours: 38,
-    restHours: 14,
-    available: true,
-  },
-  {
-    id: 'c2',
-    name: 'Wei Lun T.',
-    role: 'Paramedic',
-    hours: 56,
-    restHours: 8,
-    available: true,
-  },
-  {
-    id: 'c3',
-    name: 'Siti A.',
-    role: 'Emergency medic',
-    hours: 22,
-    restHours: 30,
-    available: true,
-  },
-  {
-    id: 'c4',
-    name: 'Daniel O.',
-    role: 'Paramedic',
-    hours: 44,
-    restHours: 26,
-    available: false,
-  },
+  { id: 'c1', name: 'Nadia R.', role: 'Paramedic', hours: 38, restHours: 14, available: true },
+  { id: 'c2', name: 'Wei Lun T.', role: 'Paramedic', hours: 56, restHours: 8, available: true },
+  { id: 'c3', name: 'Siti A.', role: 'Emergency medic', hours: 22, restHours: 30, available: true },
+  { id: 'c4', name: 'Daniel O.', role: 'Paramedic', hours: 44, restHours: 26, available: false },
 ];
 
 // The ranking rules, kept in one place so the explanation under the demo and the
@@ -78,18 +54,35 @@ export default function RosterDemo() {
   });
 
   const chosen = assigned ? ranked.find((entry) => entry.person.id === assigned) : null;
+  const crewed = chosen ? SHIFT.seats : SHIFT.seats - 1;
 
   return (
-    <div className="roster-demo">
+    <div className={`roster-demo${chosen ? ' is-resolved' : ''}`}>
+      {/* Item 11: an instrument reads as an instrument. The unit, the window and the
+          live coverage sit in a status bar, the way they would in the real product. */}
+      <div className="roster-bar">
+        <span className="roster-unit">{SHIFT.code}</span>
+        <span className="roster-when">
+          {SHIFT.day} · {SHIFT.window}
+        </span>
+        <span className={`roster-coverage${chosen ? ' is-full' : ''}`} role="status">
+          <span className="roster-coverage-dot" aria-hidden="true" />
+          <b className="numeric roster-count" key={crewed}>
+            {crewed}
+          </b>{' '}
+          of {SHIFT.seats} crewed
+        </span>
+      </div>
+
       <div className="roster-head">
         <div>
-          <p className="roster-eyebrow">Try it — a working model of the matching rules</p>
+          <p className="roster-eyebrow">A working model of the matching rules</p>
           <h3>
             {SHIFT.code} is short a {SHIFT.needs.toLowerCase()}
           </h3>
           <p className="roster-sub">
-            {SHIFT.day} · {SHIFT.window}. Four crew could cover it. The tool ranks them and shows its
-            reasoning — you make the call.
+            Four crew could cover it. Two of them legally cannot, and the tool will tell you why — but it will
+            not choose. <strong>That part is yours.</strong>
           </p>
         </div>
         {assigned ? (
@@ -113,59 +106,83 @@ export default function RosterDemo() {
       ) : null}
 
       <ul className="roster-list">
-        {ranked.map(({ person, eligible, blockers, flags }, position) => (
-          <li key={person.id} className={eligible ? '' : 'is-blocked'}>
-            <button
-              type="button"
-              disabled={!eligible}
-              onClick={() => setAssigned(person.id)}
-              aria-label={
-                eligible
-                  ? `Assign ${person.name} to shift ${SHIFT.code}`
-                  : `${person.name} unavailable: ${blockers.join('; ')}`
-              }
+        {ranked.map(({ person, eligible, blockers, flags }, position) => {
+          const isChosen = chosen?.person.id === person.id;
+          const dimmed = Boolean(chosen) && !isChosen;
+          return (
+            <li
+              key={person.id}
+              className={[
+                eligible ? '' : 'is-blocked',
+                isChosen ? 'is-chosen' : '',
+                dimmed ? 'is-dimmed' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
             >
-              <span className="roster-rank">{eligible ? String(position + 1).padStart(2, '0') : '—'}</span>
-
-              <span className="roster-person">
-                <strong>{person.name}</strong>
-                <em>{person.role}</em>
-              </span>
-
-              <span className="roster-metrics">
-                <span>
-                  <b>{person.hours}h</b> this week
+              <button
+                type="button"
+                disabled={!eligible || Boolean(chosen)}
+                onClick={() => setAssigned(person.id)}
+                aria-label={
+                  eligible
+                    ? `Assign ${person.name} to shift ${SHIFT.code}`
+                    : `${person.name} unavailable: ${blockers.join('; ')}`
+                }
+              >
+                <span className="roster-rank numeric">
+                  {eligible ? String(position + 1).padStart(2, '0') : '—'}
                 </span>
-                <span>
-                  <b>{person.restHours}h</b> rest
-                </span>
-              </span>
 
-              <span className="roster-status">
-                {blockers.map((reason) => (
-                  <span className="roster-chip roster-chip-block" key={reason}>
-                    {reason}
+                <span className="roster-person">
+                  <strong>{person.name}</strong>
+                  <em>{person.role}</em>
+                </span>
+
+                <span className="roster-metrics">
+                  <span>
+                    <b className="numeric">{person.hours}h</b> this week
                   </span>
-                ))}
-                {eligible &&
-                  flags.map((flag) => (
-                    <span className="roster-chip roster-chip-warn" key={flag}>
-                      {flag}
+                  <span>
+                    <b className="numeric">{person.restHours}h</b> rest
+                  </span>
+                </span>
+
+                <span className="roster-status">
+                  {blockers.map((reason) => (
+                    <span className="roster-chip roster-chip-block" key={reason}>
+                      {reason}
                     </span>
                   ))}
-                {eligible && flags.length === 0 ? (
-                  <span className="roster-chip roster-chip-ok">Rested · qualified</span>
-                ) : null}
-              </span>
-
-              {eligible ? (
-                <span className="roster-action" aria-hidden="true">
-                  Assign <Icon name="arrow" size={14} />
+                  {eligible &&
+                    flags.map((flag) => (
+                      <span className="roster-chip roster-chip-warn" key={flag}>
+                        {flag}
+                      </span>
+                    ))}
+                  {eligible && flags.length === 0 ? (
+                    <span className="roster-chip roster-chip-ok">Rested · qualified</span>
+                  ) : null}
                 </span>
-              ) : null}
-            </button>
-          </li>
-        ))}
+
+                {/* Item 11: a real button at rest, not text that turns out to be clickable. */}
+                {eligible ? (
+                  <span className="roster-action" aria-hidden="true">
+                    {isChosen ? (
+                      <>
+                        <Icon name="check" size={14} /> Assigned
+                      </>
+                    ) : (
+                      <>
+                        Assign <Icon name="arrow" size={14} />
+                      </>
+                    )}
+                  </span>
+                ) : null}
+              </button>
+            </li>
+          );
+        })}
       </ul>
 
       <p className="roster-note">

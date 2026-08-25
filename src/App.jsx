@@ -5,15 +5,20 @@ import ProjectCard from './components/ProjectCard';
 import ImageModal from './components/ImageModal';
 import CaseStudy from './components/CaseStudy';
 import About from './components/About';
+import NotePage from './components/NotePage';
+import Colophon from './components/Colophon';
 import Notes from './components/Notes';
 import ToTop from './components/ToTop';
 import RosterDemo from './components/RosterDemo';
 import SplitHeading from './components/SplitHeading';
 import Icon from './components/Icon';
 import { projects, getProject } from './data/projects';
+import { site } from './data/site';
+import { getNote } from './data/notes';
 import { useReveal } from './hooks/useReveal';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { useHashRoute } from './hooks/useHashRoute';
+import { usePointerGlow } from './hooks/usePointerGlow';
 
 const skills = [
   {
@@ -77,7 +82,6 @@ const KONAMI = [
 
 const SITE_URL = 'https://portfolio-things-eight.vercel.app/';
 const HOME_TITLE = 'Hadi Qusyairi | FinTech & Data Builder';
-const HOME_OG_TITLE = 'Hadi Qusyairi — I turn operational friction into clear digital tools';
 const HOME_DESCRIPTION =
   'Digital Business and FinTech student in Singapore. EMS workforce command center, a NETS loyalty engine, and analytics built around real operational decisions.';
 
@@ -116,6 +120,16 @@ export default function App() {
   // Item 08: one observer wakes every `data-reveal` element anywhere on the page.
   useReveal(reducedMotion);
 
+  // Items 03 + 14 (round two): the one ambient element the site commits to.
+  usePointerGlow(reducedMotion);
+
+  // A hash route is a same-document navigation, so the browser keeps the scroll
+  // position it had on the index — which drops the reader into the middle of a note.
+  // Entering a page route starts it at the top; leaving one lets the browser restore.
+  useEffect(() => {
+    if (route) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [route]);
+
   // Item 34: for whoever opens devtools, and for whoever still remembers the code.
   useEffect(() => {
     console.log(
@@ -141,39 +155,8 @@ export default function App() {
   // whatever was clicked.
   const openImage = (gallery, index, originRect) => setModal({ gallery, index, originRect });
 
-  // Item 48: the two case studies are the deepest writing on the site and pasting
-  // either link into Slack produced the homepage card — the title and OG tags never
-  // moved off the root. They are updated here on route change and restored on the way
-  // back, so a case study can be shared as itself.
-  useEffect(() => {
-    const project = route ? getProject(route) : null;
-    const set = (selector, value) => {
-      const tag = document.head.querySelector(selector);
-      if (tag) tag.setAttribute('content', value);
-    };
-
-    if (project?.caseStudy) {
-      const title = `${project.title} — case study | Hadi Qusyairi`;
-      const url = `${SITE_URL}#/case/${project.slug}`;
-      document.title = title;
-      set('meta[property="og:title"]', title);
-      set('meta[name="twitter:title"]', title);
-      set('meta[property="og:description"]', project.summary);
-      set('meta[name="twitter:description"]', project.summary);
-      set('meta[name="description"]', project.summary);
-      set('meta[property="og:url"]', url);
-      document.querySelector('link[rel="canonical"]')?.setAttribute('href', url);
-    } else {
-      document.title = HOME_TITLE;
-      set('meta[property="og:title"]', HOME_OG_TITLE);
-      set('meta[name="twitter:title"]', HOME_OG_TITLE);
-      set('meta[property="og:description"]', HOME_DESCRIPTION);
-      set('meta[name="twitter:description"]', HOME_DESCRIPTION);
-      set('meta[name="description"]', HOME_DESCRIPTION);
-      set('meta[property="og:url"]', SITE_URL);
-      document.querySelector('link[rel="canonical"]')?.setAttribute('href', SITE_URL);
-    }
-  }, [route]);
+  const caseProject = route?.kind === 'case' ? getProject(route.slug) : null;
+  const note = route?.kind === 'note' ? getNote(route.slug) : null;
 
   // Pressing the toggle is the only thing that counts as an explicit choice, and the
   // only thing that writes localStorage.
@@ -183,8 +166,6 @@ export default function App() {
       localStorage.setItem('theme', next);
       return next;
     });
-
-  const caseProject = route ? getProject(route) : null;
 
   const header = <Header theme={theme} onToggleTheme={toggleTheme} />;
 
@@ -198,17 +179,63 @@ export default function App() {
     />
   );
 
+  // Item 48: every page route shared as the homepage — the title and OG tags never
+  // moved off the root, so pasting a case study or a note into Slack produced the
+  // index card. They now follow the route and restore on the way back.
+  useEffect(() => {
+    const set = (selector, value) => {
+      const tag = document.head.querySelector(selector);
+      if (tag) tag.setAttribute('content', value);
+    };
+    const apply = (title, description, path) => {
+      const url = `${SITE_URL}${path}`;
+      document.title = title;
+      set('meta[property="og:title"]', title);
+      set('meta[name="twitter:title"]', title);
+      set('meta[property="og:description"]', description);
+      set('meta[name="twitter:description"]', description);
+      set('meta[name="description"]', description);
+      set('meta[property="og:url"]', url);
+      document.querySelector('link[rel="canonical"]')?.setAttribute('href', url);
+    };
+
+    if (caseProject?.caseStudy) {
+      apply(
+        `${caseProject.title} — case study | Hadi Qusyairi`,
+        caseProject.summary,
+        `#/case/${caseProject.slug}`,
+      );
+    } else if (note) {
+      apply(`${note.title} | Hadi Qusyairi`, note.dek, `#/note/${note.slug}`);
+    } else if (route?.kind === 'colophon') {
+      apply(
+        'Colophon | Hadi Qusyairi',
+        'How this site is built — the type, the tokens, the pipeline and the decisions behind them.',
+        '#/colophon',
+      );
+    } else {
+      apply(HOME_TITLE, HOME_DESCRIPTION, '');
+    }
+  }, [route, caseProject, note]);
+
   // Item 17: the case study is a route of its own rather than a longer card.
-  if (caseProject?.caseStudy) {
+  // Round two: notes (item 17) and the colophon (item 22) are routes too.
+  const page =
+    (caseProject?.caseStudy && (
+      <CaseStudy project={caseProject} onOpenImage={openImage} reducedMotion={reducedMotion} />
+    )) ||
+    (note && <NotePage note={note} />) ||
+    (route?.kind === 'colophon' && <Colophon />) ||
+    null;
+
+  if (page) {
     return (
       <>
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>
         {header}
-        <main id="main-content">
-          <CaseStudy project={caseProject} onOpenImage={openImage} reducedMotion={reducedMotion} />
-        </main>
+        <main id="main-content">{page}</main>
         <ToTop reducedMotion={reducedMotion} />
         {lightbox}
       </>
@@ -223,43 +250,18 @@ export default function App() {
       {header}
 
       <main id="main-content">
+        {/* The hero shot is a crop of the PulseOps roster, so enlarging it opens that
+            project's gallery rather than whichever project happens to be first. */}
         <Hero
           reducedMotion={reducedMotion}
-          onOpenProof={() => openImage(projects[0].visual.images, 0, null)}
+          onOpenProof={() => openImage(getProject('pulseops').visual.images, 1, null)}
         />
 
-        <About />
+        {/* Item 09 (round two): this was at screen six of fifteen, below three project
+            cards and ~6,000px of scroll, so most visitors never reached the one thing on
+            the site worth touching. It is now the first thing under the hero.
 
-        {/* Project cards share one data-backed structure so claims stay consistent. */}
-        <section className="section work-section" id="work" aria-labelledby="work-title">
-          <div className="section-intro">
-            <p className="section-label" data-reveal>
-              Selected work · 2024 to 2026
-            </p>
-            <SplitHeading
-              id="work-title"
-              text="Projects built around"
-              emphasis="real decisions."
-              reducedMotion={reducedMotion}
-            />
-            <p data-reveal>
-              Each project starts with an operational question, then turns it into software, analysis, or a
-              clearer workflow.
-            </p>
-          </div>
-          <div className="project-list">
-            {projects.map((project) => (
-              <ProjectCard
-                key={project.number}
-                project={project}
-                onOpenImage={openImage}
-                reducedMotion={reducedMotion}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* Item 25 — breaking the rhythm, first of two.
+            Item 25 — breaking the rhythm, first of two.
             Every section used to open with the same eyebrow-plus-enormous-heading block,
             four times running. This one is a full-bleed interactive band instead: no
             giant heading, no left-aligned intro, and the reader does something rather
@@ -279,10 +281,41 @@ export default function App() {
           </div>
         </section>
 
+        {/* Project cards share one data-backed structure so claims stay consistent. */}
+        <section className="section work-section" id="work" aria-labelledby="work-title">
+          <div className="section-intro">
+            <p className="section-label" data-reveal>
+              Selected work · 2024 to 2026
+            </p>
+            <SplitHeading
+              id="work-title"
+              text="Projects built around"
+              emphasis="real decisions."
+              reducedMotion={reducedMotion}
+            />
+            <p data-reveal>
+              Five of them. Two got a full case study because the decisions were worth writing down; the
+              others are here because they are true, not because they are impressive.
+            </p>
+          </div>
+          <div className="project-list">
+            {projects.map((project) => (
+              <ProjectCard
+                key={project.number}
+                project={project}
+                onOpenImage={openImage}
+                reducedMotion={reducedMotion}
+              />
+            ))}
+          </div>
+        </section>
+
+        <About />
+
         <section className="section process-section" id="process" aria-labelledby="process-title">
           <div className="section-intro compact">
             <p className="section-label" data-reveal>
-              How I work
+              How I work — when it goes well
             </p>
             <SplitHeading
               id="process-title"
@@ -352,9 +385,22 @@ export default function App() {
           </a>
         </div>
         <div className="footer-bottom">
-          <p>Hadi Qusyairi · Singapore</p>
+          {/* Item 18: freshness is a trust signal the site was giving away. */}
+          <p>
+            Hadi Qusyairi · Singapore
+            <span className="footer-stamp">Last updated {site.lastUpdated}</span>
+            <span className="footer-konami" title="Try it on this page.">
+              ↑ ↑ ↓ ↓ ← → ← → B A
+            </span>
+          </p>
           <div>
-            <a href="mailto:hadiqbz@gmail.com">Email</a>
+            {/* Item 16, third hover exception: this one tells you the address. */}
+            <a className="email-link" href={`mailto:${site.email}`}>
+              <span className="email-label">Email</span>
+              <span className="email-real" aria-hidden="true">
+                {site.email}
+              </span>
+            </a>
             <a href="https://linkedin.com/in/hadi-qusyairi" target="_blank" rel="noreferrer">
               LinkedIn
             </a>
@@ -365,6 +411,11 @@ export default function App() {
             <a href="/Hadi-Qusyairi-Resume.pdf" download>
               Résumé
             </a>
+            {/* Item 22 */}
+            <a href="#/colophon">Colophon</a>
+            {/* Item 21: the 404 page has the best line on the site and lived at a URL
+                nobody visits on purpose. Now it is reachable. */}
+            <a href="/404.html">Lost?</a>
           </div>
         </div>
       </footer>

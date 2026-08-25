@@ -35,6 +35,8 @@ CI runs lint, format check, and build on every push.
 
 ## Structure
 
+A file-by-file map of the repository lives in [`INDEX.md`](INDEX.md).
+
 Project content lives in `src/data/projects.js`, separate from presentation, so adding a
 project or a link never means touching component structure. Each project carries:
 

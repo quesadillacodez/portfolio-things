@@ -78,6 +78,20 @@ export default function CaseStudy({ project, onOpenImage, reducedMotion }) {
           <RosterDemo scenario="hard" />
         </section>
 
+        {/* The index card shows the first two of these. This is the whole argument —
+            the reader is here because they wanted it. */}
+        {project.highlight && (
+          <section className="case-block">
+            <h2>{project.highlight.title}</h2>
+            <p>{project.highlight.blurb}</p>
+            <ul className="case-constraints">
+              {project.highlight.points.map((point) => (
+                <li key={point}>{point}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         <section className="case-block">
           <h2>Decisions</h2>
           <div className="case-decisions">

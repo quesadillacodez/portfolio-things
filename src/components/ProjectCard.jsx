@@ -5,6 +5,10 @@ import Walkthrough from './Walkthrough';
 import TerminalVisual from './TerminalVisual';
 import FlowVisual from './FlowVisual';
 
+// How many highlight points the index card shows. The rest live on the case study,
+// which is where a reader has already decided they want the argument.
+const INDEX_HIGHLIGHT_POINTS = 2;
+
 export default function ProjectCard({ project, onOpenImage, reducedMotion }) {
   const { visual } = project;
 
@@ -122,7 +126,12 @@ export default function ProjectCard({ project, onOpenImage, reducedMotion }) {
         </div>
       </div>
 
-      {/* The one feature this project is remembered for, lifted out of the prose. */}
+      {/* The one feature this project is remembered for, lifted out of the prose.
+          The index states it; the case study argues it. This block was 604px on a
+          390px phone — bigger than the visual above it — because it carried the full
+          four-point argument on a card whose job is only to earn the click. It now
+          shows the two sharpest points, and CaseStudy renders the complete list, so
+          nothing is lost from the site. */}
       {project.highlight && (
         <div className="project-highlight" data-reveal>
           <h4>
@@ -130,7 +139,7 @@ export default function ProjectCard({ project, onOpenImage, reducedMotion }) {
           </h4>
           <p>{project.highlight.blurb}</p>
           <ul>
-            {project.highlight.points.map((point) => (
+            {project.highlight.points.slice(0, INDEX_HIGHLIGHT_POINTS).map((point) => (
               <li key={point}>{point}</li>
             ))}
           </ul>

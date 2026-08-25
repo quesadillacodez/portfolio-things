@@ -122,14 +122,20 @@ new JS-driven motion must take the hook and honour it.
 
 ## Known gaps
 
-- **The portraits do not exist yet.** The hero renders an `HQ` monogram and swaps
-  itself for the photos the moment they are added — no code change. Two files:
-  `public/portrait.jpg` (shown at rest) and `public/portrait-fun.jpg` (revealed on
-  hover and focus).
+- **The portraits are in.** `assets-src/portrait.png` is the headshot shown at rest;
+  `assets-src/portrait-fun.png` is the snow photo revealed on hover and focus. Both go
+  through `npm run images` like every other image, and the hero reads them by manifest
+  key. If either master is removed the slot falls back to the `HQ` monogram with no
+  network request, because presence is read from `images.json` rather than caught with
+  `onError`.
 
-  They go in `public/`, **not** `public/assets/`. `npm run images` starts with
-  `rm -rf public/assets`, so anything hand-placed there is deleted on the next image
-  rebuild. Only pipeline output belongs in that folder.
+  Photos belong in `assets-src/`, **never** hand-placed in `public/assets/`.
+  `npm run images` starts with `rm -rf public/assets`, so anything dropped there is
+  deleted on the next image rebuild. Only pipeline output lives in that folder.
+
+  A phone HEIC will not decode with sharp — iPhone files carry more references than
+  libheif's default 16-reference ceiling allows, and `.heic` is not a web format
+  anyway. Convert to PNG first, then treat it as a normal master.
 
 - `artifacts: []` is empty on every project by design. These are real process
   artifacts (whiteboards, rejected layouts) and must not be invented.

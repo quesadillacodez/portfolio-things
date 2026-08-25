@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Icon from './Icon';
 import SplitHeading from './SplitHeading';
 import Picture from './Picture';
+import images from '../data/images.json';
 import { site } from '../data/site';
 
 // Item 02: the hero used to show the whole roster dashboard shrunk to ~568px, which
@@ -10,12 +11,17 @@ import { site } from '../data/site';
 // is legible at the size it actually renders.
 const PROOF_IMAGE = 'pulseops-hero-crop';
 
-// Item 01: two photos, and the second one is the point. The portrait is the real,
-// unposed one; holding or tapping it swaps to the other. Both live in /public and the
-// slot degrades to a typographic monogram until they exist, so nothing ever renders
-// broken.
-const PORTRAIT = '/portrait.jpg';
-const PORTRAIT_ALT = '/portrait-fun.jpg';
+// Item 01: two photos, and the second one is the point. The headshot sits at rest;
+// hovering or focusing swaps to him in the snow with his hands on his head.
+//
+// Both go through the image pipeline like every other image, so they arrive as AVIF
+// with a srcset and intrinsic dimensions. Presence is read from the manifest rather
+// than caught with onError, so a missing master costs no request — the slot just falls
+// back to the typographic monogram.
+const PORTRAIT = 'portrait';
+const PORTRAIT_ALT = 'portrait-fun';
+const hasPortrait = Boolean(images[PORTRAIT]);
+const hasPortraitAlt = Boolean(images[PORTRAIT_ALT]);
 
 /** Item 05: a live clock in Singapore, so "Singapore" is a signal rather than a label. */
 function useLocalTime(timeZone) {
@@ -50,7 +56,6 @@ function useLocalTime(timeZone) {
 }
 
 export default function Hero({ reducedMotion, onOpenProof }) {
-  const [hasPortrait, setHasPortrait] = useState(true);
   const localTime = useLocalTime(site.timeZone);
 
   return (
@@ -135,23 +140,24 @@ export default function Hero({ reducedMotion, onOpenProof }) {
             <div className={`portrait ${hasPortrait ? '' : 'is-monogram'}`}>
               {hasPortrait ? (
                 <>
-                  <img
+                  <Picture
                     className="portrait-main"
-                    src={PORTRAIT}
+                    name={PORTRAIT}
                     alt="Hadi Qusyairi"
-                    width="240"
-                    height="240"
-                    onError={() => setHasPortrait(false)}
+                    sizes="104px"
+                    loading="eager"
                   />
                   {/* Item 16: one hover on the site that surprises you. */}
-                  <img
-                    className="portrait-alt"
-                    src={PORTRAIT_ALT}
-                    alt=""
-                    aria-hidden="true"
-                    width="240"
-                    height="240"
-                  />
+                  {hasPortraitAlt ? (
+                    <Picture
+                      className="portrait-alt"
+                      name={PORTRAIT_ALT}
+                      alt=""
+                      ariaHidden="true"
+                      sizes="104px"
+                      loading="eager"
+                    />
+                  ) : null}
                 </>
               ) : (
                 <span aria-hidden="true">HQ</span>

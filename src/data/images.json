@@ -19,6 +19,16 @@
     "height": 900,
     "widths": [400, 800, 1200, 1600]
   },
+  "portrait-fun": {
+    "width": 800,
+    "height": 800,
+    "widths": [400, 800]
+  },
+  "portrait": {
+    "width": 800,
+    "height": 800,
+    "widths": [400, 800]
+  },
   "pulseops-attendance": {
     "width": 1600,
     "height": 1000,

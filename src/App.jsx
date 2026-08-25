@@ -155,6 +155,9 @@ export default function App() {
   // whatever was clicked.
   const openImage = (gallery, index, originRect) => setModal({ gallery, index, originRect });
 
+  const featured = projects.filter((project) => !project.compact);
+  const alsoBuilt = projects.filter((project) => project.compact);
+
   const caseProject = route?.kind === 'case' ? getProject(route.slug) : null;
   const note = route?.kind === 'note' ? getNote(route.slug) : null;
 
@@ -299,7 +302,7 @@ export default function App() {
             </p>
           </div>
           <div className="project-list">
-            {projects.map((project) => (
+            {featured.map((project) => (
               <ProjectCard
                 key={project.number}
                 project={project}
@@ -308,6 +311,21 @@ export default function App() {
               />
             ))}
           </div>
+
+          {/* Also built: the projects that have a claim worth making and nothing to
+              click through to. At full card weight they were 25% of the mobile page. */}
+          {alsoBuilt.length > 0 && (
+            <div className="also-built">
+              <h3 className="also-built-title" data-reveal>
+                Also built
+              </h3>
+              <div className="also-built-list">
+                {alsoBuilt.map((project) => (
+                  <ProjectCard key={project.number} project={project} />
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         <About />

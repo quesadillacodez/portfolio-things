@@ -130,7 +130,7 @@ export default function ImageModal({ gallery, initialIndex, originRect, onClose,
             onClick={() => setZoomed((on) => !on)}
             aria-label={zoomed ? 'Fit image to screen' : 'Zoom in to pan around this screen'}
           >
-            <Picture name={current.image} alt={caption} sizes="100vw" loading="eager" />
+            <Picture name={current.image} alt={caption} sizes="100vw" loading="eager" full={zoomed} />
           </button>
         </figure>
       </div>

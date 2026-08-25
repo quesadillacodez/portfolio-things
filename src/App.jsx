@@ -8,6 +8,7 @@ import About from './components/About';
 import NotePage from './components/NotePage';
 import Colophon from './components/Colophon';
 import Notes from './components/Notes';
+import ToTop from './components/ToTop';
 import RosterDemo from './components/RosterDemo';
 import SplitHeading from './components/SplitHeading';
 import Icon from './components/Icon';
@@ -79,17 +80,42 @@ const KONAMI = [
   'a',
 ];
 
+const SITE_URL = 'https://portfolio-things-eight.vercel.app/';
+const HOME_TITLE = 'Hadi Qusyairi | FinTech & Data Builder';
+const HOME_DESCRIPTION =
+  'Digital Business and FinTech student in Singapore. EMS workforce command center, a NETS loyalty engine, and analytics built around real operational decisions.';
+
 export default function App() {
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
+  // Item 46: this used to fall back to 'light', so a visitor whose OS is set to dark
+  // got a cream site no matter what — prefers-color-scheme was never consulted. The
+  // inline bootstrap in index.html has already stamped the right value before paint;
+  // read it back rather than recomputing and risking a mismatch.
+  const [theme, setTheme] = useState(
+    () =>
+      localStorage.getItem('theme') ||
+      document.documentElement.dataset.theme ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+  );
   const [modal, setModal] = useState(null);
   const reducedMotion = useReducedMotion();
   const route = useHashRoute();
 
+  // Applying the theme and *persisting* it are deliberately separate. Writing to
+  // localStorage here would stamp the OS-derived value on first render, which would
+  // make the visitor look like they had chosen it and freeze the preference below.
   useEffect(() => {
-    // Persist the visitor's choice while still rendering a usable light theme by default.
     document.documentElement.dataset.theme = theme;
-    localStorage.setItem('theme', theme);
   }, [theme]);
+
+  // Item 46 continued: if the visitor has never pressed the toggle, follow their OS
+  // when it changes rather than freezing whatever it was at first load.
+  useEffect(() => {
+    if (localStorage.getItem('theme')) return undefined;
+    const query = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = (event) => setTheme(event.matches ? 'dark' : 'light');
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
 
   // Item 08: one observer wakes every `data-reveal` element anywhere on the page.
   useReveal(reducedMotion);
@@ -132,9 +158,16 @@ export default function App() {
   const caseProject = route?.kind === 'case' ? getProject(route.slug) : null;
   const note = route?.kind === 'note' ? getNote(route.slug) : null;
 
-  const header = (
-    <Header theme={theme} onToggleTheme={() => setTheme((value) => (value === 'light' ? 'dark' : 'light'))} />
-  );
+  // Pressing the toggle is the only thing that counts as an explicit choice, and the
+  // only thing that writes localStorage.
+  const toggleTheme = () =>
+    setTheme((value) => {
+      const next = value === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme', next);
+      return next;
+    });
+
+  const header = <Header theme={theme} onToggleTheme={toggleTheme} />;
 
   const lightbox = modal && (
     <ImageModal
@@ -145,6 +178,45 @@ export default function App() {
       onClose={() => setModal(null)}
     />
   );
+
+  // Item 48: every page route shared as the homepage — the title and OG tags never
+  // moved off the root, so pasting a case study or a note into Slack produced the
+  // index card. They now follow the route and restore on the way back.
+  useEffect(() => {
+    const set = (selector, value) => {
+      const tag = document.head.querySelector(selector);
+      if (tag) tag.setAttribute('content', value);
+    };
+    const apply = (title, description, path) => {
+      const url = `${SITE_URL}${path}`;
+      document.title = title;
+      set('meta[property="og:title"]', title);
+      set('meta[name="twitter:title"]', title);
+      set('meta[property="og:description"]', description);
+      set('meta[name="twitter:description"]', description);
+      set('meta[name="description"]', description);
+      set('meta[property="og:url"]', url);
+      document.querySelector('link[rel="canonical"]')?.setAttribute('href', url);
+    };
+
+    if (caseProject?.caseStudy) {
+      apply(
+        `${caseProject.title} — case study | Hadi Qusyairi`,
+        caseProject.summary,
+        `#/case/${caseProject.slug}`,
+      );
+    } else if (note) {
+      apply(`${note.title} | Hadi Qusyairi`, note.dek, `#/note/${note.slug}`);
+    } else if (route?.kind === 'colophon') {
+      apply(
+        'Colophon | Hadi Qusyairi',
+        'How this site is built — the type, the tokens, the pipeline and the decisions behind them.',
+        '#/colophon',
+      );
+    } else {
+      apply(HOME_TITLE, HOME_DESCRIPTION, '');
+    }
+  }, [route, caseProject, note]);
 
   // Item 17: the case study is a route of its own rather than a longer card.
   // Round two: notes (item 17) and the colophon (item 22) are routes too.
@@ -164,6 +236,7 @@ export default function App() {
         </a>
         {header}
         <main id="main-content">{page}</main>
+        <ToTop reducedMotion={reducedMotion} />
         {lightbox}
       </>
     );
@@ -347,6 +420,7 @@ export default function App() {
         </div>
       </footer>
 
+      <ToTop reducedMotion={reducedMotion} />
       {lightbox}
     </>
   );

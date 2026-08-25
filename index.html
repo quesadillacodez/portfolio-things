@@ -56,13 +56,19 @@
       fetchpriority="high"
     />
 
-    <!-- Fonts resolve in parallel with the CSS instead of waiting behind an @import. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fonts are self-hosted. They used to come from fonts.googleapis.com, which put
+         a third-party host on the critical path: when that request hangs rather than
+         failing fast, first paint waits on it. Preloading the two latin files means
+         the text that is actually on screen has its face by the time it paints. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/DMSans-latin.woff2" crossorigin />
     <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/InstrumentSerif-400-italic-latin.woff2"
+      crossorigin
     />
+    <link rel="stylesheet" href="/fonts/fonts.css" />
 
     <script type="application/ld+json">
       {
@@ -85,6 +91,22 @@
         ],
         "sameAs": ["https://linkedin.com/in/hadi-qusyairi"]
       }
+    </script>
+
+    <!-- Runs before first paint. The theme was only applied in a React effect, so the
+         attribute stayed unset until the bundle parsed: a visitor who chose dark last
+         time got a cream flash first, and a visitor whose OS is dark got a light site
+         permanently, because prefers-color-scheme was never consulted at all. -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
     </script>
   </head>
   <body>

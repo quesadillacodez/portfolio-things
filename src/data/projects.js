@@ -54,7 +54,7 @@ export const projects = [
 
     stack: ['React', 'TypeScript', 'Vite', 'SQLite (WASM)', 'Node', 'Playwright'],
     demo: 'https://nets-grp-prototype.vercel.app/',
-    demoNote: 'Opens the prototype',
+    demoNote: 'Open the prototype',
 
     visual: {
       kind: 'gallery',
@@ -162,7 +162,7 @@ export const projects = [
 
     // Item 18: was an http:// link shortener. Now the canonical deployment.
     demo: 'https://emspulseops.vercel.app/',
-    demoNote: 'Opens the interactive prototype',
+    demoNote: 'Open the prototype',
 
     visual: {
       kind: 'gallery',

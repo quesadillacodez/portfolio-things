@@ -96,8 +96,27 @@ Every animation is gated twice — once in CSS via `prefers-reduced-motion`, and
 JavaScript via `useReducedMotion`. CSS alone cannot switch off a `setTimeout`, so any
 new JS-driven motion must take the hook and honour it.
 
-- `useReveal` runs one shared `IntersectionObserver` for every `[data-reveal]`
-  element. Add the attribute; do not add another observer.
+- **Two motion systems, on purpose.** `useReveal` runs one shared
+  `IntersectionObserver` for every `[data-reveal]` element — the ~40 one-shot entrances
+  down the page, where there is nothing to orchestrate. Add the attribute; do not add
+  another observer. **GSAP owns the hero only**: one timeline where each element
+  arrives because the previous one landed, plus a scroll-scrubbed drift an observer
+  cannot express. Do not migrate the rest of the page to GSAP for consistency's sake —
+  the observer is cheaper and already correct.
+- **GSAP is a dynamic import.** `src/motion/heroTimeline.js` is loaded by
+  `useHeroMotion` at runtime. Statically it put 48kB gzipped in front of first paint,
+  a 58% bundle increase; deferred it costs 0.8kB on the critical path.
+  That defer creates one trap: `gsap.from()` only sets its start state when the
+  timeline is built, so a deferred import would paint the hero visible and then snap it
+  backwards. `useHeroMotion` hides the targets in a **layout** effect (before paint),
+  and guarantees they come back via three routes — reduced motion never hides them at
+  all, a 700ms timeout reveals them if the chunk is slow, and a failed import reveals
+  them too. If you touch that hook, keep all three.
+- **`nav` is not a safe selector here.** The header's rules were once written as bare
+  `nav { display: none }` / `nav { display: flex }`, which reached into the hero
+  contents list — squeezing it into one grid cell on desktop and hiding it entirely
+  below 700px. Header rules are scoped `.site-header nav`. Keep component internals
+  behind a class.
 - `usePointerGlow` is the site's one ambient element: the 80px grid lights up around
   the pointer. It writes two custom properties per animation frame and refuses to run
   for a coarse pointer or under reduced motion, so the CSS is guarded on

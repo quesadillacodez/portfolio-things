@@ -45,9 +45,9 @@
     "widths": [400, 800, 1200, 1600]
   },
   "pulseops-hero-crop": {
-    "width": 860,
-    "height": 538,
-    "widths": [400, 800, 860]
+    "width": 1300,
+    "height": 530,
+    "widths": [400, 800, 1200, 1300]
   },
   "pulseops-payroll": {
     "width": 1600,

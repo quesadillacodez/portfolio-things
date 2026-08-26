@@ -255,10 +255,9 @@ export default function App() {
       <main id="main-content">
         {/* The hero shot is a crop of the PulseOps roster, so enlarging it opens that
             project's gallery rather than whichever project happens to be first. */}
-        <Hero
-          reducedMotion={reducedMotion}
-          onOpenProof={() => openImage(getProject('pulseops').visual.images, 1, null)}
-        />
+        {/* Hero no longer takes reducedMotion: GSAP's matchMedia reads the query
+            itself and reverts everything it created the moment it stops matching. */}
+        <Hero onOpenProof={() => openImage(getProject('pulseops').visual.images, 1, null)} />
 
         {/* Item 09 (round two): this was at screen six of fifteen, below three project
             cards and ~6,000px of scroll, so most visitors never reached the one thing on

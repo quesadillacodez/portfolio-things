@@ -166,13 +166,31 @@ Every animation is gated twice — once in CSS via `prefers-reduced-motion`, and
 JavaScript via `useReducedMotion`. CSS alone cannot switch off a `setTimeout`, so any
 new JS-driven motion must take the hook and honour it.
 
-- **Two motion systems, on purpose.** `useReveal` runs one shared
-  `IntersectionObserver` for every `[data-reveal]` element — the ~40 one-shot entrances
-  down the page, where there is nothing to orchestrate. Add the attribute; do not add
-  another observer. **GSAP owns the hero only**: one timeline where each element
-  arrives because the previous one landed, plus a scroll-scrubbed drift an observer
-  cannot express. Do not migrate the rest of the page to GSAP for consistency's sake —
-  the observer is cheaper and already correct.
+- **Two motion systems, on purpose.** The ~40 one-shot entrances down the page are
+  `[data-reveal]`. Add the attribute; do not add another observer. **GSAP owns the
+  hero only**: one timeline where each element arrives because the previous one
+  landed, plus a scroll-scrubbed drift nothing else can express. Do not migrate the
+  rest of the page to GSAP for consistency's sake.
+- **`[data-reveal]` has four paths and all four have to be checked.** Where the
+  browser supports `animation-timeline: view()` and motion is allowed, the entrance is
+  a scroll timeline and no JavaScript runs at all — `useReveal` feature-detects and
+  returns early. The base rule starts elements at `opacity: 0`, which is only safe
+  because something always brings them back:
+
+  |                    | motion                | reduced motion                           |
+  | ------------------ | --------------------- | ---------------------------------------- |
+  | scroll timeline    | CSS `@supports` block | reduced-motion block forces `opacity: 1` |
+  | no scroll timeline | `useReveal` observer  | `useReveal` marks all visible at once    |
+
+  The failure mode is a page of invisible text, and it only appears on the
+  combination you did not test. If you touch any one of those rules, re-test all
+  four.
+
+- **One ambient element: the clock.** There used to be two. The pointer-following
+  glow was removed — it said nothing, it could not run for a coarse pointer or under
+  reduced motion, and it cost a custom-property write per frame. The clock says
+  somebody is in Singapore and what time it is there. The dot matrix stays, static:
+  a texture that reacts to the pointer is a texture you keep looking at.
 - **GSAP is a dynamic import.** `src/motion/heroTimeline.js` is loaded by
   `useHeroMotion` at runtime. Statically it put 48kB gzipped in front of first paint,
   a 58% bundle increase; deferred it costs 0.8kB on the critical path.
@@ -187,10 +205,6 @@ new JS-driven motion must take the hook and honour it.
   contents list — squeezing it into one grid cell on desktop and hiding it entirely
   below 700px. Header rules are scoped `.site-header nav`. Keep component internals
   behind a class.
-- `usePointerGlow` is the site's one ambient element: the 80px grid lights up around
-  the pointer. It writes two custom properties per animation frame and refuses to run
-  for a coarse pointer or under reduced motion, so the CSS is guarded on
-  `:root[data-glow='on']` and needs no fallback.
 - `SplitHeading` splits headings into words for staggered entry. The spaces between
   words are **real text nodes**, not CSS generated content — `::after { content: ' ' }`
   renders visually but is invisible to `innerText`, so the heading copied and was

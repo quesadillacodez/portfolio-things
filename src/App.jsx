@@ -20,7 +20,6 @@ import { getNote } from './data/notes';
 import { useReveal } from './hooks/useReveal';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { useHashRoute } from './hooks/useHashRoute';
-import { usePointerGlow } from './hooks/usePointerGlow';
 
 const skills = [
   {
@@ -121,9 +120,6 @@ export default function App() {
 
   // Item 08: one observer wakes every `data-reveal` element anywhere on the page.
   useReveal(reducedMotion);
-
-  // Items 03 + 14 (round two): the one ambient element the site commits to.
-  usePointerGlow(reducedMotion);
 
   // A hash route is a same-document navigation, so the browser keeps the scroll
   // position it had on the index — which drops the reader into the middle of a note.

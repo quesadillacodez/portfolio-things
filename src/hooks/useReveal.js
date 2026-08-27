@@ -6,6 +6,14 @@ import { useEffect } from 'react';
 //
 // Item 14: when the visitor prefers reduced motion we do not observe at all — we mark
 // everything visible immediately, so nothing depends on a scroll event to become readable.
+// The CSS carries a scroll-timeline version of the same entrance. Where that is
+// supported AND motion is allowed, this observer is pure redundant work — the
+// stylesheet has already overridden everything it would set. It still has to run
+// under reduced motion, because the scroll-timeline rules are inside a
+// no-preference media query and something must mark elements visible.
+const hasScrollTimeline = () =>
+  typeof CSS !== 'undefined' && CSS.supports && CSS.supports('animation-timeline: view()');
+
 export function useReveal(prefersReducedMotion) {
   useEffect(() => {
     const targets = document.querySelectorAll('[data-reveal]:not(.is-visible)');
@@ -14,6 +22,8 @@ export function useReveal(prefersReducedMotion) {
       targets.forEach((el) => el.classList.add('is-visible'));
       return undefined;
     }
+
+    if (hasScrollTimeline()) return undefined;
 
     const observer = new IntersectionObserver(
       (entries) => {

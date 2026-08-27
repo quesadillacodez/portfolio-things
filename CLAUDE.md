@@ -200,6 +200,17 @@ new JS-driven motion must take the hook and honour it.
   and guarantees they come back via three routes — reduced motion never hides them at
   all, a 700ms timeout reveals them if the chunk is slow, and a failed import reveals
   them too. If you touch that hook, keep all three.
+- **The hero's big elements arrive by movement, never by fading.** An element at
+  `opacity: 0` does not count as painted, so whichever element is largest above the
+  fold sets LCP — and if it is fading in behind the deferred 48kB GSAP chunk, LCP is
+  whenever that chunk lands. `useHeroMotion` keeps `title`, `blurb` and `frame`
+  painted and unhidden for exactly this reason; only the small chrome fades, and none
+  of it is ever the largest element. The title still disappears completely before it
+  animates, because `SplitText`'s `mask: 'lines'` gives each line a clipping parent —
+  the fade was doing nothing you could see. Fixing these one at a time is
+  whack-a-mole; the largest element changes with the viewport (screenshot at 1440,
+  blurb at 390). Measured: LCP 1284ms → 264ms desktop, 1300ms → 208ms mobile.
+
 - **`nav` is not a safe selector here.** The header's rules were once written as bare
   `nav { display: none }` / `nav { display: flex }`, which reached into the hero
   contents list — squeezing it into one grid cell on desktop and hiding it entirely

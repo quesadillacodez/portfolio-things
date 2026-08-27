@@ -34,8 +34,25 @@ export function useHeroMotion(ref) {
     // static hero is the finished state, not a fallback.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
 
-    const targets = root.querySelectorAll('[data-hero]');
-    targets.forEach((el) => {
+    // THE BIG THREE ARRIVE BY MOVEMENT, NOT BY FADING, AND THAT IS A PERFORMANCE RULE
+    // RATHER THAN A TASTE ONE.
+    //
+    // An element at opacity:0 does not count as painted, so whichever element is the
+    // largest thing above the fold sets LCP — and if it is fading in behind a deferred
+    // 48kB chunk, LCP is whenever that chunk lands. Chasing them one at a time is
+    // whack-a-mole: it was the screenshot at 1440 (1272ms), then the blurb at 390
+    // (1300ms), because the largest element changes with the viewport.
+    //
+    // So title, blurb and frame are never hidden and never fade. They still arrive:
+    // the title's words rise out of the line mask SplitText builds, which conceals
+    // them exactly as well as opacity did, and the blurb and frame travel in. Only the
+    // small chrome — status row, buttons, aside, ID block, index — fades, and none of
+    // it is ever the largest element on screen.
+    const KEEP_PAINTED = ['frame', 'title', 'blurb'];
+    const hidden = root.querySelectorAll(
+      `[data-hero]${KEEP_PAINTED.map((name) => `:not([data-hero='${name}'])`).join('')}`,
+    );
+    hidden.forEach((el) => {
       el.style.opacity = '0';
     });
 
@@ -43,7 +60,7 @@ export function useHeroMotion(ref) {
     let teardown;
 
     const reveal = () =>
-      targets.forEach((el) => {
+      hidden.forEach((el) => {
         el.style.removeProperty('opacity');
       });
 

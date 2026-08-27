@@ -1650,6 +1650,7 @@ footer h2 {
   border-top: 1px solid var(--line);
 }
 .case-facts dt {
+  font-family: var(--mono);
   color: var(--muted);
   font-size: 0.68rem;
   letter-spacing: 0.12em;
@@ -2017,8 +2018,10 @@ footer {
     grid-template-columns: 2rem minmax(9rem, 1fr) auto minmax(0, 1.4fr) auto;
     gap: 1rem;
   }
+  /* Four, not three: Read joined Role/Period/Stack and a fourth item in a
+     three-column grid wraps onto a row of its own under the first column. */
   .case-facts {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
   }
   .case-grid {
@@ -3638,4 +3641,61 @@ footer h2,
   .hero-index em {
     grid-column: 2;
   }
+}
+
+/* ── The in-app empty board ──────────────────────────────────────────────
+   A hash route that matches nothing. Set as a reading document, same measure as a
+   note, because that is what the reader was expecting to land on. */
+.not-found {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: clamp(3rem, 8vw, 6rem) 5vw clamp(4rem, 8vw, 7rem);
+  display: grid;
+  gap: 1.6rem;
+  justify-items: start;
+}
+.not-found h1 {
+  margin: 0;
+  max-width: 15ch;
+  font-family: var(--display);
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+  line-height: 1.03;
+  letter-spacing: -0.022em;
+  font-weight: 700;
+  text-wrap: balance;
+}
+.not-found h1 em {
+  font-style: normal;
+  font-weight: 800;
+  font-stretch: var(--display-narrow);
+}
+.not-found p {
+  margin: 0;
+  max-width: 36rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+.not-found code {
+  font-family: var(--mono);
+  font-size: 0.92em;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.not-found-board {
+  width: 100%;
+  max-width: 36rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+.not-found-board li {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--muted);
 }

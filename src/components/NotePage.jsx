@@ -1,6 +1,7 @@
 import Icon from './Icon';
 import CopyLink from './CopyLink';
 import { notes } from '../data/notes';
+import SectionLabel from './SectionLabel';
 
 const longDate = (iso) =>
   new Date(iso).toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -17,12 +18,14 @@ export default function NotePage({ note }) {
       </a>
 
       <header className="note-head">
+        <SectionLabel code="NOTE">{note.project}</SectionLabel>
         <p className="note-meta">
           <time className="numeric" dateTime={note.date}>
             {longDate(note.date)}
           </time>
-          <span>{note.project}</span>
-          <span>{note.minutes} min read</span>
+          <span>
+            <span className="numeric">{note.minutes}</span> min read
+          </span>
         </p>
         <h1>{note.title}</h1>
         <p className="note-dek">{note.dek}</p>

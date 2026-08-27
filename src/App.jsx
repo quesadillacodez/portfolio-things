@@ -11,6 +11,7 @@ import Notes from './components/Notes';
 import ToTop from './components/ToTop';
 import RosterDemo from './components/RosterDemo';
 import SectionLabel from './components/SectionLabel';
+import NotFound from './components/NotFound';
 import SplitHeading from './components/SplitHeading';
 import Icon from './components/Icon';
 import { projects, getProject } from './data/projects';
@@ -161,6 +162,11 @@ export default function App() {
 
   const caseProject = route?.kind === 'case' ? getProject(route.slug) : null;
   const note = route?.kind === 'note' ? getNote(route.slug) : null;
+  // A slug-shaped route that matches nothing. The server cannot answer this with
+  // public/404.html — everything after the `#` never reaches it — so it used to render
+  // the index under a URL claiming to be a case study.
+  const missing =
+    (route?.kind === 'case' && !caseProject?.caseStudy) || (route?.kind === 'note' && !note) ? route : null;
 
   // Pressing the toggle is the only thing that counts as an explicit choice, and the
   // only thing that writes localStorage.
@@ -211,6 +217,8 @@ export default function App() {
       );
     } else if (note) {
       apply(`${note.title} | Hadi Qusyairi`, note.dek, `#/note/${note.slug}`);
+    } else if (missing) {
+      apply('Not found | Hadi Qusyairi', 'No page at this address.', `#/${missing.kind}/${missing.slug}`);
     } else if (route?.kind === 'colophon') {
       apply(
         'Colophon | Hadi Qusyairi',
@@ -220,7 +228,7 @@ export default function App() {
     } else {
       apply(HOME_TITLE, HOME_DESCRIPTION, '');
     }
-  }, [route, caseProject, note]);
+  }, [route, caseProject, note, missing]);
 
   // Item 17: the case study is a route of its own rather than a longer card.
   // Round two: notes (item 17) and the colophon (item 22) are routes too.
@@ -230,6 +238,7 @@ export default function App() {
     )) ||
     (note && <NotePage note={note} />) ||
     (route?.kind === 'colophon' && <Colophon />) ||
+    (missing && <NotFound kind={missing.kind} slug={missing.slug} />) ||
     null;
 
   if (page) {

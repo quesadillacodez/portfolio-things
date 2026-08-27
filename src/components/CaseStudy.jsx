@@ -3,6 +3,8 @@ import Icon from './Icon';
 import TiltFrame from './TiltFrame';
 import Picture from './Picture';
 import RosterDemo from './RosterDemo';
+import SectionLabel from './SectionLabel';
+import { readingMinutes } from '../lib/readingTime';
 
 // Item 17: a project with six interface screens and CPF-aware payroll logic was
 // compressed into three short paragraphs on a shared index. This is the page it earned:
@@ -13,6 +15,10 @@ import RosterDemo from './RosterDemo';
 // a junior hire — they are the only place a reader can see judgement rather than output.
 export default function CaseStudy({ project, onOpenImage, reducedMotion }) {
   const study = project.caseStudy;
+  // Derived, not typed in beside the content: this page is assembled from half a dozen
+  // arrays in projects.js, so any hand-written figure would be wrong the first time
+  // somebody added a decision.
+  const minutes = readingMinutes(project.summary, study);
 
   // A route change should start at the top of the new page, not wherever the index
   // happened to be scrolled to.
@@ -28,7 +34,7 @@ export default function CaseStudy({ project, onOpenImage, reducedMotion }) {
         </a>
 
         <header className="case-head">
-          <p className="section-label">{project.eyebrow}</p>
+          <SectionLabel code="CASE">{project.eyebrow}</SectionLabel>
           <h1>{project.title}</h1>
           <p className="case-summary">{project.summary}</p>
 
@@ -44,6 +50,12 @@ export default function CaseStudy({ project, onOpenImage, reducedMotion }) {
             <div>
               <dt>Stack</dt>
               <dd>{project.stack.join(' · ')}</dd>
+            </div>
+            <div>
+              <dt>Read</dt>
+              <dd>
+                <span className="numeric">{minutes}</span> min
+              </dd>
             </div>
           </dl>
 

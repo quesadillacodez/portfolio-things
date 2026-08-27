@@ -48,23 +48,23 @@ const skills = [
 const process = [
   {
     n: '01',
-    title: 'Observe the workflow',
-    body: 'I map who does what, where information changes hands, and which steps create avoidable waiting or errors.',
+    title: 'Watch it go wrong',
+    body: 'Before anything else I find out who hands what to whom, and what the next person does while they wait. The waiting is the problem. The task is usually fine.',
   },
   {
     n: '02',
-    title: 'Model the logic',
-    body: 'I define the data, rules, edge cases, and success criteria before choosing the interface or visualization.',
+    title: 'Write the rules as sentences',
+    body: 'What is allowed, what is forbidden, and what happens exactly at the boundary — in plain English, before a single screen exists. A rule I cannot say out loud is a rule I am about to get wrong in code.',
   },
   {
     n: '03',
-    title: 'Build the smallest useful version',
-    body: 'I connect core actions first, then improve feedback, validation, and readability around actual user tasks.',
+    title: 'Build the smallest thing somebody could use',
+    body: 'One action, end to end, and nothing around it. Everything I would have added early turns out to be a guess, and a guess is cheaper to delete than to maintain.',
   },
   {
     n: '04',
-    title: 'Test the claim',
-    body: 'I separate measured outcomes from projections, collect feedback, and document assumptions that still need validation.',
+    title: 'Say which numbers I measured',
+    body: 'Measured figures and projected ones get labelled differently, including when that makes the projection look worse. A number nobody can trace is a number nobody should believe.',
   },
 ];
 
@@ -342,8 +342,8 @@ export default function App() {
             </SectionLabel>
             <SplitHeading
               id="process-title"
-              text="From messy process to"
-              emphasis="usable system."
+              text="Nobody has ever asked me for"
+              emphasis="a piece of software."
               reducedMotion={reducedMotion}
             />
           </div>

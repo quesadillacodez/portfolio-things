@@ -2,72 +2,141 @@
    (@import forced the browser to download and parse this file before it even
    discovered the font request — the slowest possible waterfall.) */
 
-:root {
-  color-scheme: light;
-  --bg: #f2f0e9;
-  --surface: #e8e5dc;
-  --ink: #101f20;
-  --muted: #586361;
-  --line: #b8b9b1;
-  --line-strong: #9a9c93;
-  --glow-line: #8fa62e;
-  /* Item 25: the palette had three accents doing one job each. It now has two, with
-     rules. --accent (lime) owns every interactive and system signal: active nav,
-     hover, availability, list markers, the pointer-following grid. --coral owns
-     editorial emphasis only: display italic in headings, and the small uppercase
-     labels. The old --blue, which appeared exactly once as a footer heading colour
-     and owned nothing, is gone.
+/* ---------------------------------------------------------------------------
+   DISPATCH: the site is an operations board.
 
-     --focus and --progress stay separate tokens rather than aliasing --accent,
-     because lime has almost no contrast on cream — it can only carry those two jobs
-     on a dark ground. Same rule, resolved per theme. */
-  --accent: #d9ff53;
-  --accent-ink: #101f20;
-  /* Small labels need 4.5:1, which the display coral cannot reach on cream. Two
-     tuned values of one hue: display size, and 11px label size. */
-  --coral: #c2381f;
-  --coral-display: #ff674d;
-  --header: rgba(242, 240, 233, 0.88);
-  --surface-raised: #f8f7f2;
-  --focus: #101f20;
-  /* The lime accent is unreadable as a 2px bar on the cream header — it only has
-     contrast against the dark ground. The progress bar takes ink in light, accent
-     in dark, so it is visible in both rather than decorative in one. */
-  --progress: #101f20;
-  --shot-brightness: 1;
-  /* Fixed-role tokens: the inverted band is always a dark ground with light text,
-     so swapping the theme can never turn it into a cream slab. */
-  --invert-bg: #101f20;
-  --invert-ink: #f2f0e9;
-  --invert-muted: rgba(242, 240, 233, 0.7);
-  --invert-line: rgba(242, 240, 233, 0.22);
-  --display: 'Instrument Serif', Georgia, serif;
-  --sans: 'DM Sans', Arial, sans-serif;
-  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+   Dark is the authored state — the board as it looks in the room it belongs in.
+   Light is not that board inverted; it is the printed handover sheet, designed
+   separately, with its own paper, its own rules and its own signal colours. Both
+   are first-class. Neither is a filter over the other.
+
+   COLOUR MEANS SIGNAL. There are exactly two signals on this site:
+
+     signal    amber   something is unresolved and wants a person
+     resolved  lime    something has been decided
+
+   Nothing else is allowed to be coloured. Editorial emphasis inside a heading is
+   a CONDENSED CUT of the display face, not a colour — see --display below. That
+   rule exists because the palette this replaces used a coral for emphasis that
+   measured 2.52:1 against cream on every display italic on the site, and 4.30:1
+   on the small labels (not the 4.5:1 it was designed for, because those labels
+   sit on --surface, not on --bg). A colour that carries meaning has to survive a
+   contrast check on every ground it lands on; a colour that carries emphasis
+   only ever gets checked on the one ground somebody remembered.
+
+   Each signal is THREE tokens, and the split is load-bearing:
+
+     --signal-fill / --signal-on-fill   fixed-role. A bright chip with dark ink,
+                                        identical in both themes. This is the
+                                        primary carrier — it cannot invert into
+                                        an unreadable state, for the same reason
+                                        --invert-* is fixed-role.
+     --signal-ink                       per-theme. Text tinted with the signal,
+                                        on the page ground. Amber has to go to a
+                                        burnt #96590a on paper to clear 4.5:1;
+                                        lime cannot be text on paper at all and
+                                        becomes a deep green. Do not use the fill
+                                        value as text, in either theme.
+
+   Every value below is measured, not chosen by eye. Worst-case ratio across
+   --bg, --surface and --surface-raised, per theme:
+
+     dark   ink 13.26  muted 6.01  signal-ink 8.82  resolved-ink 13.91
+     light  ink 15.37  muted 5.47  signal-ink 4.84  resolved-ink 5.24
+
+   --line is decorative hairline and is deliberately faint (1.2–1.8:1). Anything
+   whose border is the ONLY boundary of a control takes --line-interactive
+   instead, which is held at >=3:1 for WCAG 1.4.11 (dark 3.70, light 3.16).
+   --------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: dark;
+
+  /* The board */
+  --bg: #101314;
+  --surface: #171b1c;
+  --surface-raised: #1e2324;
+  --ink: #e9ebe8;
+  --muted: #98a1a0;
+  --line: #2b3233;
+  --line-strong: #414a4b;
+  --line-interactive: #6b7677;
+  --header: rgba(16, 19, 20, 0.9);
+
+  --signal-fill: #ffb224;
+  --signal-on-fill: #14100a;
+  --signal-ink: #ffb224;
+  --resolved-fill: #d9ff53;
+  --resolved-on-fill: #101314;
+  --resolved-ink: #d9ff53;
+
+  /* The focus ring and the progress bar are separate tokens from the signals for
+     the reason the old palette already learned the hard way: lime has no contrast
+     on paper, so it cannot be the progress bar in light mode. Resolved per theme,
+     same rule. */
+  --focus: #d9ff53;
+  --progress: #ffb224;
+
+  /* Fixed-role: the inverted band is always a dark ground with light text, so
+     switching the theme can never turn it into a pale slab with 1.00:1 text.
+     In dark mode it goes *below* the board rather than above it — the band still
+     has to read as a separate surface, and there is no lighter direction to go. */
+  --invert-bg: #080a0b;
+  --invert-ink: #f2f2ef;
+  --invert-muted: #a9b0ae;
+  --invert-line: rgba(242, 242, 239, 0.16);
+
+  --shot-brightness: 0.88;
+
+  /* Bricolage carries a real width axis and it is the emphasis mechanism: normal
+     runs at 100%, emphasised words inside a heading drop to 78%. --display-narrow
+     is that cut. Never emphasise a heading with colour. */
+  --display: 'Bricolage Grotesque', 'Arial Narrow', Helvetica, sans-serif;
+  --display-wide: 100%;
+  --display-narrow: 78%;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --sans: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* The one material idea, used everywhere and nowhere loudly: a dot matrix.
+     On the board it is the phosphor grid; on paper it is the printer's grain.
+     Same geometry, different ink, one idea. */
+  --dot: rgba(233, 235, 232, 0.16);
+  --dot-lit: rgba(217, 255, 83, 0.5);
+  --dot-size: 22px;
+
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* The same semantic color tokens power both themes and keep component styles simple. */
-[data-theme='dark'] {
-  color-scheme: dark;
-  --bg: #101918;
-  --surface: #182321;
-  --ink: #f2f0e9;
-  --muted: #a7b0ac;
-  --line: #3d4945;
-  --line-strong: #55635e;
-  --glow-line: #d9ff53;
-  --accent: #d9ff53;
-  --accent-ink: #101f20;
-  --coral: #ff806b;
-  --coral-display: #ff806b;
-  --header: rgba(16, 25, 24, 0.9);
-  --surface-raised: #16211f;
-  --focus: #d9ff53;
-  --progress: #d9ff53;
-  --shot-brightness: 0.88;
-  /* Lifted rather than reused so the band still reads as a separate surface. */
-  --invert-bg: #1b2a27;
+/* The handover sheet. Not an inversion — different paper, different rules, and
+   signal colours re-derived for a light ground rather than reused from the board. */
+[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #f7f7f5;
+  --surface: #eeeeeb;
+  --surface-raised: #ffffff;
+  --ink: #14181a;
+  --muted: #59615f;
+  --line: #dcdcd8;
+  --line-strong: #bcbdb8;
+  --line-interactive: #85867f;
+  --header: rgba(247, 247, 245, 0.9);
+
+  /* The fills stay exactly as they are — that is what fixed-role means. Only the
+     ink values move, because amber and lime are both unreadable as text on paper. */
+  --signal-ink: #96590a;
+  --resolved-ink: #456d0d;
+
+  --focus: #14181a;
+  --progress: #96590a;
+
+  /* On paper the band is the board: a dark slab quoted into a light document. */
+  --invert-bg: #101314;
+
+  --shot-brightness: 1;
+
+  --dot: rgba(20, 24, 26, 0.14);
+  --dot-lit: rgba(150, 89, 10, 0.42);
 }
 
 * {
@@ -88,17 +157,19 @@ body {
     background 180ms ease,
     color 180ms ease;
 }
+/* The site has exactly one material idea and this is it: a dot matrix. On the dark
+   board it reads as the phosphor grid behind the readings; on the printed sheet it
+   reads as the grain a dot-matrix printer leaves. Same geometry, different ink.
+   It is used here as the page ground, at section boundaries, and as the surface the
+   pointer lights up — three jobs, one idea, none of them loud. */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: -1;
-  opacity: 0.25;
   pointer-events: none;
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 80px 80px;
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+  background-size: var(--dot-size) var(--dot-size);
   mask-image: linear-gradient(to bottom, black, transparent 42rem);
 }
 a {
@@ -121,8 +192,8 @@ img {
   left: 1rem;
   z-index: 100;
   padding: 0.7rem 1rem;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--signal-fill);
+  color: var(--signal-on-fill);
 }
 .skip-link:focus {
   top: 1rem;
@@ -195,13 +266,14 @@ img {
   backdrop-filter: blur(15px);
 }
 .brand {
+  font-family: var(--display);
   font-size: 1.15rem;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
 }
 .brand span {
-  color: var(--coral-display);
+  color: var(--signal-ink);
 }
 /* Scoped: this was a bare `nav`, which also hit the hero contents list and hid it
    below 700px. Element selectors for a component's internals reach further than the
@@ -224,9 +296,9 @@ img {
   cursor: pointer;
 }
 .theme-toggle:hover {
-  background: var(--accent);
-  color: var(--accent-ink);
-  border-color: var(--accent);
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
 }
 
 /* Item 09: scroll progress. CSS-driven where scroll timelines exist, JS-driven
@@ -281,7 +353,11 @@ img {
   gap: 1.6rem;
   align-content: start;
 }
+/* Labels, eyebrows and unit codes are mono, always. That is the board's voice:
+   anything that names or numbers a thing is set in the face that also carries the
+   readings, so a section marker and a station code look like the same system. */
 .section-label {
+  font-family: var(--mono);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -304,7 +380,7 @@ img {
   gap: 0.6rem;
   padding: 0.45rem 0.9rem 0.45rem 0.7rem;
   border: 1px solid var(--line);
-  border-radius: 3rem;
+  border-radius: 0;
   background: var(--surface);
   font-size: 0.74rem;
   font-weight: 600;
@@ -324,7 +400,7 @@ img {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #14b866;
+  background: var(--signal-fill);
   flex: none;
 }
 .status-dot::after {
@@ -355,18 +431,26 @@ img {
 .hero h1 {
   max-width: 16ch;
   margin: 0;
-  font-family: var(--sans);
+  font-family: var(--display);
   font-size: clamp(2.7rem, 6.6vw, 5.6rem);
   line-height: 0.94;
-  letter-spacing: -0.055em;
-  font-weight: 500;
+  letter-spacing: -0.025em;
+  font-weight: 700;
 }
+/* Emphasis inside a display heading is a NARROWER CUT of the same face, not a
+   colour and not an italic. Bricolage carries a real width axis, so the emphasised
+   words compress and tighten against the words either side of them — the phrase
+   changes shape rather than changing hue. This replaces a coral italic that
+   measured 2.52:1 on cream, and it means colour stays reserved for the two
+   signals. Bricolage has no true italic, so `font-style` is reset to normal
+   rather than left to synthesise an oblique. */
 h1 em,
 h2 em {
   font-family: var(--display);
-  font-weight: 400;
-  color: var(--coral-display);
-  font-style: italic;
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: var(--display-narrow);
+  letter-spacing: -0.03em;
 }
 .hero-blurb {
   max-width: 40rem;
@@ -403,9 +487,9 @@ h2 em {
   color: var(--bg);
 }
 .button-primary:hover {
-  background: var(--accent);
-  color: var(--accent-ink);
-  border-color: var(--accent);
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
 }
 .button-quiet {
   background: transparent;
@@ -477,7 +561,6 @@ h2 em {
   border: 1px solid var(--line);
   background: var(--surface);
   /* A face on a light ground needs a little separation or it floats. */
-  box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
 }
 .portrait img {
   position: absolute;
@@ -632,10 +715,11 @@ footer h2 {
 }
 .project-heading h3 {
   margin: 0;
+  font-family: var(--display);
   font-size: clamp(2.2rem, 5vw, 5rem);
   line-height: 1;
-  letter-spacing: -0.055em;
-  font-weight: 500;
+  letter-spacing: -0.025em;
+  font-weight: 700;
 }
 .project-heading p {
   max-width: 47rem;
@@ -684,8 +768,8 @@ footer h2 {
   height: 74px;
   margin: -37px 0 0 -37px;
   border-radius: 50%;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--ink);
+  color: var(--bg);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -779,10 +863,10 @@ footer h2 {
   color: var(--ink);
 }
 .walkthrough-num {
+  color: var(--muted);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  opacity: 0.7;
 }
 .walkthrough-name {
   font-size: 0.84rem;
@@ -794,7 +878,7 @@ footer h2 {
   bottom: 0;
   height: 2px;
   width: 100%;
-  background: var(--accent);
+  background: var(--progress);
   transform-origin: 0 50%;
   /* Must match DWELL in Walkthrough.jsx or the bar fills early and then waits. */
   animation: dwell 6.5s linear both;
@@ -827,27 +911,32 @@ footer h2 {
 }
 
 /* ── Item 16: terminal visual (FairPrice) ───────────────────────────── */
+/* A terminal is quoted material — it is dark wherever it appears, like the inverted
+   band, so its colours are fixed-role rather than themed. They are re-based onto the
+   board's ground here so it stops looking like a transplant from the old palette,
+   but the two site signals deliberately do not appear inside it: what a tool prints
+   is its own vocabulary, not the board's. */
 .visual-terminal {
   margin: 0;
   border: 1px solid var(--line);
-  background: #0d1614;
+  background: #0b0e0f;
 }
 .term-chrome {
   display: flex;
   align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 0.8rem;
-  border-bottom: 1px solid #24322e;
+  border-bottom: 1px solid #232829;
 }
 .term-chrome span {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: #2f3f3b;
+  background: #333a3b;
 }
 .term-chrome code {
   margin-left: 0.6rem;
-  color: #7d918b;
+  color: #8b9493;
   font-family: var(--mono);
   font-size: 0.7rem;
 }
@@ -866,13 +955,13 @@ footer h2 {
   display: block;
 }
 .term-out {
-  color: #b7c6c1;
+  color: #c2c8c6;
 }
 .term-in {
   color: #d9ff53;
 }
 .term-in b {
-  color: #6f8079;
+  color: #7c8584;
 }
 .term-ok {
   color: #7fd6a2;
@@ -895,8 +984,8 @@ footer h2 {
 }
 .visual-terminal figcaption {
   padding: 0.7rem 1.1rem;
-  border-top: 1px solid #24322e;
-  color: #7d918b;
+  border-top: 1px solid #232829;
+  color: #8b9493;
   font-size: 0.72rem;
 }
 
@@ -961,16 +1050,16 @@ footer h2 {
   flex: none;
 }
 .flow-before {
-  color: var(--coral);
+  color: var(--signal-ink);
 }
 .flow-after {
-  color: var(--coral-display);
+  color: var(--resolved-ink);
 }
 .flow-col ol li {
   color: var(--ink);
 }
 .flow-before li {
-  border-left: 2px solid var(--coral-display);
+  border-left: 2px solid var(--signal-ink);
 }
 .flow-after li {
   border-left: 2px solid var(--line-strong);
@@ -1004,7 +1093,7 @@ footer h2 {
 .project-details span {
   display: block;
   margin-bottom: 0.6rem;
-  color: var(--coral);
+  color: var(--muted);
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -1057,13 +1146,15 @@ footer h2 {
   gap: 0.15rem;
 }
 .project-stats b {
-  font-size: 1.7rem;
-  font-weight: 500;
+  font-family: var(--mono);
+  font-size: 1.6rem;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 .project-stats span {
+  font-family: var(--mono);
   color: var(--muted);
   font-size: 0.7rem;
   letter-spacing: 0.1em;
@@ -1073,7 +1164,7 @@ footer h2 {
 .project-note {
   padding: 1rem;
   margin: 1.7rem 0 0;
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid var(--line-strong);
   background: var(--surface);
   color: var(--muted);
   font-size: 0.85rem;
@@ -1097,7 +1188,7 @@ footer h2 {
 .stack-list li {
   padding: 0.35rem 0.6rem;
   border: 1px solid var(--line);
-  border-radius: 3rem;
+  border-radius: 0;
   color: var(--muted);
   font-size: 0.72rem;
 }
@@ -1140,7 +1231,7 @@ footer h2 {
 }
 .roster-eyebrow {
   margin: 0 0 0.5rem;
-  color: var(--coral);
+  color: var(--muted);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -1220,9 +1311,13 @@ footer h2 {
 .roster-list button:hover:not(:disabled) {
   background: var(--surface);
 }
+/* A blocked row used to be dimmed to 0.55, which took its reason text — the single
+   most useful thing on the row — to 2.96:1. The row is already legible as inactive
+   from the missing Assign control and the chip that says why, so the dimming was
+   costing readability to repeat something the layout already said. */
 .roster-list button:disabled {
   cursor: not-allowed;
-  opacity: 0.55;
+  color: var(--muted);
 }
 .roster-rank {
   font-family: var(--mono);
@@ -1259,21 +1354,17 @@ footer h2 {
 .roster-chip {
   padding: 0.2rem 0.5rem;
   border: 1px solid currentColor;
-  border-radius: 3rem;
+  border-radius: 0;
   font-size: 0.66rem;
   font-weight: 600;
 }
+/* The chips carry the two signals at their smallest size, so they take the ink
+   values rather than the fills — a 0.66rem chip filled with amber is a smear. */
 .roster-chip-ok {
-  color: #12805a;
-}
-[data-theme='dark'] .roster-chip-ok {
-  color: #6fd6a4;
+  color: var(--resolved-ink);
 }
 .roster-chip-warn {
-  color: #9a5b00;
-}
-[data-theme='dark'] .roster-chip-warn {
-  color: #e0a54a;
+  color: var(--signal-ink);
 }
 .roster-chip-block {
   color: var(--muted);
@@ -1308,10 +1399,11 @@ footer h2 {
 }
 .demo-copy h2 {
   margin: 0.8rem 0 0.9rem;
+  font-family: var(--display);
   font-size: clamp(1.7rem, 3.4vw, 2.6rem);
   line-height: 1.05;
-  letter-spacing: -0.04em;
-  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-weight: 700;
   max-width: 20ch;
 }
 .demo-copy p {
@@ -1320,7 +1412,7 @@ footer h2 {
   max-width: 34rem;
 }
 .demo-copy .section-label {
-  color: var(--coral);
+  color: var(--muted);
 }
 
 /* Process and skills */
@@ -1336,7 +1428,7 @@ footer h2 {
   color: var(--invert-ink);
 }
 .process-section .section-intro h2 em {
-  color: var(--accent);
+  color: var(--invert-ink);
 }
 .process-grid {
   display: grid;
@@ -1349,8 +1441,12 @@ footer h2 {
   padding: 2rem 0;
   border-bottom: 1px solid var(--invert-line);
 }
+/* --muted, not --invert-muted, put these step numbers at 2.93:1 on the band in
+   light mode: the band is a fixed dark ground, so a themed token inside it resolves
+   against the wrong background. Anything inside .process-section takes --invert-*.
+   This is the same failure CLAUDE.md records for background/color, one level down. */
 .process-grid span {
-  color: var(--accent);
+  color: var(--invert-muted);
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
 }
@@ -1372,10 +1468,11 @@ footer h2 {
 }
 .skills-aside h2 {
   margin: 0.9rem 0 1rem;
+  font-family: var(--display);
   font-size: clamp(1.7rem, 3.2vw, 2.4rem);
   line-height: 1.05;
-  letter-spacing: -0.04em;
-  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-weight: 700;
 }
 .skills-note {
   margin: 0;
@@ -1394,7 +1491,7 @@ footer h2 {
   border-bottom: 1px solid var(--line);
 }
 .skills-grid article > span {
-  color: var(--coral);
+  color: var(--muted);
   font-size: 0.72rem;
 }
 .skills-grid h3 {
@@ -1415,7 +1512,7 @@ footer h2 {
 .skills-grid li::before {
   content: '↳';
   margin-right: 0.35rem;
-  color: var(--coral-display);
+  color: var(--line-interactive);
 }
 
 /* ── Item 17: case study page ───────────────────────────────────────── */
@@ -1449,10 +1546,11 @@ footer h2 {
 .case-head h1 {
   margin: 0;
   max-width: 18ch;
+  font-family: var(--display);
   font-size: clamp(2.4rem, 6vw, 4.6rem);
   line-height: 0.98;
-  letter-spacing: -0.055em;
-  font-weight: 500;
+  letter-spacing: -0.025em;
+  font-weight: 700;
 }
 .case-summary {
   margin: 0;
@@ -1495,7 +1593,7 @@ footer h2 {
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--coral);
+  color: var(--muted);
 }
 .case-block > p {
   margin: 0;
@@ -1526,7 +1624,7 @@ footer h2 {
   top: 0.65em;
   width: 0.7rem;
   height: 1px;
-  background: var(--coral-display);
+  background: var(--line-interactive);
 }
 .case-decisions {
   display: grid;
@@ -1537,7 +1635,7 @@ footer h2 {
   border-top: 1px solid var(--line);
 }
 .case-decision-num {
-  color: var(--coral);
+  color: var(--resolved-ink);
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -1589,7 +1687,7 @@ footer {
   gap: 2rem;
 }
 .footer-top h2 em {
-  color: var(--coral-display);
+  color: inherit;
 }
 .footer-top .button {
   justify-self: start;
@@ -1632,7 +1730,7 @@ footer {
   overflow: hidden;
 }
 .modal::backdrop {
-  background: #050a0a;
+  background: #080a0b;
 }
 .modal[open] {
   display: grid;
@@ -1644,16 +1742,16 @@ footer {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.8rem 1rem;
-  background: #050a0a;
+  background: #080a0b;
 }
 .modal-count {
-  color: #c5ccca;
+  color: #c8cdcb;
   font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
 }
 .modal-stage {
   overflow: auto;
-  background: #050a0a;
+  background: #080a0b;
   touch-action: pan-x pan-y pinch-zoom;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
@@ -1696,20 +1794,20 @@ footer {
   align-items: center;
   gap: 0.6rem;
   padding: 0.8rem 1rem calc(0.8rem + env(safe-area-inset-bottom));
-  background: #050a0a;
+  background: #080a0b;
 }
 .modal-foot p {
   grid-column: 1 / -1;
   order: -1;
   margin: 0 0 0.2rem;
-  color: #c5ccca;
+  color: #c8cdcb;
   font-size: 0.78rem;
   text-align: center;
 }
 .modal-foot button {
   min-height: 44px;
   padding: 0.6rem 1rem;
-  border: 1px solid #64706d;
+  border: 1px solid #6b7677;
   background: transparent;
   color: white;
   cursor: pointer;
@@ -1972,12 +2070,12 @@ footer {
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 0;
 }
 .process-section,
 .modal,
 .site-nav-panel {
-  --focus: var(--accent);
+  --focus: var(--resolved-fill);
 }
 
 .modal-close {
@@ -1985,7 +2083,7 @@ footer {
   height: 44px;
   display: grid;
   place-items: center;
-  border: 1px solid #64706d;
+  border: 1px solid #6b7677;
   border-radius: 50%;
   background: transparent;
   color: white;
@@ -1996,7 +2094,10 @@ footer {
 picture {
   display: contents;
 }
+/* Every reading on the board — times, counts, codes, stats — is mono and tabular,
+   so a number never changes width as it ticks. */
 .numeric {
+  font-family: var(--mono);
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum' 1;
 }
@@ -2012,10 +2113,9 @@ picture {
   inset: 0 0 auto;
   height: 14rem;
   z-index: 0;
-  opacity: 0.35;
   pointer-events: none;
-  background-image: linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 80px 80px;
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+  background-size: var(--dot-size) var(--dot-size);
   mask-image: linear-gradient(to bottom, black, transparent);
 }
 .section > * {
@@ -2045,8 +2145,8 @@ picture {
   align-items: center;
   margin: 0 0 1.1rem;
   padding: 0.4rem 0.7rem;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--ink);
+  color: var(--bg);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -2069,10 +2169,11 @@ picture {
   font-size: 1.05rem;
   font-weight: 600;
 }
+/* Not display emphasis — this is a label. Labels are mono on this site. */
 .project-highlight h4 em {
-  font-family: var(--display);
+  font-family: var(--mono);
   font-style: normal;
-  color: var(--coral);
+  color: var(--muted);
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -2096,8 +2197,8 @@ picture {
   content: '↳';
   margin-right: 0.5rem;
   padding: 0 0.2rem;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--ink);
+  color: var(--bg);
 }
 
 /* Item 32: bright app screenshots sat on #101918 as blazing rectangles in dark mode. */
@@ -2114,8 +2215,8 @@ picture {
 
 /* Item 27: the accent had three jobs. Active navigation is a fourth. */
 .site-header nav a[aria-current='true'] {
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--ink);
+  color: var(--bg);
   font-weight: 600;
 }
 
@@ -2133,9 +2234,9 @@ picture {
   cursor: pointer;
 }
 .nav-toggle:hover {
-  background: var(--accent);
-  color: var(--accent-ink);
-  border-color: var(--accent);
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
 }
 .header-actions {
   display: flex;
@@ -2164,7 +2265,7 @@ picture {
 }
 .site-nav-panel a span {
   margin-right: 0.9rem;
-  color: var(--accent);
+  color: var(--invert-muted);
   font-size: 0.7rem;
   letter-spacing: 0.14em;
   font-variant-numeric: tabular-nums;
@@ -2191,7 +2292,7 @@ picture {
    gets a full setting rather than one italic fragment. */
 .about-section .section-intro h2 {
   font-family: var(--display);
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 .about-grid {
@@ -2234,7 +2335,7 @@ picture {
   margin: 0;
 }
 .currently dt {
-  color: var(--coral);
+  color: var(--signal-ink);
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -2261,13 +2362,14 @@ picture {
   margin: 0;
   max-width: 24ch;
   font-family: var(--display);
+  font-weight: 700;
   font-size: clamp(2rem, 5vw, 4rem);
   line-height: 1.06;
   letter-spacing: -0.02em;
 }
 .pullquote blockquote::before {
   content: '\201C';
-  color: var(--coral-display);
+  color: var(--line-strong);
 }
 .pullquote figcaption {
   margin-top: 1.5rem;
@@ -2315,7 +2417,7 @@ picture {
   text-transform: uppercase;
 }
 .notes-meta b {
-  color: var(--coral);
+  color: var(--muted);
   font-weight: 600;
 }
 
@@ -2338,7 +2440,7 @@ picture {
       border-color 150ms ease;
   }
   .site-header nav a:hover {
-    border-bottom-color: var(--accent);
+    border-bottom-color: var(--ink);
   }
   .about-grid {
     grid-template-columns: minmax(0, 1.35fr) minmax(17rem, 0.65fr);
@@ -2442,7 +2544,7 @@ picture {
 }
 .hero-aside a:hover {
   color: var(--ink);
-  border-bottom-color: var(--accent);
+  border-bottom-color: var(--ink);
 }
 
 /* Item 07: what replaced the three static facts. */
@@ -2484,7 +2586,7 @@ picture {
 }
 .hero-now-link:hover {
   color: var(--ink);
-  border-bottom-color: var(--accent);
+  border-bottom-color: var(--ink);
 }
 
 /* Item 08: the contents page, replacing a lone "Selected work" cue. */
@@ -2512,8 +2614,8 @@ picture {
 }
 .roster-unit {
   padding: 0.2rem 0.5rem;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--ink);
+  color: var(--bg);
   font-weight: 700;
   letter-spacing: 0.06em;
   font-variant-numeric: tabular-nums;
@@ -2537,15 +2639,15 @@ picture {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #f0a33c;
+  background: var(--signal-fill);
   transition:
     background 320ms var(--ease),
     box-shadow 320ms var(--ease);
 }
 /* Item 10: the shift resolving is the payoff for the click. */
 .roster-coverage.is-full .roster-coverage-dot {
-  background: var(--accent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 28%, transparent);
+  background: var(--resolved-fill);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--resolved-fill) 28%, transparent);
 }
 
 /* Item 11: rows that look pressable at rest. */
@@ -2572,9 +2674,9 @@ picture {
     border-color 160ms ease;
 }
 .roster-list li:not(.is-blocked) button:hover .roster-action {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
+  background: var(--signal-fill);
+  border-color: var(--signal-fill);
+  color: var(--signal-on-fill);
 }
 
 /* Item 10: the chosen row settles, everything else steps back. */
@@ -2588,12 +2690,12 @@ picture {
   filter: saturate(0.5);
 }
 .roster-list li.is-chosen button {
-  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  background: color-mix(in srgb, var(--resolved-fill) 22%, transparent);
 }
 .roster-list li.is-chosen .roster-action {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
+  background: var(--resolved-fill);
+  border-color: var(--resolved-fill);
+  color: var(--resolved-on-fill);
 }
 .roster-list li.is-chosen {
   animation: roster-settle 460ms var(--ease) both;
@@ -2656,11 +2758,8 @@ picture {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  opacity: 0.55;
-  background-image:
-    linear-gradient(var(--accent) 1px, transparent 1px),
-    linear-gradient(90deg, var(--accent) 1px, transparent 1px);
-  background-size: 80px 80px;
+  background-image: radial-gradient(var(--dot-lit) 1.4px, transparent 1.4px);
+  background-size: var(--dot-size) var(--dot-size);
   /* The glow follows the pointer and breathes slowly, so the page is alive even
      when the pointer is not moving. */
   mask-image: radial-gradient(
@@ -2770,7 +2869,6 @@ picture {
   font-family: var(--mono);
   font-size: 0.68rem;
   letter-spacing: 0.18em;
-  opacity: 0.55;
   cursor: help;
   transition:
     opacity 200ms ease,
@@ -2799,9 +2897,9 @@ picture {
     border-color 160ms ease;
 }
 .copy-link:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-ink);
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
 }
 
 /* Item 17: notes on the index, and the pages they now lead to. */
@@ -2815,7 +2913,7 @@ picture {
   transition: border-color 160ms ease;
 }
 .notes-list h3 a:hover {
-  border-bottom-color: var(--accent);
+  border-bottom-color: var(--ink);
 }
 .notes-read {
   display: inline-flex;
@@ -2835,7 +2933,7 @@ picture {
 }
 .notes-read:hover {
   color: var(--ink);
-  border-bottom-color: var(--accent);
+  border-bottom-color: var(--ink);
 }
 
 .note-page,
@@ -2854,10 +2952,11 @@ picture {
 .note-head h1,
 .colophon-head h1 {
   margin: 0;
+  font-family: var(--display);
   font-size: clamp(2.1rem, 5vw, 3.4rem);
   line-height: 1.03;
-  letter-spacing: -0.045em;
-  font-weight: 500;
+  letter-spacing: -0.022em;
+  font-weight: 700;
   text-wrap: balance;
 }
 .note-meta {
@@ -2918,7 +3017,7 @@ picture {
   transition: border-color 150ms ease;
 }
 .note-next a:hover {
-  border-bottom-color: var(--accent);
+  border-bottom-color: var(--ink);
 }
 
 /* Item 22 */
@@ -2934,7 +3033,7 @@ picture {
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--coral);
+  color: var(--muted);
 }
 .colophon-block dl {
   display: grid;
@@ -2964,7 +3063,7 @@ picture {
   max-width: 36rem;
 }
 .colophon-todo li::marker {
-  color: var(--accent-ink);
+  color: var(--signal-ink);
 }
 .colophon-foot {
   padding-top: 1.4rem;
@@ -3115,7 +3214,7 @@ footer h2,
 }
 .project-compact-eyebrow {
   margin: 0;
-  color: var(--coral);
+  color: var(--muted);
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -3175,8 +3274,7 @@ footer h2,
   border: 1px solid var(--line);
   background: var(--surface);
   overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 18px 50px -28px rgb(0 0 0 / 0.45);
+  border-radius: 0;
 }
 .hero-shot-chrome {
   display: flex;
@@ -3265,7 +3363,6 @@ footer h2,
 .hero-index span {
   font-size: 0.7rem;
   letter-spacing: 0.08em;
-  opacity: 0.75;
 }
 .hero-index b {
   color: var(--ink);
@@ -3275,8 +3372,7 @@ footer h2,
 .hero-index em {
   font-style: normal;
   font-size: 0.82rem;
-  color: var(--faint, var(--muted));
-  opacity: 0.85;
+  color: var(--muted);
 }
 
 /* SplitText writes these. `mask: 'lines'` gives each line a clipping parent, which is
@@ -3287,17 +3383,19 @@ footer h2,
 .hero-title {
   margin: 0;
   max-width: 18ch;
+  font-family: var(--display);
   font-size: clamp(2.6rem, 6.2vw, 5.4rem);
   line-height: 0.98;
-  letter-spacing: -0.055em;
-  font-weight: 500;
+  letter-spacing: -0.025em;
+  font-weight: 700;
   text-wrap: balance;
 }
 .hero-title em {
   font-family: var(--display);
-  font-weight: 400;
-  font-style: italic;
-  color: var(--coral-display);
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: var(--display-narrow);
+  letter-spacing: -0.03em;
 }
 
 @media (max-width: 700px) {

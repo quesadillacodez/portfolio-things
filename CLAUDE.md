@@ -58,17 +58,77 @@ zero. Two things to know:
 
 ## Theming: three states, not two
 
-The site supports light, dark, and an inverted band that must stay dark in both.
+The site is an operations board. **Dark is the authored state** — `:root` carries it —
+and light is not that board inverted but a separate design, a printed handover sheet
+with its own paper, rules and signal colours. `[data-theme='light']` overrides.
 
 - Style through tokens. Never put a colour's only definition inside `[data-theme]`.
-- `--invert-*` tokens are **fixed-role**: the inverted band is always a dark ground
-  with light text. This exists because it used to be `background: var(--ink);
-color: var(--bg)`, which swapped with the theme and rendered a cream slab with
-  1.00:1 text in dark mode.
-- `--coral` is the accessible label colour (4.5:1 on cream); `--coral-display` is the
-  brand colour for headline-sized text. Small text takes `--coral`, always.
-- `--progress` and `--focus` are separate tokens for the same reason: the lime accent
-  only has contrast on a dark ground, so it cannot be the progress bar in light mode.
+- **Colour means signal, and there are exactly two.** Amber = unresolved, wants a
+  person. Lime = decided. Nothing else on the site is allowed to be coloured;
+  hover, active nav and list markers are ink, rule or an ink inversion.
+- **Editorial emphasis is a width, not a colour.** `h1 em` / `h2 em` drop to
+  `font-stretch: var(--display-narrow)` (78%). This replaced a coral italic that
+  measured 2.52:1 on cream. If you find yourself reaching for a colour to emphasise
+  a heading, use the width axis.
+- Each signal is **three tokens**, and the split matters:
+  `--signal-fill` / `--signal-on-fill` are **fixed-role** — a bright chip with dark
+  ink, identical in both themes, and the primary carrier. `--signal-ink` is
+  per-theme, for signal-tinted _text_ on the page ground: amber has to go to a burnt
+  `#96590a` on paper to clear 4.5:1, and lime cannot be text on paper at all.
+  **Never use a `-fill` value as text**, in either theme.
+- `--invert-*` tokens are fixed-role for the same reason: the inverted band is always
+  a dark ground with light text. It used to be `background: var(--ink); color:
+var(--bg)`, which swapped with the theme and rendered a pale slab with 1.00:1 text.
+  **Everything inside `.process-section` takes `--invert-*`, including one level
+  down** — `.process-grid span` was on plain `--muted` and measured 2.93:1 on the
+  band in light mode.
+- `--progress` and `--focus` stay separate tokens because lime only has contrast on
+  a dark ground, so it cannot be the progress bar in light mode.
+- **`opacity` is not a colour.** Five rules dimmed text with `opacity` between 0.55
+  and 0.85; `getComputedStyle(el).color` cannot see that, so they passed every naive
+  contrast check while sitting at 2.33:1. If text should be quieter, give it
+  `--muted`. Dimming a _disabled_ row is not an exemption either — the reason text on
+  a blocked roster row is the most useful thing on it.
+- `--line` is a decorative hairline and is deliberately faint (1.2–1.8:1). Anything
+  whose border is the **only** boundary of a control takes `--line-interactive`,
+  held at ≥3:1 for WCAG 1.4.11.
+
+Worst-case measured ratio across `--bg`, `--surface` and `--surface-raised`:
+
+| token            | dark  | light |
+| ---------------- | ----- | ----- |
+| `--ink`          | 13.26 | 15.37 |
+| `--muted`        | 6.01  | 5.47  |
+| `--signal-ink`   | 8.82  | 4.84  |
+| `--resolved-ink` | 13.91 | 5.24  |
+
+## Type: three faces, three jobs
+
+- **Bricolage Grotesque** — display only. Variable on weight _and_ width; the width
+  axis is the emphasis mechanism (see above).
+- **IBM Plex Mono** — every reading. Times, counts, station codes, stats, section
+  labels, the status line. If it names or numbers something, it is mono.
+- **Source Sans 3** — body copy and nothing else. Its job is to not be noticed.
+
+All three are self-hosted in `public/fonts/`, subsetted to latin + latin-ext.
+Two things to know:
+
+- **Bricolage is requested without its `opsz` axis.** With it, the latin subset is
+  131kB; without, 78kB. Optical sizing buys nothing here because the display face
+  runs at fixed sizes whose tracking is set by hand. If you re-fetch it, keep `opsz`
+  out of the request.
+- **Only two faces are preloaded** (Bricolage latin, Plex Mono 400 latin) — the
+  headline and the status line are what would visibly swap above the fold. Source
+  Sans 3 is close enough to the system humanist fallback that its swap does not move
+  layout, so it stays off the critical path.
+
+## Material: one idea
+
+A dot matrix, at `--dot-size` (22px), at low opacity. On the dark board it is the
+phosphor grid; on paper it is the printer's grain. It appears in exactly three
+places — the page ground, section boundaries, and the surface the pointer lights up.
+There is no second material. Hard corners, hairline rules, and no soft drop shadows:
+the one remaining `box-shadow` is a ring on a lit dot, not a shadow.
 
 ## Routes
 

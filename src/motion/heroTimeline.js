@@ -44,7 +44,10 @@ export function playHero(root) {
 
       const tl = gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.9 } });
 
-      tl.from(q('[data-hero="pill"]'), { y: 14, opacity: 0, duration: 0.6 })
+      // The board comes online top-down: the status row's readings arrive one field
+      // at a time, the way a real board fills in, and only then does the headline
+      // land. Everything after it is a consequence of the row above it.
+      tl.from(q('[data-hero="status"] > div'), { opacity: 0, duration: 0.45, stagger: 0.07 })
         .from(
           split ? split.words : q('[data-hero="title"]'),
           { yPercent: 115, opacity: 0, duration: 1, stagger: 0.035 },

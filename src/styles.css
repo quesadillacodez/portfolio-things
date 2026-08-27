@@ -333,14 +333,79 @@ img {
 .hero {
   /* Was 100svh, which left 111px of dead field between the CTA row and the scroll
      cue once the right-hand column stopped being the tallest thing here. The hero
-     is now sized by its content with a floor, not stretched to fill the viewport. */
+     is now sized by its content with a floor, not stretched to fill the viewport.
+
+     Horizontal padding is 0 rather than 5vw: the status line and the index rail are
+     the board's top and bottom edges and run the full width. Everything between them
+     is inset by --board-pad instead. */
+  --board-pad: 5vw;
   min-height: min(calc(100svh - 72px), 46rem);
-  padding: clamp(2.5rem, 6vw, 5rem) 5vw 1.5rem;
+  padding: 0 0 1.5rem;
   display: flex;
   flex-direction: column;
 }
+
+/* The board's header row: four readings, edge to edge, ruled top and bottom. It is a
+   <dl> because that is what it is — four label/value pairs — and a screen reader then
+   announces "Status: Open to internships" rather than two loose fragments.
+
+   The rule above it doubles as the seam under the site header. */
+.board-status {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  /* Its own ground. Left transparent, the fixed dot matrix showed through the row and
+     the dots landed between the words as stray marks on the baseline. */
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+.board-status > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.6rem;
+  padding: 0.75rem var(--board-pad);
+}
+.board-status > div + div {
+  border-top: 1px solid var(--line);
+}
+.board-status dt {
+  color: var(--muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.board-status dd {
+  margin: 0;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+/* The one amber on the board's header row, and the only one above the fold: the site
+   says it wants a person before it says anything else. */
+.board-status-signal dd,
+.board-status-signal dd a {
+  color: var(--signal-ink);
+}
+.board-status-signal a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* A 12px mono line is a small target; the padding takes the hit area past 44px
+     without moving the baseline it sits on. */
+  padding: 0.75rem 0;
+  margin: -0.75rem 0;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.board-status-signal a:hover {
+  border-bottom-color: currentColor;
+}
 .hero-grid {
   display: grid;
+  padding: clamp(2.5rem, 5vw, 4.5rem) var(--board-pad) clamp(2rem, 4vw, 3.5rem);
   gap: clamp(2.5rem, 5vw, 4rem);
   /* Was `center`, which floated the shorter column in the middle of a 163px gap at
      2000x890. Both columns now start at the top and the left one closes with the
@@ -556,11 +621,11 @@ h2 em {
   width: clamp(84px, 8vw, 104px);
   aspect-ratio: 1;
   flex: none;
-  border-radius: 50%;
+  /* Square, not a circle: this is the ID photo clipped to the board, and a lone
+     rounded element in a page of hairlines and hard corners reads as an accident. */
   overflow: hidden;
   border: 1px solid var(--line);
   background: var(--surface);
-  /* A face on a light ground needs a little separation or it floats. */
 }
 .portrait img {
   position: absolute;
@@ -3326,10 +3391,17 @@ footer h2,
 
 /* The contents list moved out from under the hero and into the left column, where it
    both fills the dead field and finally sits above the fold. */
+/* The board's bottom edge. This was a stack closing the left column, which read
+   fine but left the right column trailing off into ~360px of empty field below the
+   portrait. Four across and full width, it closes the whole hero and takes that
+   field with it.
+
+   Note the guard in CLAUDE.md: an earlier four-across version of this list broke
+   because bare `nav` rules in the header reached it. Those are scoped now, but keep
+   every rule here behind .hero-index. */
 .hero-index {
   display: block;
-  margin-top: 0.6rem;
-  padding-top: 1.3rem;
+  margin-top: auto;
   border-top: 1px solid var(--line);
 }
 .hero-index ul {
@@ -3349,13 +3421,16 @@ footer h2,
   grid-template-columns: 2.4rem 7rem minmax(0, 1fr);
   align-items: baseline;
   gap: 0 0.9rem;
-  padding: 0.7rem 0;
+  padding: 0.7rem var(--board-pad);
   text-decoration: none;
   color: var(--muted);
-  transition: color 160ms ease;
+  transition:
+    color 160ms ease,
+    background 160ms ease;
 }
 .hero-index a:hover {
   color: var(--ink);
+  background: var(--surface);
 }
 .hero-index a:hover em {
   color: var(--muted);
@@ -3363,6 +3438,7 @@ footer h2,
 .hero-index span {
   font-size: 0.7rem;
   letter-spacing: 0.08em;
+  color: var(--muted);
 }
 .hero-index b {
   color: var(--ink);
@@ -3396,6 +3472,56 @@ footer h2,
   font-weight: 700;
   font-stretch: var(--display-narrow);
   letter-spacing: -0.03em;
+}
+
+/* These live here, after the component, and not in the big min-width:1050px block
+   1400 lines above — that block is authored before .hero-index, so at equal
+   specificity the base rule won and the desktop padding never applied. Same cascade
+   trap as the stale .hero-index block recorded in CLAUDE.md. Keep breakpoint rules
+   for a component next to the component. */
+@media (min-width: 1050px) {
+  /* Four readings across, divided by vertical hairlines rather than horizontal ones —
+     the row reads as one line of instruments instead of four stacked facts. */
+  .board-status {
+    grid-template-columns: auto auto auto minmax(0, 1fr);
+  }
+  .board-status > div {
+    gap: 0 0.7rem;
+    padding: 0.7rem 1.6rem;
+  }
+  .board-status > div:first-child {
+    padding-left: var(--board-pad);
+  }
+  .board-status > div:last-child {
+    justify-content: end;
+    padding-right: var(--board-pad);
+  }
+  .board-status > div + div {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+  .hero-index ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .hero-index li + li {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+  /* Stacked inside each cell rather than three columns across: at a quarter of the
+     width the fixed 2.4rem/7rem/1fr grid put the note on its own line anyway, ragged. */
+  .hero-index a {
+    grid-template-columns: 2.2rem minmax(0, 1fr);
+    padding: 1rem 1.6rem 1.1rem;
+  }
+  .hero-index li:first-child a {
+    padding-left: var(--board-pad);
+  }
+  .hero-index li:last-child a {
+    padding-right: var(--board-pad);
+  }
+  .hero-index em {
+    grid-column: 2;
+  }
 }
 
 @media (max-width: 700px) {

@@ -6,14 +6,15 @@ import { site } from '../data/site';
 import { useHeroMotion } from '../hooks/useHeroMotion';
 
 // The hero shot is a crop of the roster screen, not the whole dashboard: at ~790px the
-// full 1600px screen put its interface type at roughly 8px. The crop was previously cut
-// by hand and its right edge landed mid-card, so A09 read as "X dr" and a "+ Log demand"
-// button was sliced in half — it looked like a rendering bug rather than a crop. It is
-// now cut on real boundaries: all seven station cards and the whole coverage row.
+// full 1600px screen put its interface type at roughly 8px. It is cut on real
+// boundaries — all seven station cards and the whole coverage row — so no card or
+// button is sliced mid-element. index.html preloads this same key; if it changes here,
+// change it there, or the LCP preload fetches an image the page never uses.
 const PROOF_IMAGE = 'pulseops-hero-crop';
 
-// Item 01: two photos, and the second one is the point. The headshot sits at rest;
-// hovering or focusing swaps to him in the snow with his hands on his head.
+// Two photos, and the second one is the point. The headshot sits at rest; hovering or
+// focusing swaps to him in the snow with his hands on his head. Presence is read from
+// the manifest rather than caught with onError, so a missing master costs no request.
 const PORTRAIT = 'portrait';
 const PORTRAIT_ALT = 'portrait-fun';
 const hasPortrait = Boolean(images[PORTRAIT]);
@@ -26,7 +27,7 @@ const CONTENTS = [
   { id: 'notes', n: '04', label: 'Notes', note: '3 things I got wrong first' },
 ];
 
-/** Item 05: a live clock in Singapore, so "Singapore" is a signal rather than a label. */
+/** A live clock in Singapore, so "Singapore" is a reading rather than a label. */
 function useLocalTime(timeZone) {
   const format = () =>
     new Intl.DateTimeFormat('en-SG', {
@@ -67,21 +68,38 @@ export default function Hero({ onOpenProof }) {
 
   return (
     <section className="hero" id="top" aria-labelledby="hero-title" ref={root}>
+      {/* The board's header row. Full-bleed and ruled top and bottom, so the hero has
+          an edge to start on rather than beginning with a headline floating in space.
+          Four readings, mono, in the same voice the roster demo uses further down —
+          the site's language is introduced before it is explained. */}
+      <dl className="board-status" data-hero="status">
+        <div>
+          <dt>Operator</dt>
+          <dd>Hadi Qusyairi</dd>
+        </div>
+        <div>
+          <dt>Station</dt>
+          <dd>
+            Singapore, <time className="numeric">{localTime}</time>
+          </dd>
+        </div>
+        <div className="board-status-signal">
+          <dt>Status</dt>
+          <dd>
+            <a href={`mailto:${site.email}?subject=Internship%20opportunity`}>
+              <span className="status-dot" aria-hidden="true" />
+              Open to internships
+            </a>
+          </dd>
+        </div>
+        <div>
+          <dt>Shift</dt>
+          <dd>Digital Business &amp; FinTech, Nanyang Polytechnic</dd>
+        </div>
+      </dl>
+
       <div className="hero-grid">
         <div className="hero-lead">
-          <a
-            className="status-pill"
-            data-hero="pill"
-            href={`mailto:${site.email}?subject=Internship%20opportunity`}
-          >
-            <span className="status-dot" aria-hidden="true" />
-            Open to internships
-            <span className="status-sep" aria-hidden="true" />
-            <span className="status-time">
-              Singapore, <time className="numeric">{localTime}</time>
-            </span>
-          </a>
-
           {/* Plain markup: GSAP's SplitText does the splitting at runtime and restores
               the original nodes on revert, so the heading stays one selectable string. */}
           <h1 className="hero-title" id="hero-title" data-hero="title">
@@ -89,9 +107,10 @@ export default function Hero({ onOpenProof }) {
           </h1>
 
           <p className="hero-blurb" data-hero="blurb">
-            I&rsquo;m Hadi Qusyairi, a Digital Business and FinTech student in Singapore. I spent three years
-            on retail floors, in stockrooms and behind a shooting-range equipment counter, watching where work
-            actually gets stuck. Now I build the software that unsticks it.
+            I&rsquo;m Hadi Qusyairi. I spent three years on retail floors, in stockrooms and behind a
+            shooting-range equipment counter, watching where work actually gets stuck. It is almost never the
+            job itself. It is the ten minutes between one person finishing and the next person finding out.
+            Now I build the software that closes those ten minutes.
           </p>
 
           <div className="hero-actions" data-hero="actions">
@@ -112,24 +131,6 @@ export default function Hero({ onOpenProof }) {
             </a>{' '}
             — two pages, no buzzwords.
           </p>
-
-          {/* Item 08 (revised): this contents list used to sit under the whole hero,
-              which put it below the fold on a 890px screen — a table of contents nobody
-              saw. It now closes the left column, which also fills the 163px of dead
-              field the two-column grid was leaving under the résumé line. */}
-          <nav className="hero-index" aria-label="What's on this page" data-hero="index">
-            <ul>
-              {CONTENTS.map(({ id, n, label, note }) => (
-                <li key={id}>
-                  <a href={`#${id}`}>
-                    <span className="numeric">{n}</span>
-                    <b>{label}</b>
-                    <em>{note}</em>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
         </div>
 
         <div className="hero-proof">
@@ -166,7 +167,7 @@ export default function Hero({ onOpenProof }) {
                     sizes="104px"
                     loading="eager"
                   />
-                  {/* Item 16: one hover on the site that surprises you. */}
+                  {/* The one hover on the site that surprises you. */}
                   {hasPortraitAlt ? (
                     <Picture
                       className="portrait-alt"
@@ -193,6 +194,23 @@ export default function Hero({ onOpenProof }) {
           </div>
         </div>
       </div>
+
+      {/* The board's bottom edge, and its index. This used to be a stack closing the
+          left column, which worked but left the right column trailing off into ~360px
+          of empty field. Four across, full width, it closes the whole hero instead. */}
+      <nav className="hero-index" aria-label="What's on this page" data-hero="index">
+        <ul>
+          {CONTENTS.map(({ id, n, label, note }) => (
+            <li key={id}>
+              <a href={`#${id}`}>
+                <span className="numeric">{n}</span>
+                <b>{label}</b>
+                <em>{note}</em>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </section>
   );
 }

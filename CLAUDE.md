@@ -89,6 +89,16 @@ var(--bg)`, which swapped with the theme and rendered a pale slab with 1.00:1 te
   contrast check while sitting at 2.33:1. If text should be quieter, give it
   `--muted`. Dimming a _disabled_ row is not an exemption either — the reason text on
   a blocked roster row is the most useful thing on it.
+- **A signal colour is a fill with its own ink, or it is nothing.** Never lay a
+  `color-mix()` of a signal _under_ text that was coloured for a different ground.
+  The assigned roster row used `color-mix(--resolved-fill 22%, transparent)`, which
+  composites to an olive `#515F3A` on the dark board and put six elements in that row
+  at 2.61:1. The lift is neutral now; the lime lives in the chips, which carry their
+  own ink.
+- **There is no usable text dim on this site.** `--muted` is 5.47:1 in light, so any
+  opacity below about 0.9 fails and anything above it is invisible. Rows that go
+  inert say so structurally — the chosen row lifts, and the inert rows lose their
+  Assign control — not by fading.
 - `--line` is a decorative hairline and is deliberately faint (1.2–1.8:1). Anything
   whose border is the **only** boundary of a control takes `--line-interactive`,
   held at ≥3:1 for WCAG 1.4.11.

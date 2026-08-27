@@ -2677,10 +2677,12 @@ picture {
   color: var(--invert-ink);
   font-size: 0.78rem;
 }
+/* --invert-*, not --ink/--bg: the bar is a fixed dark ground, so the themed pair put
+   a near-black chip on a near-black bar in light mode and the unit code disappeared. */
 .roster-unit {
   padding: 0.2rem 0.5rem;
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--invert-ink);
+  color: var(--invert-bg);
   font-weight: 700;
   letter-spacing: 0.06em;
   font-variant-numeric: tabular-nums;
@@ -2689,30 +2691,101 @@ picture {
   color: var(--invert-muted);
   letter-spacing: 0.04em;
 }
+/* ── The one moment on this site where colour changes meaning ──────────────
+   Amber while the shift is unresolved, lime the instant somebody decides. The
+   fills are fixed-role, so this reads identically on the board and on the printed
+   sheet — a bright chip with dark ink, never a tint that has to survive a theme. */
+.roster-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-left: auto;
+}
+.roster-state-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.28rem 0.6rem;
+  background: var(--signal-fill);
+  color: var(--signal-on-fill);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.roster-state-dot {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+.roster-demo.is-resolved .roster-state-chip {
+  background: var(--resolved-fill);
+  color: var(--resolved-on-fill);
+}
+/* The demo's own frame carries the state too, so the change is visible from the
+   corner of the eye even if you were reading a row rather than the bar. */
+.roster-demo {
+  border-color: var(--signal-fill);
+  transition: border-color 420ms var(--ease);
+}
+.roster-demo.is-resolved {
+  border-color: var(--resolved-fill);
+}
 .roster-coverage {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  margin-left: auto;
   color: var(--invert-ink);
   letter-spacing: 0.04em;
 }
 .roster-coverage b {
   font-size: 1rem;
 }
-.roster-coverage-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--signal-fill);
-  transition:
-    background 320ms var(--ease),
-    box-shadow 320ms var(--ease);
-}
-/* Item 10: the shift resolving is the payoff for the click. */
-.roster-coverage.is-full .roster-coverage-dot {
-  background: var(--resolved-fill);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--resolved-fill) 28%, transparent);
+
+/* CSS-only, and therefore gated once rather than twice: this fires from a class and
+   a React key, not a timer, so `prefers-reduced-motion` in CSS is the whole gate.
+   The rule in CLAUDE.md about gating twice is about JS-driven motion — a media query
+   cannot cancel a setTimeout, but it can cancel this. */
+@media (prefers-reduced-motion: no-preference) {
+  .roster-state-chip {
+    animation: state-flip 520ms var(--ease) both;
+  }
+  .roster-demo.is-resolved .roster-state-dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    animation: state-ring 700ms var(--ease) both;
+  }
+  @keyframes state-flip {
+    0% {
+      transform: scale(0.86);
+      opacity: 0;
+    }
+    55% {
+      transform: scale(1.06);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes state-ring {
+    from {
+      transform: scale(0.6);
+      opacity: 1;
+    }
+    to {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
 }
 
 /* Item 11: rows that look pressable at rest. */
@@ -2744,18 +2817,32 @@ picture {
   color: var(--signal-on-fill);
 }
 
-/* Item 10: the chosen row settles, everything else steps back. */
+/* The chosen row settles and everything else steps back — but neither effect is
+   allowed to be paid for in contrast.
+
+   The row fill used to be `color-mix(--resolved-fill 22%, transparent)`. Over the
+   dark board that composites to #515F3A, an olive that is lighter than the ground
+   but nowhere near light enough to carry --muted text: six elements in the assigned
+   row measured 2.61:1. A signal colour is a fill with its own ink or it is nothing;
+   it is never a tint laid under text that was coloured for a different ground.
+
+   The lift is now neutral, and the lime lives where it has its own ink — the
+   Assigned chip and the state chip in the bar.
+
+   The dim is gone entirely. It was 0.4, which put every remaining row at ~2.4:1;
+   0.78 was still 3.10. There is no dim that both reads as a dim and keeps --muted
+   above 4.5:1 — the baseline is 5.47 in light, so anything below about 0.9 fails and
+   anything above it is invisible. The rows step back because the chosen one steps
+   forward, and because their Assign control goes away once there is nothing to
+   assign. That says "inert" without spending any contrast on saying it. */
 .roster-list li {
-  transition:
-    opacity 320ms var(--ease),
-    filter 320ms var(--ease);
+  transition: background 320ms var(--ease);
 }
-.roster-list li.is-dimmed {
-  opacity: 0.4;
-  filter: saturate(0.5);
+.roster-list li.is-dimmed .roster-action {
+  visibility: hidden;
 }
 .roster-list li.is-chosen button {
-  background: color-mix(in srgb, var(--resolved-fill) 22%, transparent);
+  background: var(--surface-raised);
 }
 .roster-list li.is-chosen .roster-action {
   background: var(--resolved-fill);

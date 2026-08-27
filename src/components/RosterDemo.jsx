@@ -93,19 +93,33 @@ export default function RosterDemo({ scenario = 'clean' }) {
 
   return (
     <div className={`roster-demo${chosen ? ' is-resolved' : ''}`}>
-      {/* Item 11: an instrument reads as an instrument. The unit, the window and the
-          live coverage sit in a status bar, the way they would in the real product. */}
+      {/* An instrument reads as an instrument. The unit, the window and the live
+          coverage sit in a status bar, the way they would in the real product.
+
+          The state chip is the loudest thing on the site, and it is the only place
+          where colour changes meaning rather than just carrying it: amber while the
+          shift is unresolved, lime the moment somebody decides. Everything else on
+          the page has been drained of colour so that this one transition lands.
+
+          One role="status" wraps both the word and the count, so a screen reader
+          announces "Resolved, 3 of 3 crewed" as a single change rather than racing
+          two live regions against each other. */}
       <div className="roster-bar">
         <span className="roster-unit">{SHIFT.code}</span>
         <span className="roster-when">
           {SHIFT.day} · {SHIFT.window}
         </span>
-        <span className={`roster-coverage${chosen ? ' is-full' : ''}`} role="status">
-          <span className="roster-coverage-dot" aria-hidden="true" />
-          <b className="numeric roster-count" key={crewed}>
-            {crewed}
-          </b>{' '}
-          of {SHIFT.seats} crewed
+        <span className="roster-state" role="status">
+          <span className="roster-state-chip" key={chosen ? 'resolved' : 'open'}>
+            <span className="roster-state-dot" aria-hidden="true" />
+            {chosen ? 'Resolved' : 'Unresolved'}
+          </span>
+          <span className="roster-coverage">
+            <b className="numeric roster-count" key={crewed}>
+              {crewed}
+            </b>{' '}
+            of {SHIFT.seats} crewed
+          </span>
         </span>
       </div>
 

@@ -10,6 +10,7 @@ import Colophon from './components/Colophon';
 import Notes from './components/Notes';
 import ToTop from './components/ToTop';
 import RosterDemo from './components/RosterDemo';
+import SectionLabel from './components/SectionLabel';
 import SplitHeading from './components/SplitHeading';
 import Icon from './components/Icon';
 import { projects, getProject } from './data/projects';
@@ -272,7 +273,7 @@ export default function App() {
         <section className="section demo-section" id="try" aria-labelledby="try-heading">
           <div className="demo-inner" data-reveal>
             <div className="demo-copy">
-              <p className="section-label">Rather than tell you</p>
+              <SectionLabel code="TRY">Rather than tell you</SectionLabel>
               <h2 id="try-heading">The decision my software exists to&nbsp;support.</h2>
               <p>
                 Every project on this site started as somebody&rsquo;s awkward Tuesday. This is one of them,
@@ -286,9 +287,9 @@ export default function App() {
         {/* Project cards share one data-backed structure so claims stay consistent. */}
         <section className="section work-section" id="work" aria-labelledby="work-title">
           <div className="section-intro">
-            <p className="section-label" data-reveal>
+            <SectionLabel code="WRK" reveal>
               Selected work · 2024 to 2026
-            </p>
+            </SectionLabel>
             <SplitHeading
               id="work-title"
               text="Projects built around"
@@ -331,9 +332,9 @@ export default function App() {
 
         <section className="section process-section" id="process" aria-labelledby="process-title">
           <div className="section-intro compact">
-            <p className="section-label" data-reveal>
+            <SectionLabel code="PRC" reveal>
               How I work — when it goes well
-            </p>
+            </SectionLabel>
             <SplitHeading
               id="process-title"
               text="From messy process to"
@@ -361,7 +362,7 @@ export default function App() {
         <section className="section skills-section" id="skills" aria-labelledby="skills-title">
           <div className="skills-shell">
             <div className="skills-aside" data-reveal>
-              <p className="section-label">Technical toolkit</p>
+              <SectionLabel code="SKL">Technical toolkit</SectionLabel>
               <h2 id="skills-title">
                 Skills I use to <em>ship and explain.</em>
               </h2>
@@ -389,9 +390,9 @@ export default function App() {
 
       <footer id="contact">
         <div className="footer-top">
-          <p className="section-label" data-reveal>
+          <SectionLabel code="CTC" reveal>
             Let’s connect
-          </p>
+          </SectionLabel>
           <SplitHeading
             text="Looking for someone who can understand the process"
             emphasis="and build the tool?"

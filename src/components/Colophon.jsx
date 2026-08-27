@@ -1,5 +1,6 @@
 import Icon from './Icon';
 import { site } from '../data/site';
+import SectionLabel from './SectionLabel';
 
 // Item 22 (round two): nothing told a visitor what this site is made of, why it looks
 // the way it does, or what its author has opinions about. That is cheap to write and
@@ -13,7 +14,7 @@ export default function Colophon() {
       </a>
 
       <header className="colophon-head">
-        <p className="section-label">Colophon</p>
+        <SectionLabel code="CLP">Colophon</SectionLabel>
         <h1>How this site is put together</h1>
         <p className="colophon-dek">
           A portfolio that argues for caring about process should probably show its own. Everything below is

@@ -60,11 +60,12 @@ export default function Colophon() {
         <h2>Set in</h2>
         <dl>
           <div>
-            <dt>Bricolage Grotesque</dt>
+            <dt>Fraunces</dt>
             <dd>
-              Headlines only. It has a real width axis, and that axis is doing a job: the emphasised phrase in
-              every heading is a narrower cut of the same face, not a colour. Emphasis you can see with the
-              sound off.
+              Headlines only. It carries a WONK axis that swaps in wonky glyph alternates — a single-storey g
+              with a curl, a straight-tailed y — and that axis is doing a job: the emphasised phrase in every
+              heading is the wonky cut of the same face, not a colour. Emphasis you can see with the sound
+              off.
             </dd>
           </div>
           <div>
@@ -84,9 +85,8 @@ export default function Colophon() {
           </div>
         </dl>
         <p className="colophon-note">
-          All three are self-hosted and cut down to the characters this site actually uses. Bricolage is
-          fetched without its optical-size axis, which halves the file for a feature nothing here would have
-          used.
+          All three are self-hosted and subsetted to latin. Fraunces is fetched with weight and WONK only —
+          adding its SOFT axis nearly doubles the file for a difference you cannot see at these sizes.
         </p>
       </section>
 
@@ -97,7 +97,8 @@ export default function Colophon() {
             <dt>Amber</dt>
             <dd>
               Unresolved. Something here is waiting on a person. It is on the availability line at the top of
-              the page and on the shift nobody has crewed yet, and those are the same statement.
+              the page and on the shift nobody has crewed yet, and those are the same statement — the second
+              one is just easier to see.
             </dd>
           </div>
           <div>

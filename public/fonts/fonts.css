@@ -3,43 +3,45 @@
 
    Three faces, three jobs, no overlap:
 
-     Bricolage Grotesque  display only. Variable on weight AND width, and the width
-                          axis is load-bearing — emphasis inside a heading is a
-                          condensed cut, not a colour. That is deliberate: colour on
-                          this site means a signal (amber unresolved, lime resolved),
-                          so it is not available for editorial emphasis.
+     Fraunces             display only. A warm, high-contrast serif with a WONK axis
+                          that swaps in wonky glyph alternates — a single-storey g
+                          with a curl, a straight-tailed y, a different k. That axis
+                          is load-bearing: emphasis inside a heading is the wonky cut,
+                          not a colour. Colour on this site means a signal (amber
+                          unresolved, lime resolved) and is not available for
+                          editorial emphasis.
      IBM Plex Mono        every reading. Times, counts, station codes, stats, the
                           status line. If it is a number the board reports, it is mono.
      Source Sans 3        body copy, and nothing else. Its job is to not be noticed.
 
-   Bricolage is requested WITHOUT its `opsz` axis. Including it cost 131kB for the
-   latin subset against 78kB without, and optical sizing buys nothing here — the
-   display face runs at three fixed sizes whose tracking is set by hand in styles.css.
-   If you re-fetch this font, keep opsz out of the request.
+   Fraunces is requested with `wght` and `WONK` only. Adding its `SOFT` axis takes the
+   latin subset from 37kB to 62kB, and SOFT is close to invisible at the sizes used
+   here; `opsz` is left out for the same reason it was left out of the face this
+   replaced — the display runs at fixed sizes whose tracking is set by hand. Keep both
+   out of the request if you re-fetch it. WONK, however, must stay: it is the emphasis
+   mechanism, and without it every `em` in a heading silently stops doing anything.
 
-   Only two files are preloaded in index.html (Bricolage latin, Plex Mono 400 latin):
+   Only two files are preloaded in index.html (Fraunces latin, Plex Mono 400 latin):
    the headline and the status line are the two things above the fold that must not
    swap. Source Sans 3 is close enough to the system humanist fallback that its swap
    does not move layout, so it is left to `font-display`. */
 
 @font-face {
-  font-family: 'Bricolage Grotesque';
+  font-family: 'Fraunces';
   font-style: normal;
-  font-weight: 400 800;
-  font-stretch: 75% 100%;
+  font-weight: 400 900;
   font-display: swap;
-  src: url('/fonts/Bricolage-var-latin.woff2') format('woff2');
+  src: url('/fonts/Fraunces-var-latin.woff2') format('woff2');
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
     U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: 'Bricolage Grotesque';
+  font-family: 'Fraunces';
   font-style: normal;
-  font-weight: 400 800;
-  font-stretch: 75% 100%;
+  font-weight: 400 900;
   font-display: swap;
-  src: url('/fonts/Bricolage-var-latin-ext.woff2') format('woff2');
+  src: url('/fonts/Fraunces-var-latin-ext.woff2') format('woff2');
   unicode-range:
     U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
     U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;

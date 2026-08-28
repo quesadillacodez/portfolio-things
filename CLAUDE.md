@@ -66,10 +66,11 @@ with its own paper, rules and signal colours. `[data-theme='light']` overrides.
 - **Colour means signal, and there are exactly two.** Amber = unresolved, wants a
   person. Lime = decided. Nothing else on the site is allowed to be coloured;
   hover, active nav and list markers are ink, rule or an ink inversion.
-- **Editorial emphasis is a width, not a colour.** `h1 em` / `h2 em` drop to
-  `font-stretch: var(--display-narrow)` (78%). This replaced a coral italic that
-  measured 2.52:1 on cream. If you find yourself reaching for a colour to emphasise
-  a heading, use the width axis.
+- **Editorial emphasis is a glyph swap, not a colour.** `h1 em` / `h2 em` take
+  `font-variation-settings: var(--display-wonk)` — Fraunces's WONK axis, which
+  substitutes wonky alternates (a single-storey `g` with a curl, a straight-tailed
+  `y`). This replaced a coral italic that measured 2.52:1 on cream. If you find
+  yourself reaching for a colour to emphasise a heading, use the axis.
 - Each signal is **three tokens**, and the split matters:
   `--signal-fill` / `--signal-on-fill` are **fixed-role** — a bright chip with dark
   ink, identical in both themes, and the primary carrier. `--signal-ink` is
@@ -107,15 +108,21 @@ Worst-case measured ratio across `--bg`, `--surface` and `--surface-raised`:
 
 | token            | dark  | light |
 | ---------------- | ----- | ----- |
-| `--ink`          | 13.26 | 15.37 |
-| `--muted`        | 6.01  | 5.47  |
-| `--signal-ink`   | 8.82  | 4.84  |
-| `--resolved-ink` | 13.91 | 5.24  |
+| `--ink`          | 13.84 | 15.42 |
+| `--muted`        | 6.27  | 5.83  |
+| `--signal-ink`   | 9.00  | 5.24  |
+| `--resolved-ink` | 14.21 | 5.23  |
+
+The neutrals are **warm** on purpose — the dark ground is an umber near-black, not
+graphite, and the light ground is a warm white rather than a cream. That is what
+carries the site's temperature; the two signals are not allowed to do it.
 
 ## Type: three faces, three jobs
 
-- **Bricolage Grotesque** — display only. Variable on weight _and_ width; the width
-  axis is the emphasis mechanism (see above).
+- **Fraunces** — display only. A warm, high-contrast serif; its WONK axis is the
+  emphasis mechanism (see above). Fetched with `wght` and `WONK` only: adding `SOFT`
+  takes the latin subset from 37kB to 62kB for a difference invisible at these sizes.
+  WONK must stay in the request, or every `em` in a heading silently stops working.
 - **IBM Plex Mono** — every reading. Times, counts, station codes, stats, section
   labels, the status line. If it names or numbers something, it is mono.
 - **Source Sans 3** — body copy and nothing else. Its job is to not be noticed.
@@ -123,14 +130,10 @@ Worst-case measured ratio across `--bg`, `--surface` and `--surface-raised`:
 All three are self-hosted in `public/fonts/`, subsetted to latin + latin-ext.
 Two things to know:
 
-- **Bricolage is requested without its `opsz` axis.** With it, the latin subset is
-  131kB; without, 78kB. Optical sizing buys nothing here because the display face
-  runs at fixed sizes whose tracking is set by hand. If you re-fetch it, keep `opsz`
-  out of the request.
-- **Only two faces are preloaded** (Bricolage latin, Plex Mono 400 latin) — the
-  headline and the status line are what would visibly swap above the fold. Source
-  Sans 3 is close enough to the system humanist fallback that its swap does not move
-  layout, so it stays off the critical path.
+- **Only two faces are preloaded** (Fraunces latin, Plex Mono 400 latin) — the
+  headline and the availability line are what would visibly swap above the fold.
+  Source Sans 3 is close enough to the system humanist fallback that its swap does
+  not move layout, so it stays off the critical path.
 
 ## Material: one idea
 
@@ -203,13 +206,17 @@ new JS-driven motion must take the hook and honour it.
 - **The hero's big elements arrive by movement, never by fading.** An element at
   `opacity: 0` does not count as painted, so whichever element is largest above the
   fold sets LCP — and if it is fading in behind the deferred 48kB GSAP chunk, LCP is
-  whenever that chunk lands. `useHeroMotion` keeps `title`, `blurb` and `frame`
-  painted and unhidden for exactly this reason; only the small chrome fades, and none
+  whenever that chunk lands. `useHeroMotion` keeps `title`, `claim`, `blurb` and
+  `portrait` painted and unhidden for exactly this reason; only the small chrome fades, and none
   of it is ever the largest element. The title still disappears completely before it
   animates, because `SplitText`'s `mask: 'lines'` gives each line a clipping parent —
   the fade was doing nothing you could see. Fixing these one at a time is
-  whack-a-mole; the largest element changes with the viewport (screenshot at 1440,
-  blurb at 390). Measured: LCP 1284ms → 264ms desktop, 1300ms → 208ms mobile.
+  whack-a-mole; the largest element changes with the viewport (the hero image at
+  1440, the blurb at 390). Measured: LCP 1284ms → 252ms desktop, 1300ms → 188ms
+  mobile.
+- **The portrait hover swap is scoped to `.portrait`, not to a wrapper.** It used to
+  be `.hero-id:hover`, and when that wrapper was removed the selector failed silently
+  — the only symptom is that the best interaction on the site quietly stops working.
 
 - **`nav` is not a safe selector here.** The header's rules were once written as bare
   `nav { display: none }` / `nav { display: flex }`, which reached into the hero

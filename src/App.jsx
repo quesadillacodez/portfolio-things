@@ -263,7 +263,11 @@ export default function App() {
             project's gallery rather than whichever project happens to be first. */}
         {/* Hero no longer takes reducedMotion: GSAP's matchMedia reads the query
             itself and reverts everything it created the moment it stops matching. */}
-        <Hero onOpenProof={() => openImage(getProject('pulseops').visual.images, 1, null)} />
+        {/* The hero's "this week" note is about the NETS XP ledger, so the link under
+            it opens the XP rewards screen — it used to open the PulseOps roster, which
+            is a different project entirely. It pointed there because the hero used to
+            carry a PulseOps screenshot and this handler was written for that. */}
+        <Hero onOpenProof={() => openImage(getProject('nets-pay-together').visual.images, 0, null)} />
 
         {/* Item 09 (round two): this was at screen six of fifteen, below three project
             cards and ~6,000px of scroll, so most visitors never reached the one thing on

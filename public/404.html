@@ -6,15 +6,15 @@
     <title>404 — no unit at this address | Hadi Qusyairi</title>
     <meta name="robots" content="noindex" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#f7f7f5" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#101314" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#faf8f5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#15110e" media="(prefers-color-scheme: dark)" />
 
     <!-- This page used to pull DM Sans and Instrument Serif from fonts.googleapis.com,
          which put a third-party host on the critical path of the one page a visitor
          reaches by accident — and named two faces the site no longer ships. It now
          uses the same self-hosted files as the rest of the site, and preloads the
          two it actually paints with. -->
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/Bricolage-var-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Fraunces-var-latin.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/PlexMono-400-latin.woff2" crossorigin />
     <link rel="stylesheet" href="/fonts/fonts.css" />
     <style>
@@ -26,30 +26,30 @@
          preference into an attribute, so here the media query is the mechanism. */
       :root {
         color-scheme: dark;
-        --bg: #101314;
-        --surface: #171b1c;
-        --ink: #e9ebe8;
-        --muted: #98a1a0;
-        --line: #2b3233;
-        --line-interactive: #6b7677;
+        --bg: #15110e;
+        --surface: #1e1815;
+        --ink: #f2ece4;
+        --muted: #ab9f93;
+        --line: #2a221d;
+        --line-interactive: #7a6d63;
         --signal-ink: #ffb224;
-        --dot: rgba(233, 235, 232, 0.16);
+        --dot: rgba(242, 236, 228, 0.15);
         --dot-size: 22px;
-        --display: 'Bricolage Grotesque', 'Arial Narrow', Helvetica, sans-serif;
+        --display: 'Fraunces', Georgia, 'Times New Roman', serif;
         --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
         --sans: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
       }
       @media (prefers-color-scheme: light) {
         :root {
           color-scheme: light;
-          --bg: #f7f7f5;
-          --surface: #eeeeeb;
-          --ink: #14181a;
-          --muted: #59615f;
-          --line: #dcdcd8;
-          --line-interactive: #85867f;
-          --signal-ink: #96590a;
-          --dot: rgba(20, 24, 26, 0.14);
+          --bg: #faf8f5;
+          --surface: #f1ede7;
+          --ink: #1a1613;
+          --muted: #645950;
+          --line: #e6e0d8;
+          --line-interactive: #8f847a;
+          --signal-ink: #8f5406;
+          --dot: rgba(26, 22, 19, 0.13);
         }
       }
       * {
@@ -106,7 +106,7 @@
       h1 em {
         font-style: normal;
         font-weight: 800;
-        font-stretch: 78%;
+        font-variation-settings: 'WONK' 1;
         letter-spacing: -0.03em;
       }
       p {

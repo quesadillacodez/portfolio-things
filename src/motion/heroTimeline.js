@@ -44,10 +44,10 @@ export function playHero(root) {
 
       const tl = gsap.timeline({ defaults: { ease: 'power3.out', duration: 0.9 } });
 
-      // The board comes online top-down: the status row's readings arrive one field
-      // at a time, the way a real board fills in, and only then does the headline
-      // land. Everything after it is a consequence of the row above it.
-      tl.from(q('[data-hero="status"] > div'), { opacity: 0, duration: 0.45, stagger: 0.07 })
+      // A person arrives, then makes a claim, then shows you their face. The
+      // availability line first because it is the smallest promise, then the sentence,
+      // then everything that supports it.
+      tl.from(q('[data-hero="meta"]'), { y: 10, opacity: 0, duration: 0.5 })
         // No opacity on the words when SplitText is doing the splitting: `mask: 'lines'`
         // already gives each line a clipping parent, so a word travelling in from
         // yPercent 115 is invisible until it clears the mask. Fading it as well changes
@@ -65,21 +65,21 @@ export function playHero(root) {
         )
         // No opacity: this is the largest element above the fold at 390px, so fading
         // it made it the LCP element at 1300ms. It travels instead.
-        .from(q('[data-hero="blurb"]'), { y: 18 }, '-=0.65')
+        .from(q('[data-hero="claim"]'), { y: 20 }, '-=0.7')
+        .from(q('[data-hero="blurb"]'), { y: 18 }, '-=0.75')
         .from(q('[data-hero="actions"] > *'), { y: 16, opacity: 0, duration: 0.6, stagger: 0.08 }, '-=0.6')
         .from(q('[data-hero="aside"]'), { opacity: 0, duration: 0.5 }, '-=0.4')
-        // The frame arrives last and from further away: it is the thing the headline
-        // has just made a claim about. No opacity in this one — it carries the LCP
-        // element, and fading it in cost a second of LCP for an effect the travel and
-        // the scale already deliver. See the note in useHeroMotion.
-        .from(q('[data-hero="frame"]'), { y: 40, scale: 0.97, duration: 1.1 }, '-=1.1')
-        .from(q('[data-hero="id"]'), { y: 20, opacity: 0, duration: 0.7 }, '-=0.7')
+        // The portrait arrives alongside the sentence rather than after it, and never
+        // fades — it is the LCP element now, and an element at opacity 0 does not count
+        // as painted. Travel and scale carry the entrance. See the note in useHeroMotion.
+        .from(q('[data-hero="portrait"]'), { y: 34, scale: 0.98, duration: 1.1 }, '-=1.2')
+        .from(q('[data-hero="now"]'), { y: 20, opacity: 0, duration: 0.7 }, '-=0.7')
         .from(q('[data-hero="index"] li'), { y: 14, opacity: 0, duration: 0.5, stagger: 0.06 }, '-=0.6');
 
       // Scrubbed rather than triggered — the part an IntersectionObserver cannot do.
       // The frame drifts slower than the column beside it, so leaving the hero has a
       // small amount of depth.
-      const frame = root.querySelector('[data-hero="frame"]');
+      const frame = root.querySelector('[data-hero="portrait"]');
       if (frame) {
         gsap.to(frame, {
           yPercent: -8,

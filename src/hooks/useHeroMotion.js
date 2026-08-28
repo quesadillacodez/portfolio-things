@@ -40,15 +40,15 @@ export function useHeroMotion(ref) {
     // An element at opacity:0 does not count as painted, so whichever element is the
     // largest thing above the fold sets LCP — and if it is fading in behind a deferred
     // 48kB chunk, LCP is whenever that chunk lands. Chasing them one at a time is
-    // whack-a-mole: it was the screenshot at 1440 (1272ms), then the blurb at 390
+    // whack-a-mole: it was the hero image at 1440 (1272ms), then the blurb at 390
     // (1300ms), because the largest element changes with the viewport.
     //
-    // So title, blurb and frame are never hidden and never fade. They still arrive:
+    // So title, blurb and portrait are never hidden and never fade. They still arrive:
     // the title's words rise out of the line mask SplitText builds, which conceals
-    // them exactly as well as opacity did, and the blurb and frame travel in. Only the
-    // small chrome — status row, buttons, aside, ID block, index — fades, and none of
-    // it is ever the largest element on screen.
-    const KEEP_PAINTED = ['frame', 'title', 'blurb'];
+    // them exactly as well as opacity did, and the blurb and portrait travel in. Only
+    // the small chrome — availability line, buttons, aside, this-week note, index —
+    // fades, and none of it is ever the largest element on screen.
+    const KEEP_PAINTED = ['portrait', 'title', 'claim', 'blurb'];
     const hidden = root.querySelectorAll(
       `[data-hero]${KEEP_PAINTED.map((name) => `:not([data-hero='${name}'])`).join('')}`,
     );

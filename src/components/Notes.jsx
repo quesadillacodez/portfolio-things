@@ -1,5 +1,6 @@
 import Icon from './Icon';
 import { notes } from '../data/notes';
+import SectionLabel from './SectionLabel';
 
 const shortDate = (iso) =>
   new Date(iso).toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -8,9 +9,9 @@ export default function Notes() {
   return (
     <section className="section notes-section" id="notes" aria-labelledby="notes-title">
       <div className="section-intro compact">
-        <p className="section-label" data-reveal>
+        <SectionLabel code="NTS" reveal>
           Notes
-        </p>
+        </SectionLabel>
         <h2 id="notes-title" data-reveal>
           Things I got wrong <em>the first time.</em>
         </h2>

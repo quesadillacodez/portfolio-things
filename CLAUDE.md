@@ -58,17 +58,90 @@ zero. Two things to know:
 
 ## Theming: three states, not two
 
-The site supports light, dark, and an inverted band that must stay dark in both.
+The site is an operations board. **Dark is the authored state** — `:root` carries it —
+and light is not that board inverted but a separate design, a printed handover sheet
+with its own paper, rules and signal colours. `[data-theme='light']` overrides.
 
 - Style through tokens. Never put a colour's only definition inside `[data-theme]`.
-- `--invert-*` tokens are **fixed-role**: the inverted band is always a dark ground
-  with light text. This exists because it used to be `background: var(--ink);
-color: var(--bg)`, which swapped with the theme and rendered a cream slab with
-  1.00:1 text in dark mode.
-- `--coral` is the accessible label colour (4.5:1 on cream); `--coral-display` is the
-  brand colour for headline-sized text. Small text takes `--coral`, always.
-- `--progress` and `--focus` are separate tokens for the same reason: the lime accent
-  only has contrast on a dark ground, so it cannot be the progress bar in light mode.
+- **Colour means signal, and there are exactly two.** Amber = unresolved, wants a
+  person. Lime = decided. Nothing else on the site is allowed to be coloured;
+  hover, active nav and list markers are ink, rule or an ink inversion.
+- **Editorial emphasis is a glyph swap, not a colour.** `h1 em` / `h2 em` take
+  `font-variation-settings: var(--display-wonk)` — Fraunces's WONK axis, which
+  substitutes wonky alternates (a single-storey `g` with a curl, a straight-tailed
+  `y`). This replaced a coral italic that measured 2.52:1 on cream. If you find
+  yourself reaching for a colour to emphasise a heading, use the axis.
+- Each signal is **three tokens**, and the split matters:
+  `--signal-fill` / `--signal-on-fill` are **fixed-role** — a bright chip with dark
+  ink, identical in both themes, and the primary carrier. `--signal-ink` is
+  per-theme, for signal-tinted _text_ on the page ground: amber has to go to a burnt
+  `#96590a` on paper to clear 4.5:1, and lime cannot be text on paper at all.
+  **Never use a `-fill` value as text**, in either theme.
+- `--invert-*` tokens are fixed-role for the same reason: the inverted band is always
+  a dark ground with light text. It used to be `background: var(--ink); color:
+var(--bg)`, which swapped with the theme and rendered a pale slab with 1.00:1 text.
+  **Everything inside `.process-section` takes `--invert-*`, including one level
+  down** — `.process-grid span` was on plain `--muted` and measured 2.93:1 on the
+  band in light mode.
+- `--progress` and `--focus` stay separate tokens because lime only has contrast on
+  a dark ground, so it cannot be the progress bar in light mode.
+- **`opacity` is not a colour.** Five rules dimmed text with `opacity` between 0.55
+  and 0.85; `getComputedStyle(el).color` cannot see that, so they passed every naive
+  contrast check while sitting at 2.33:1. If text should be quieter, give it
+  `--muted`. Dimming a _disabled_ row is not an exemption either — the reason text on
+  a blocked roster row is the most useful thing on it.
+- **A signal colour is a fill with its own ink, or it is nothing.** Never lay a
+  `color-mix()` of a signal _under_ text that was coloured for a different ground.
+  The assigned roster row used `color-mix(--resolved-fill 22%, transparent)`, which
+  composites to an olive `#515F3A` on the dark board and put six elements in that row
+  at 2.61:1. The lift is neutral now; the lime lives in the chips, which carry their
+  own ink.
+- **There is no usable text dim on this site.** `--muted` is 5.47:1 in light, so any
+  opacity below about 0.9 fails and anything above it is invisible. Rows that go
+  inert say so structurally — the chosen row lifts, and the inert rows lose their
+  Assign control — not by fading.
+- `--line` is a decorative hairline and is deliberately faint (1.2–1.8:1). Anything
+  whose border is the **only** boundary of a control takes `--line-interactive`,
+  held at ≥3:1 for WCAG 1.4.11.
+
+Worst-case measured ratio across `--bg`, `--surface` and `--surface-raised`:
+
+| token            | dark  | light |
+| ---------------- | ----- | ----- |
+| `--ink`          | 13.84 | 15.42 |
+| `--muted`        | 6.27  | 5.83  |
+| `--signal-ink`   | 9.00  | 5.24  |
+| `--resolved-ink` | 14.21 | 5.23  |
+
+The neutrals are **warm** on purpose — the dark ground is an umber near-black, not
+graphite, and the light ground is a warm white rather than a cream. That is what
+carries the site's temperature; the two signals are not allowed to do it.
+
+## Type: three faces, three jobs
+
+- **Fraunces** — display only. A warm, high-contrast serif; its WONK axis is the
+  emphasis mechanism (see above). Fetched with `wght` and `WONK` only: adding `SOFT`
+  takes the latin subset from 37kB to 62kB for a difference invisible at these sizes.
+  WONK must stay in the request, or every `em` in a heading silently stops working.
+- **IBM Plex Mono** — every reading. Times, counts, station codes, stats, section
+  labels, the status line. If it names or numbers something, it is mono.
+- **Source Sans 3** — body copy and nothing else. Its job is to not be noticed.
+
+All three are self-hosted in `public/fonts/`, subsetted to latin + latin-ext.
+Two things to know:
+
+- **Only two faces are preloaded** (Fraunces latin, Plex Mono 400 latin) — the
+  headline and the availability line are what would visibly swap above the fold.
+  Source Sans 3 is close enough to the system humanist fallback that its swap does
+  not move layout, so it stays off the critical path.
+
+## Material: one idea
+
+A dot matrix, at `--dot-size` (22px), at low opacity. On the dark board it is the
+phosphor grid; on paper it is the printer's grain. It appears in exactly three
+places — the page ground, section boundaries, and the surface the pointer lights up.
+There is no second material. Hard corners, hairline rules, and no soft drop shadows:
+the one remaining `box-shadow` is a ring on a lit dot, not a shadow.
 
 ## Routes
 
@@ -96,13 +169,31 @@ Every animation is gated twice — once in CSS via `prefers-reduced-motion`, and
 JavaScript via `useReducedMotion`. CSS alone cannot switch off a `setTimeout`, so any
 new JS-driven motion must take the hook and honour it.
 
-- **Two motion systems, on purpose.** `useReveal` runs one shared
-  `IntersectionObserver` for every `[data-reveal]` element — the ~40 one-shot entrances
-  down the page, where there is nothing to orchestrate. Add the attribute; do not add
-  another observer. **GSAP owns the hero only**: one timeline where each element
-  arrives because the previous one landed, plus a scroll-scrubbed drift an observer
-  cannot express. Do not migrate the rest of the page to GSAP for consistency's sake —
-  the observer is cheaper and already correct.
+- **Two motion systems, on purpose.** The ~40 one-shot entrances down the page are
+  `[data-reveal]`. Add the attribute; do not add another observer. **GSAP owns the
+  hero only**: one timeline where each element arrives because the previous one
+  landed, plus a scroll-scrubbed drift nothing else can express. Do not migrate the
+  rest of the page to GSAP for consistency's sake.
+- **`[data-reveal]` has four paths and all four have to be checked.** Where the
+  browser supports `animation-timeline: view()` and motion is allowed, the entrance is
+  a scroll timeline and no JavaScript runs at all — `useReveal` feature-detects and
+  returns early. The base rule starts elements at `opacity: 0`, which is only safe
+  because something always brings them back:
+
+  |                    | motion                | reduced motion                           |
+  | ------------------ | --------------------- | ---------------------------------------- |
+  | scroll timeline    | CSS `@supports` block | reduced-motion block forces `opacity: 1` |
+  | no scroll timeline | `useReveal` observer  | `useReveal` marks all visible at once    |
+
+  The failure mode is a page of invisible text, and it only appears on the
+  combination you did not test. If you touch any one of those rules, re-test all
+  four.
+
+- **One ambient element: the clock.** There used to be two. The pointer-following
+  glow was removed — it said nothing, it could not run for a coarse pointer or under
+  reduced motion, and it cost a custom-property write per frame. The clock says
+  somebody is in Singapore and what time it is there. The dot matrix stays, static:
+  a texture that reacts to the pointer is a texture you keep looking at.
 - **GSAP is a dynamic import.** `src/motion/heroTimeline.js` is loaded by
   `useHeroMotion` at runtime. Statically it put 48kB gzipped in front of first paint,
   a 58% bundle increase; deferred it costs 0.8kB on the critical path.
@@ -112,15 +203,26 @@ new JS-driven motion must take the hook and honour it.
   and guarantees they come back via three routes — reduced motion never hides them at
   all, a 700ms timeout reveals them if the chunk is slow, and a failed import reveals
   them too. If you touch that hook, keep all three.
+- **The hero's big elements arrive by movement, never by fading.** An element at
+  `opacity: 0` does not count as painted, so whichever element is largest above the
+  fold sets LCP — and if it is fading in behind the deferred 48kB GSAP chunk, LCP is
+  whenever that chunk lands. `useHeroMotion` keeps `title`, `claim`, `blurb` and
+  `portrait` painted and unhidden for exactly this reason; only the small chrome fades, and none
+  of it is ever the largest element. The title still disappears completely before it
+  animates, because `SplitText`'s `mask: 'lines'` gives each line a clipping parent —
+  the fade was doing nothing you could see. Fixing these one at a time is
+  whack-a-mole; the largest element changes with the viewport (the hero image at
+  1440, the blurb at 390). Measured: LCP 1284ms → 252ms desktop, 1300ms → 188ms
+  mobile.
+- **The portrait hover swap is scoped to `.portrait`, not to a wrapper.** It used to
+  be `.hero-id:hover`, and when that wrapper was removed the selector failed silently
+  — the only symptom is that the best interaction on the site quietly stops working.
+
 - **`nav` is not a safe selector here.** The header's rules were once written as bare
   `nav { display: none }` / `nav { display: flex }`, which reached into the hero
   contents list — squeezing it into one grid cell on desktop and hiding it entirely
   below 700px. Header rules are scoped `.site-header nav`. Keep component internals
   behind a class.
-- `usePointerGlow` is the site's one ambient element: the 80px grid lights up around
-  the pointer. It writes two custom properties per animation frame and refuses to run
-  for a coarse pointer or under reduced motion, so the CSS is guarded on
-  `:root[data-glow='on']` and needs no fallback.
 - `SplitHeading` splits headings into words for staggered entry. The spaces between
   words are **real text nodes**, not CSS generated content — `::after { content: ' ' }`
   renders visually but is invisible to `innerText`, so the heading copied and was

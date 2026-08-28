@@ -1,8 +1,10 @@
+import SectionLabel from './SectionLabel';
+
 export default function About() {
   return (
     <section className="section about-section" id="about" aria-labelledby="about-title">
       <div className="section-intro compact">
-        <p className="section-label">About</p>
+        <SectionLabel code="ABT">About</SectionLabel>
         <h2 id="about-title">
           Operations first, <em>software second.</em>
         </h2>

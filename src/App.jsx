@@ -10,6 +10,8 @@ import Colophon from './components/Colophon';
 import Notes from './components/Notes';
 import ToTop from './components/ToTop';
 import RosterDemo from './components/RosterDemo';
+import SectionLabel from './components/SectionLabel';
+import NotFound from './components/NotFound';
 import SplitHeading from './components/SplitHeading';
 import Icon from './components/Icon';
 import { projects, getProject } from './data/projects';
@@ -18,7 +20,6 @@ import { getNote } from './data/notes';
 import { useReveal } from './hooks/useReveal';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { useHashRoute } from './hooks/useHashRoute';
-import { usePointerGlow } from './hooks/usePointerGlow';
 
 const skills = [
   {
@@ -47,23 +48,23 @@ const skills = [
 const process = [
   {
     n: '01',
-    title: 'Observe the workflow',
-    body: 'I map who does what, where information changes hands, and which steps create avoidable waiting or errors.',
+    title: 'Watch it go wrong',
+    body: 'Before anything else I find out who hands what to whom, and what the next person does while they wait. The waiting is the problem. The task is usually fine.',
   },
   {
     n: '02',
-    title: 'Model the logic',
-    body: 'I define the data, rules, edge cases, and success criteria before choosing the interface or visualization.',
+    title: 'Write the rules as sentences',
+    body: 'What is allowed, what is forbidden, and what happens exactly at the boundary — in plain English, before a single screen exists. A rule I cannot say out loud is a rule I am about to get wrong in code.',
   },
   {
     n: '03',
-    title: 'Build the smallest useful version',
-    body: 'I connect core actions first, then improve feedback, validation, and readability around actual user tasks.',
+    title: 'Build the smallest thing somebody could use',
+    body: 'One action, end to end, and nothing around it. Everything I would have added early turns out to be a guess, and a guess is cheaper to delete than to maintain.',
   },
   {
     n: '04',
-    title: 'Test the claim',
-    body: 'I separate measured outcomes from projections, collect feedback, and document assumptions that still need validation.',
+    title: 'Say which numbers I measured',
+    body: 'Measured figures and projected ones get labelled differently, including when that makes the projection look worse. A number nobody can trace is a number nobody should believe.',
   },
 ];
 
@@ -120,9 +121,6 @@ export default function App() {
   // Item 08: one observer wakes every `data-reveal` element anywhere on the page.
   useReveal(reducedMotion);
 
-  // Items 03 + 14 (round two): the one ambient element the site commits to.
-  usePointerGlow(reducedMotion);
-
   // A hash route is a same-document navigation, so the browser keeps the scroll
   // position it had on the index — which drops the reader into the middle of a note.
   // Entering a page route starts it at the top; leaving one lets the browser restore.
@@ -160,6 +158,11 @@ export default function App() {
 
   const caseProject = route?.kind === 'case' ? getProject(route.slug) : null;
   const note = route?.kind === 'note' ? getNote(route.slug) : null;
+  // A slug-shaped route that matches nothing. The server cannot answer this with
+  // public/404.html — everything after the `#` never reaches it — so it used to render
+  // the index under a URL claiming to be a case study.
+  const missing =
+    (route?.kind === 'case' && !caseProject?.caseStudy) || (route?.kind === 'note' && !note) ? route : null;
 
   // Pressing the toggle is the only thing that counts as an explicit choice, and the
   // only thing that writes localStorage.
@@ -210,6 +213,8 @@ export default function App() {
       );
     } else if (note) {
       apply(`${note.title} | Hadi Qusyairi`, note.dek, `#/note/${note.slug}`);
+    } else if (missing) {
+      apply('Not found | Hadi Qusyairi', 'No page at this address.', `#/${missing.kind}/${missing.slug}`);
     } else if (route?.kind === 'colophon') {
       apply(
         'Colophon | Hadi Qusyairi',
@@ -219,7 +224,7 @@ export default function App() {
     } else {
       apply(HOME_TITLE, HOME_DESCRIPTION, '');
     }
-  }, [route, caseProject, note]);
+  }, [route, caseProject, note, missing]);
 
   // Item 17: the case study is a route of its own rather than a longer card.
   // Round two: notes (item 17) and the colophon (item 22) are routes too.
@@ -229,6 +234,7 @@ export default function App() {
     )) ||
     (note && <NotePage note={note} />) ||
     (route?.kind === 'colophon' && <Colophon />) ||
+    (missing && <NotFound kind={missing.kind} slug={missing.slug} />) ||
     null;
 
   if (page) {
@@ -257,7 +263,11 @@ export default function App() {
             project's gallery rather than whichever project happens to be first. */}
         {/* Hero no longer takes reducedMotion: GSAP's matchMedia reads the query
             itself and reverts everything it created the moment it stops matching. */}
-        <Hero onOpenProof={() => openImage(getProject('pulseops').visual.images, 1, null)} />
+        {/* The hero's "this week" note is about the NETS XP ledger, so the link under
+            it opens the XP rewards screen — it used to open the PulseOps roster, which
+            is a different project entirely. It pointed there because the hero used to
+            carry a PulseOps screenshot and this handler was written for that. */}
+        <Hero onOpenProof={() => openImage(getProject('nets-pay-together').visual.images, 0, null)} />
 
         {/* Item 09 (round two): this was at screen six of fifteen, below three project
             cards and ~6,000px of scroll, so most visitors never reached the one thing on
@@ -272,7 +282,7 @@ export default function App() {
         <section className="section demo-section" id="try" aria-labelledby="try-heading">
           <div className="demo-inner" data-reveal>
             <div className="demo-copy">
-              <p className="section-label">Rather than tell you</p>
+              <SectionLabel code="TRY">Rather than tell you</SectionLabel>
               <h2 id="try-heading">The decision my software exists to&nbsp;support.</h2>
               <p>
                 Every project on this site started as somebody&rsquo;s awkward Tuesday. This is one of them,
@@ -286,9 +296,9 @@ export default function App() {
         {/* Project cards share one data-backed structure so claims stay consistent. */}
         <section className="section work-section" id="work" aria-labelledby="work-title">
           <div className="section-intro">
-            <p className="section-label" data-reveal>
+            <SectionLabel code="WRK" reveal>
               Selected work · 2024 to 2026
-            </p>
+            </SectionLabel>
             <SplitHeading
               id="work-title"
               text="Projects built around"
@@ -331,13 +341,13 @@ export default function App() {
 
         <section className="section process-section" id="process" aria-labelledby="process-title">
           <div className="section-intro compact">
-            <p className="section-label" data-reveal>
+            <SectionLabel code="PRC" reveal>
               How I work — when it goes well
-            </p>
+            </SectionLabel>
             <SplitHeading
               id="process-title"
-              text="From messy process to"
-              emphasis="usable system."
+              text="Nobody has ever asked me for"
+              emphasis="a piece of software."
               reducedMotion={reducedMotion}
             />
           </div>
@@ -361,7 +371,7 @@ export default function App() {
         <section className="section skills-section" id="skills" aria-labelledby="skills-title">
           <div className="skills-shell">
             <div className="skills-aside" data-reveal>
-              <p className="section-label">Technical toolkit</p>
+              <SectionLabel code="SKL">Technical toolkit</SectionLabel>
               <h2 id="skills-title">
                 Skills I use to <em>ship and explain.</em>
               </h2>
@@ -389,9 +399,9 @@ export default function App() {
 
       <footer id="contact">
         <div className="footer-top">
-          <p className="section-label" data-reveal>
+          <SectionLabel code="CTC" reveal>
             Let’s connect
-          </p>
+          </SectionLabel>
           <SplitHeading
             text="Looking for someone who can understand the process"
             emphasis="and build the tool?"

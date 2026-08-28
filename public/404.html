@@ -3,31 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>404 — nothing rostered here | Hadi Qusyairi</title>
+    <title>404 — no unit at this address | Hadi Qusyairi</title>
     <meta name="robots" content="noindex" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap"
-    />
+    <meta name="theme-color" content="#faf8f5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#15110e" media="(prefers-color-scheme: dark)" />
+
+    <!-- This page used to pull DM Sans and Instrument Serif from fonts.googleapis.com,
+         which put a third-party host on the critical path of the one page a visitor
+         reaches by accident — and named two faces the site no longer ships. It now
+         uses the same self-hosted files as the rest of the site, and preloads the
+         two it actually paints with. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Fraunces-var-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/PlexMono-400-latin.woff2" crossorigin />
+    <link rel="stylesheet" href="/fonts/fonts.css" />
     <style>
+      /* A standalone copy of the tokens rather than an import of styles.css: this page
+         must render from its own two files, and it only needs eleven of them. Values
+         are copied from src/styles.css — if the palette moves, move it here too.
+
+         Unlike the app, this page has no bootstrap script to resolve the system
+         preference into an attribute, so here the media query is the mechanism. */
       :root {
-        color-scheme: light dark;
-        --bg: #f2f0e9;
-        --ink: #101f20;
-        --muted: #586361;
-        --line: #b8b9b1;
-        --accent: #d9ff53;
-        --coral: #ff674d;
+        color-scheme: dark;
+        --bg: #15110e;
+        --surface: #1e1815;
+        --ink: #f2ece4;
+        --muted: #ab9f93;
+        --line: #2a221d;
+        --line-interactive: #7a6d63;
+        --signal-ink: #ffb224;
+        --dot: rgba(242, 236, 228, 0.15);
+        --dot-size: 22px;
+        --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+        --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+        --sans: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
       }
-      @media (prefers-color-scheme: dark) {
+      @media (prefers-color-scheme: light) {
         :root {
-          --bg: #101918;
-          --ink: #f2f0e9;
-          --muted: #a7b0ac;
-          --line: #3d4945;
+          color-scheme: light;
+          --bg: #faf8f5;
+          --surface: #f1ede7;
+          --ink: #1a1613;
+          --muted: #645950;
+          --line: #e6e0d8;
+          --line-interactive: #8f847a;
+          --signal-ink: #8f5406;
+          --dot: rgba(26, 22, 19, 0.13);
         }
       }
       * {
@@ -39,11 +61,11 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        gap: 2rem;
+        gap: 1.6rem;
         padding: 3rem 5vw;
         background: var(--bg);
         color: var(--ink);
-        font-family: 'DM Sans', Arial, sans-serif;
+        font-family: var(--sans);
         line-height: 1.55;
       }
       body::before {
@@ -51,37 +73,68 @@
         position: fixed;
         inset: 0;
         z-index: -1;
-        opacity: 0.25;
-        background-image:
-          linear-gradient(var(--line) 1px, transparent 1px),
-          linear-gradient(90deg, var(--line) 1px, transparent 1px);
-        background-size: 80px 80px;
+        background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+        background-size: var(--dot-size) var(--dot-size);
         mask-image: linear-gradient(to bottom, black, transparent 42rem);
       }
-      .code {
+      /* The board's status line, with nothing on it. */
+      .status {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 1.6rem;
+        padding-bottom: 0.9rem;
+        border-bottom: 1px solid var(--line);
+        font-family: var(--mono);
         font-size: 0.72rem;
-        font-weight: 600;
-        letter-spacing: 0.16em;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--muted);
       }
+      .status b {
+        font-weight: 600;
+        color: var(--signal-ink);
+      }
       h1 {
-        max-width: 16ch;
+        max-width: 15ch;
         margin: 0;
-        font-size: clamp(3rem, 11vw, 8rem);
-        line-height: 0.88;
-        letter-spacing: -0.075em;
-        font-weight: 500;
+        font-family: var(--display);
+        font-size: clamp(2.8rem, 10vw, 7rem);
+        line-height: 0.92;
+        letter-spacing: -0.03em;
+        font-weight: 700;
       }
       h1 em {
-        font-family: 'Instrument Serif', Georgia, serif;
-        color: var(--coral);
+        font-style: normal;
+        font-weight: 800;
+        font-variation-settings: 'WONK' 1;
+        letter-spacing: -0.03em;
       }
       p {
-        max-width: 38rem;
+        max-width: 40rem;
         margin: 0;
         color: var(--muted);
         font-size: 1.05rem;
+      }
+      /* Six empty rows. The board is real, it just has nothing on it. */
+      .empty {
+        margin: 0.4rem 0 0;
+        padding: 0;
+        list-style: none;
+        max-width: 40rem;
+        border-top: 1px solid var(--line);
+      }
+      .empty li {
+        display: grid;
+        grid-template-columns: 5rem 1fr;
+        gap: 1rem;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--line);
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        color: var(--muted);
+      }
+      .empty span {
+        color: var(--line-interactive);
       }
       a.button {
         align-self: flex-start;
@@ -94,12 +147,14 @@
         background: var(--ink);
         color: var(--bg);
         text-decoration: none;
+        font-family: var(--mono);
         font-weight: 600;
-        font-size: 0.88rem;
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
       }
       a.button:hover {
-        background: var(--accent);
-        color: #101f20;
+        background: transparent;
+        color: var(--ink);
       }
       a.button:focus-visible {
         outline: 2px solid var(--ink);
@@ -108,12 +163,23 @@
     </style>
   </head>
   <body>
-    <p class="code">Error 404 · unassigned</p>
-    <h1>No shift <em>rostered</em> at this URL.</h1>
-    <p>
-      The page you asked for is not on the schedule. Nothing is broken — this address just does not map to
-      anything. The work, the notes and the résumé are all one click away.
+    <p class="status">
+      <span>Board 404</span> <span>Units on duty <b>0</b></span> <span>Assigned <b>0</b></span>
+      <span>Status <b>no such address</b></span>
     </p>
-    <a class="button" href="/">Back to the command center →</a>
+    <h1>Nothing is <em>rostered</em> here.</h1>
+    <p>
+      This address does not map to anything, which is a different problem from something being broken. The
+      board below is real. It is simply empty, the way a board is at the start of a shift nobody scheduled.
+    </p>
+    <ul class="empty">
+      <li><span>—</span> <span>unassigned</span></li>
+      <li><span>—</span> <span>unassigned</span></li>
+      <li><span>—</span> <span>unassigned</span></li>
+      <li><span>—</span> <span>unassigned</span></li>
+      <li><span>—</span> <span>unassigned</span></li>
+      <li><span>—</span> <span>unassigned</span></li>
+    </ul>
+    <a class="button" href="/">Back to a board with work on it →</a>
   </body>
 </html>

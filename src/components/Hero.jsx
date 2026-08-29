@@ -93,14 +93,14 @@ export default function Hero({ onOpenProof }) {
           </h1>
 
           <p className="hero-claim" data-hero="claim">
-            The delay is never the task. <em>It&rsquo;s the handover.</em>
+            The delay is rarely in the work. <em>It&rsquo;s in the handover.</em>
           </p>
 
           <p className="hero-blurb" data-hero="blurb">
-            Three years on retail floors, in stockrooms and behind a shooting-range equipment counter taught
-            me the same thing in three places: the hold-up is almost never the job, it is the ten minutes
-            between one person finishing and the next person finding out. I build the software that closes
-            those ten minutes.
+            After three years working across retail floors, stockrooms, and a shooting-range equipment
+            counter, I kept seeing the same problem: the work would be done, but the next person
+            wouldn&rsquo;t know yet. Those small communication gaps added up. Now I build software to close
+            them.
           </p>
 
           <div className="hero-actions" data-hero="actions">
@@ -118,8 +118,7 @@ export default function Hero({ onOpenProof }) {
             or{' '}
             <a href="/Hadi-Qusyairi-Resume.pdf" download>
               download my résumé
-            </a>{' '}
-            — two pages, no buzzwords.
+            </a>
           </p>
         </div>
 

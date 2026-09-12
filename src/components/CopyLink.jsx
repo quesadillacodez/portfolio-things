@@ -25,7 +25,7 @@ export default function CopyLink({ label = 'Copy link' }) {
   };
 
   return (
-    <button type="button" className="copy-link" onClick={copy}>
+    <button type="button" className="copy-link" onClick={copy} aria-live="polite">
       <Icon name={copied ? 'check' : 'arrow'} size={14} />
       {copied ? 'Copied' : label}
     </button>

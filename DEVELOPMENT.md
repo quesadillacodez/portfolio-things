@@ -1,6 +1,6 @@
-# CLAUDE.md
+# DEVELOPMENT.md
 
-Notes for anyone — human or agent — working on this repo. Read this before editing;
+Notes for developers working on this repo. Read this before editing;
 several of the conventions here exist because the obvious approach was tried and
 broke something.
 

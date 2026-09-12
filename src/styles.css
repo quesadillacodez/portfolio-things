@@ -1510,7 +1510,7 @@ footer h2 {
 /* --muted, not --invert-muted, put these step numbers at 2.93:1 on the band in
    light mode: the band is a fixed dark ground, so a themed token inside it resolves
    against the wrong background. Anything inside .process-section takes --invert-*.
-   This is the same failure CLAUDE.md records for background/color, one level down. */
+   This is the same failure DEVELOPMENT.md records for background/color, one level down. */
 .process-grid span {
   color: var(--invert-muted);
   font-size: 0.75rem;
@@ -2760,7 +2760,7 @@ picture {
 
 /* CSS-only, and therefore gated once rather than twice: this fires from a class and
    a React key, not a timer, so `prefers-reduced-motion` in CSS is the whole gate.
-   The rule in CLAUDE.md about gating twice is about JS-driven motion — a media query
+   The rule in DEVELOPMENT.md about gating twice is about JS-driven motion — a media query
    cannot cancel a setTimeout, but it can cancel this. */
 @media (prefers-reduced-motion: no-preference) {
   .roster-state-chip {
@@ -3402,7 +3402,7 @@ footer h2,
    portrait. Four across and full width, it closes the whole hero and takes that
    field with it.
 
-   Note the guard in CLAUDE.md: an earlier four-across version of this list broke
+   Note the guard in DEVELOPMENT.md: an earlier four-across version of this list broke
    because bare `nav` rules in the header reached it. Those are scoped now, but keep
    every rule here behind .hero-index. */
 .hero-index {
@@ -3500,7 +3500,7 @@ footer h2,
 /* These live here, after the component, and not in the big min-width:1050px block
    1400 lines above — that block is authored before .hero-index, so at equal
    specificity the base rule won and the desktop padding never applied. Same cascade
-   trap as the stale .hero-index block recorded in CLAUDE.md. Keep breakpoint rules
+   trap as the stale .hero-index block recorded in DEVELOPMENT.md. Keep breakpoint rules
    for a component next to the component. */
 @media (min-width: 1050px) {
   .hero-index ul {

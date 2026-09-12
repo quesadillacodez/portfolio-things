@@ -3,7 +3,7 @@
 A map of what lives where, and which file to open for a given change.
 
 This file is navigational only. [`README.md`](README.md) covers what the site is and how to run
-it; [`CLAUDE.md`](CLAUDE.md) covers the conventions and the mistakes already made and fixed. Where
+it; [`DEVELOPMENT.md`](DEVELOPMENT.md) covers the conventions and the mistakes already made and fixed. Where
 they disagree with this file, they win — this is the table of contents, not the rulebook.
 
 ## Layout

@@ -428,11 +428,11 @@ export default function App() {
                 {site.email}
               </span>
             </a>
-            <a href="https://linkedin.com/in/hadi-qusyairi" target="_blank" rel="noreferrer">
+            <a href="https://linkedin.com/in/hadi-qusyairi" target="_blank" rel="noopener noreferrer">
               LinkedIn
             </a>
             {/* Item 20: was a non-clickable span reading "GitHub soon". */}
-            <a href="https://github.com/quesadillacodez" target="_blank" rel="noreferrer">
+            <a href="https://github.com/quesadillacodez" target="_blank" rel="noopener noreferrer">
               GitHub
             </a>
             <a href="/Hadi-Qusyairi-Resume.pdf" download>

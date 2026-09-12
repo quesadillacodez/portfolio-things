@@ -60,7 +60,12 @@ export default function CaseStudy({ project, onOpenImage, reducedMotion }) {
           </dl>
 
           {project.demo && (
-            <a className="button button-primary" href={project.demo} target="_blank" rel="noreferrer">
+            <a
+              className="button button-primary"
+              href={project.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {project.demoNote || 'Live demo'} <Icon name="arrow" />
             </a>
           )}

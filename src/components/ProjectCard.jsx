@@ -181,7 +181,7 @@ export default function ProjectCard({ project, onOpenImage, reducedMotion }) {
             </a>
           )}
           {project.demo && (
-            <a href={project.demo} target="_blank" rel="noreferrer">
+            <a href={project.demo} target="_blank" rel="noopener noreferrer">
               {project.demoNote || 'Live demo'} <Icon name="arrow" />
             </a>
           )}

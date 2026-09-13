@@ -261,3 +261,9 @@ new JS-driven motion must take the hook and honour it.
 - `artifacts: []` is empty on every project by design. These are real process
   artifacts (whiteboards, rejected layouts) and must not be invented.
 - Three of five projects have no demo or source link.
+
+## September 2026 routing and launch update
+
+The earlier hash-routing description is historical. `src/lib/routes.js` now defines real document URLs and `scripts/build-pages.mjs` writes static HTML with per-page metadata and a sitemap after Vite builds. The existing `useHashRoute` hook also accepts legacy hash links. Root-section links must use `/#work` etc. so they work from nested paths. Never add a catch-all rewrite: unknown HTTP paths should retain a real 404.
+
+New utilities: local search, FAQ, email draft composer, privacy/terms pages, and optional consent-gated analytics. No account, database, upload or email-delivery backend exists in this portfolio. Keep those distinctions explicit. Do not claim delivery from a mailto action, invent response deadlines, or publish unsupported testimonials. Run build before tests; tests inspect generated metadata.

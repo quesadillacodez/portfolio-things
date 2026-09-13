@@ -33,10 +33,10 @@ export default function Notes() {
               <span>{note.minutes} min</span>
             </p>
             <h3>
-              <a href={`#/note/${note.slug}`}>{note.title}</a>
+              <a href={`/note/${note.slug}`}>{note.title}</a>
             </h3>
             <p>{note.dek}</p>
-            <a className="notes-read" href={`#/note/${note.slug}`}>
+            <a className="notes-read" href={`/note/${note.slug}`}>
               Read it <Icon name="arrow" size={14} />
             </a>
           </article>

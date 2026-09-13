@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Icon from './Icon';
+import Breadcrumbs from './Breadcrumbs';
 import TiltFrame from './TiltFrame';
 import Picture from './Picture';
 import RosterDemo from './RosterDemo';
@@ -29,7 +30,8 @@ export default function CaseStudy({ project, onOpenImage, reducedMotion }) {
   return (
     <article className="case">
       <div className="case-inner">
-        <a className="case-back" href="#work">
+        <Breadcrumbs title={project.title} section="Work" />
+        <a className="case-back" href="/#work">
           <span aria-hidden="true">←</span> All work
         </a>
 
@@ -90,10 +92,12 @@ export default function CaseStudy({ project, onOpenImage, reducedMotion }) {
         {/* The index already carries the clean version of this. Meeting the identical
             puzzle twice is a re-run, so the case study gets the one where the rules run
             out and a person has to decide. */}
-        <section className="case-block case-block-wide">
-          <h2>Where the rules run out</h2>
-          <RosterDemo scenario="hard" />
-        </section>
+        {project.slug === 'pulseops' && (
+          <section className="case-block case-block-wide">
+            <h2>Where the rules run out</h2>
+            <RosterDemo scenario="hard" />
+          </section>
+        )}
 
         {/* The index card shows the first two of these. This is the whole argument —
             the reader is here because they wanted it. */}
@@ -167,10 +171,13 @@ export default function CaseStudy({ project, onOpenImage, reducedMotion }) {
         </section>
 
         <footer className="case-foot">
-          <a className="button button-quiet" href="#work">
+          <a className="button button-quiet" href="/#work">
             <span aria-hidden="true">←</span> Back to all work
           </a>
-          <a className="button button-primary" href="mailto:hadiqbz@gmail.com?subject=PulseOps">
+          <a
+            className="button button-primary"
+            href={`mailto:hadiqbz@gmail.com?subject=${encodeURIComponent(project.title)}`}
+          >
             Ask me about this project <Icon name="arrow" />
           </a>
         </footer>

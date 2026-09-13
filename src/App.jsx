@@ -14,6 +14,12 @@ import SectionLabel from './components/SectionLabel';
 import NotFound from './components/NotFound';
 import SplitHeading from './components/SplitHeading';
 import Icon from './components/Icon';
+import FAQ from './components/FAQ';
+import InfoPage from './components/InfoPage';
+import ContactComposer from './components/ContactComposer';
+import PrivacyChoices from './components/PrivacyChoices';
+import { readPreference, savePreference } from './lib/storage';
+import { pages, siteUrl } from './lib/routes';
 import { projects, getProject } from './data/projects';
 import { site } from './data/site';
 import { getNote } from './data/notes';
@@ -81,11 +87,6 @@ const KONAMI = [
   'a',
 ];
 
-const SITE_URL = 'https://portfolio-things-eight.vercel.app/';
-const HOME_TITLE = 'Hadi Qusyairi | FinTech & Data Builder';
-const HOME_DESCRIPTION =
-  'Digital Business and FinTech student in Singapore. EMS workforce command center, a NETS loyalty engine, and analytics built around real operational decisions.';
-
 export default function App() {
   // Item 46: this used to fall back to 'light', so a visitor whose OS is set to dark
   // got a cream site no matter what — prefers-color-scheme was never consulted. The
@@ -93,7 +94,7 @@ export default function App() {
   // read it back rather than recomputing and risking a mismatch.
   const [theme, setTheme] = useState(
     () =>
-      localStorage.getItem('theme') ||
+      readPreference('theme') ||
       document.documentElement.dataset.theme ||
       (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
   );
@@ -111,9 +112,11 @@ export default function App() {
   // Item 46 continued: if the visitor has never pressed the toggle, follow their OS
   // when it changes rather than freezing whatever it was at first load.
   useEffect(() => {
-    if (localStorage.getItem('theme')) return undefined;
+    if (readPreference('theme')) return undefined;
     const query = window.matchMedia('(prefers-color-scheme: dark)');
-    const onChange = (event) => setTheme(event.matches ? 'dark' : 'light');
+    const onChange = (event) => {
+      if (!readPreference('theme')) setTheme(event.matches ? 'dark' : 'light');
+    };
     query.addEventListener('change', onChange);
     return () => query.removeEventListener('change', onChange);
   }, []);
@@ -161,15 +164,14 @@ export default function App() {
   // A slug-shaped route that matches nothing. The server cannot answer this with
   // public/404.html — everything after the `#` never reaches it — so it used to render
   // the index under a URL claiming to be a case study.
-  const missing =
-    (route?.kind === 'case' && !caseProject?.caseStudy) || (route?.kind === 'note' && !note) ? route : null;
+  const missing = route?.kind === 'missing' ? route : null;
 
   // Pressing the toggle is the only thing that counts as an explicit choice, and the
   // only thing that writes localStorage.
   const toggleTheme = () =>
     setTheme((value) => {
       const next = value === 'light' ? 'dark' : 'light';
-      localStorage.setItem('theme', next);
+      savePreference('theme', next);
       return next;
     });
 
@@ -185,46 +187,31 @@ export default function App() {
     />
   );
 
-  // Item 48: every page route shared as the homepage — the title and OG tags never
-  // moved off the root, so pasting a case study or a note into Slack produced the
-  // index card. They now follow the route and restore on the way back.
+  // Real document URLs also carry these tags in the build output for crawlers.
   useEffect(() => {
-    const set = (selector, value) => {
-      const tag = document.head.querySelector(selector);
-      if (tag) tag.setAttribute('content', value);
-    };
-    const apply = (title, description, path) => {
-      const url = `${SITE_URL}${path}`;
-      document.title = title;
-      set('meta[property="og:title"]', title);
-      set('meta[name="twitter:title"]', title);
-      set('meta[property="og:description"]', description);
-      set('meta[name="twitter:description"]', description);
-      set('meta[name="description"]', description);
-      set('meta[property="og:url"]', url);
-      document.querySelector('link[rel="canonical"]')?.setAttribute('href', url);
-    };
+    const page = route || pages[0];
+    document.title = page.title;
+    for (const [selector, value] of [
+      ['meta[name="description"]', page.description],
+      ['meta[property="og:title"]', page.title],
+      ['meta[property="og:description"]', page.description],
+      ['meta[name="twitter:title"]', page.title],
+      ['meta[name="twitter:description"]', page.description],
+      ['meta[property="og:url"]', siteUrl + page.path],
+      ['meta[name="robots"]', page.noindex ? 'noindex, follow' : 'index, follow'],
+    ])
+      document.head.querySelector(selector)?.setAttribute('content', value);
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', siteUrl + page.path);
+  }, [route]);
 
-    if (caseProject?.caseStudy) {
-      apply(
-        `${caseProject.title} — case study | Hadi Qusyairi`,
-        caseProject.summary,
-        `#/case/${caseProject.slug}`,
-      );
-    } else if (note) {
-      apply(`${note.title} | Hadi Qusyairi`, note.dek, `#/note/${note.slug}`);
-    } else if (missing) {
-      apply('Not found | Hadi Qusyairi', 'No page at this address.', `#/${missing.kind}/${missing.slug}`);
-    } else if (route?.kind === 'colophon') {
-      apply(
-        'Colophon | Hadi Qusyairi',
-        'How this site is built — the type, the tokens, the pipeline and the decisions behind them.',
-        '#/colophon',
-      );
-    } else {
-      apply(HOME_TITLE, HOME_DESCRIPTION, '');
-    }
-  }, [route, caseProject, note, missing]);
+  const utilities = (
+    <>
+      <a className="floating-contact" href="/#contact">
+        Let’s talk <Icon name="arrow" size={14} />
+      </a>
+      <PrivacyChoices path={route?.path || '/'} />
+    </>
+  );
 
   // Item 17: the case study is a route of its own rather than a longer card.
   // Round two: notes (item 17) and the colophon (item 22) are routes too.
@@ -234,6 +221,7 @@ export default function App() {
     )) ||
     (note && <NotePage note={note} />) ||
     (route?.kind === 'colophon' && <Colophon />) ||
+    (['privacy', 'terms', 'thank-you'].includes(route?.kind) && <InfoPage kind={route.kind} />) ||
     (missing && <NotFound kind={missing.kind} slug={missing.slug} />) ||
     null;
 
@@ -244,9 +232,12 @@ export default function App() {
           Skip to content
         </a>
         {header}
-        <main id="main-content">{page}</main>
+        <main id="main-content" tabIndex={-1}>
+          {page}
+        </main>
         <ToTop reducedMotion={reducedMotion} />
         {lightbox}
+        {utilities}
       </>
     );
   }
@@ -258,7 +249,7 @@ export default function App() {
       </a>
       {header}
 
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
         {/* The hero shot is a crop of the PulseOps roster, so enlarging it opens that
             project's gallery rather than whichever project happens to be first. */}
         {/* Hero no longer takes reducedMotion: GSAP's matchMedia reads the query
@@ -363,6 +354,7 @@ export default function App() {
         </section>
 
         <Notes />
+        <FAQ />
 
         {/* Item 25 — breaking the rhythm, second of two.
             The skills section keeps its content but drops the giant heading in favour of
@@ -411,6 +403,7 @@ export default function App() {
             Start a conversation <Icon name="arrow" />
           </a>
         </div>
+        <ContactComposer />
         <div className="footer-bottom">
           {/* Item 18: freshness is a trust signal the site was giving away. */}
           <p>
@@ -439,7 +432,7 @@ export default function App() {
               Résumé
             </a>
             {/* Item 22 */}
-            <a href="#/colophon">Colophon</a>
+            <a href="/colophon">Colophon</a>
             {/* Item 21: the 404 page has the best line on the site and lived at a URL
                 nobody visits on purpose. Now it is reachable. */}
             <a href="/404.html">Lost?</a>
@@ -449,6 +442,7 @@ export default function App() {
 
       <ToTop reducedMotion={reducedMotion} />
       {lightbox}
+      {utilities}
     </>
   );
 }

@@ -1,4 +1,5 @@
 import Icon from './Icon';
+import Breadcrumbs from './Breadcrumbs';
 import CopyLink from './CopyLink';
 import { notes } from '../data/notes';
 import SectionLabel from './SectionLabel';
@@ -13,7 +14,8 @@ export default function NotePage({ note }) {
 
   return (
     <article className="note-page">
-      <a className="case-back" href="#notes">
+      <Breadcrumbs title={note.title} section="Notes" />
+      <a className="case-back" href="/#notes">
         <Icon name="arrow" size={14} /> All notes
       </a>
 
@@ -42,7 +44,7 @@ export default function NotePage({ note }) {
         <div className="note-next">
           <p className="note-next-label">Also written</p>
           {others.map((entry) => (
-            <a key={entry.slug} href={`#/note/${entry.slug}`}>
+            <a key={entry.slug} href={`/note/${entry.slug}`}>
               {entry.title} <Icon name="arrow" size={14} />
             </a>
           ))}

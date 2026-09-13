@@ -110,7 +110,7 @@ export default function Hero({ onOpenProof }) {
             >
               Start a conversation <Icon name="arrow" />
             </a>
-            <a className="button button-quiet" href="#try">
+            <a className="button button-quiet" href="/#try">
               Try the thing I built
             </a>
           </div>
@@ -168,7 +168,7 @@ export default function Hero({ onOpenProof }) {
         <ul>
           {CONTENTS.map(({ id, n, label, note }) => (
             <li key={id}>
-              <a href={`#${id}`}>
+              <a href={`/#${id}`}>
                 <span className="numeric">{n}</span>
                 <b>{label}</b>
                 <em>{note}</em>

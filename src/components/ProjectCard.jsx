@@ -176,7 +176,7 @@ export default function ProjectCard({ project, onOpenImage, reducedMotion }) {
             absence is gone; real links stand on their own. */}
         <div className="project-links">
           {project.caseStudy && (
-            <a className="link-strong" href={`#/case/${project.slug}`}>
+            <a className="link-strong" href={`/case/${project.slug}`}>
               Read the case study <Icon name="arrow" />
             </a>
           )}

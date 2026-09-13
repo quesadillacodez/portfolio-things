@@ -4,7 +4,7 @@ export const site = {
   email: 'hadiqbz@gmail.com',
   linkedin: 'https://linkedin.com/in/hadi-qusyairi',
   github: 'https://github.com/quesadillacodez',
-  lastUpdated: '24 August 2026',
+  lastUpdated: '12 September 2026',
   // Item 05: the hero clock resolves against this rather than the visitor's zone.
   timeZone: 'Asia/Singapore',
 };

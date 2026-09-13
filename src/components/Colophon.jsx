@@ -1,4 +1,5 @@
 import Icon from './Icon';
+import Breadcrumbs from './Breadcrumbs';
 import { site } from '../data/site';
 import SectionLabel from './SectionLabel';
 
@@ -9,7 +10,8 @@ import SectionLabel from './SectionLabel';
 export default function Colophon() {
   return (
     <article className="colophon">
-      <a className="case-back" href="#top">
+      <Breadcrumbs title="Colophon" />
+      <a className="case-back" href="/#top">
         <Icon name="arrow" size={14} /> Back to the site
       </a>
 
@@ -35,8 +37,8 @@ export default function Colophon() {
           <div>
             <dt>Routing</dt>
             <dd>
-              Hash routes, hand-rolled in about forty lines. It means case studies and notes deploy as plain
-              static files anywhere, with no rewrite rules to get wrong.
+              Each case study and note has a real URL and a generated HTML document with its own metadata. Old
+              hash links still work. The build stays static, with no application server.
             </dd>
           </div>
           <div>

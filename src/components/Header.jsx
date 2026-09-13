@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Icon from './Icon';
+import SiteSearch from './SiteSearch';
 
 // Item 09: a 7,600px page gave no sense of position. The bar under the header is
 // driven by CSS `animation-timeline: scroll()` where the browser supports it —
@@ -22,6 +23,8 @@ export default function Header({ theme, onToggleTheme }) {
   const [progress, setProgress] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [active, setActive] = useState('');
+  const menu = useRef(null);
+  const menuButton = useRef(null);
 
   useEffect(() => {
     if (SUPPORTS_SCROLL_TIMELINE) return undefined;
@@ -68,33 +71,43 @@ export default function Header({ theme, onToggleTheme }) {
   // Item 45: the menu overlays the page, so lock the page behind it and let Escape out.
   useEffect(() => {
     if (!menuOpen) return undefined;
-    const onKeyDown = (event) => event.key === 'Escape' && setMenuOpen(false);
+    const panel = menu.current;
+    const trigger = menuButton.current;
+    panel.showModal();
+    const breakpoint = window.matchMedia('(min-width: 700px)');
+    const closeOnDesktop = () => {
+      if (breakpoint.matches) setMenuOpen(false);
+    };
+    breakpoint.addEventListener('change', closeOnDesktop);
     document.body.classList.add('nav-open');
-    window.addEventListener('keydown', onKeyDown);
     return () => {
       document.body.classList.remove('nav-open');
-      window.removeEventListener('keydown', onKeyDown);
+      breakpoint.removeEventListener('change', closeOnDesktop);
+      panel.close();
+      trigger?.focus();
     };
   }, [menuOpen]);
 
   return (
     <>
       <header className="site-header">
-        <a className="brand" href="#top" aria-label="Back to top">
+        <a className="brand" href="/#top" aria-label="Back to top">
           HQ<span>.</span>
         </a>
         <nav aria-label="Main navigation">
           {links.map(({ id, label }) => (
-            <a key={id} href={`#${id}`} aria-current={active === id ? 'true' : undefined}>
+            <a key={id} href={`/#${id}`} aria-current={active === id ? 'true' : undefined}>
               {label}
             </a>
           ))}
         </nav>
 
         <div className="header-actions">
+          <SiteSearch />
           {/* Item 45: below 700px the nav was display:none with nothing in its place. */}
           <button
             className="nav-toggle"
+            ref={menuButton}
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
             aria-expanded={menuOpen}
@@ -121,14 +134,23 @@ export default function Header({ theme, onToggleTheme }) {
       </header>
 
       {menuOpen && (
-        <div className="site-nav-panel" id="mobile-nav">
+        <dialog
+          className="site-nav-panel"
+          id="mobile-nav"
+          ref={menu}
+          aria-label="Mobile navigation"
+          onCancel={() => setMenuOpen(false)}
+        >
+          <button className="mobile-nav-close" type="button" onClick={() => setMenuOpen(false)}>
+            Close menu
+          </button>
           {links.map(({ id, label, number }) => (
-            <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)}>
+            <a key={id} href={`/#${id}`} onClick={() => setMenuOpen(false)}>
               <span>{number}</span>
               {label}
             </a>
           ))}
-        </div>
+        </dialog>
       )}
     </>
   );

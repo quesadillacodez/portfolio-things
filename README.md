@@ -77,3 +77,13 @@ replacing or adding a master.
   be zoomed, panned and swiped on touch.
 - The inverted process band uses fixed-role `--invert-*` tokens rather than swapping
   `--ink` and `--bg`, so it cannot invert into an unreadable slab in dark mode.
+
+## Launch checklist additions
+
+See [the complete 80-entry implementation record](docs/pdf-launch-checklist.md) for additions, existing coverage, and features that do not apply to this static personal portfolio.
+
+`npm run build` now writes real HTML documents for `/case/<slug>`, `/note/<slug>`, `/colophon`, `/privacy`, `/terms`, and `/thank-you`. The metadata and sitemap are generated from `src/lib/routes.js`. Existing hash links still work. Deploy `dist/` as static files, with no catch-all rewrite; `404.html` handles missing paths.
+
+Run `npm run build` before `npm test`, because metadata tests inspect the generated documents. CI runs lint, formatting, build, tests and a high-severity dependency audit. Dependabot checks weekly.
+
+Contact uses a local email composer and your visitor’s own email app. It does not send a server request or claim delivery. Analytics stays off unless a valid public `VITE_GA_ID` is configured and the visitor opts in. See `.env.example` and the implementation record for the GA stream settings and deployment checks.

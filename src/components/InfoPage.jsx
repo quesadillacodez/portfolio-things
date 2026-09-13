@@ -2,7 +2,7 @@ import { site } from '../data/site';
 import Breadcrumbs from './Breadcrumbs';
 
 export default function InfoPage({ kind }) {
-  const title = kind === 'privacy' ? 'Privacy' : kind === 'terms' ? 'Terms of use' : 'Finish your email';
+  const title = kind === 'privacy' ? 'Privacy' : kind === 'terms' ? 'Terms of use' : 'Thank you';
   return (
     <article className="info-page">
       <Breadcrumbs title={title} />
@@ -18,8 +18,8 @@ export default function InfoPage({ kind }) {
           <h2>Your preferences</h2>
           <p>
             Your browser can remember your theme and analytics choice in local storage. These preferences are
-            used to operate the site. Search and email drafts stay in your browser; this site does not submit
-            them to a server.
+            used to operate the site. Search queries stay in your browser. Contact form submissions are sent
+            to my inbox so I can respond.
           </p>
           <h2>Optional analytics</h2>
           <p>
@@ -39,9 +39,9 @@ export default function InfoPage({ kind }) {
           </p>
           <h2>Contact and hosting</h2>
           <p>
-            The email composer opens your email app. Nothing is delivered until you send it there. Your email
-            provider and the recipient’s provider then handle the message. Do not include sensitive
-            information that is unnecessary for your enquiry.
+            Contact form submissions are sent through Resend, an email delivery provider, to my inbox. The
+            form is not for sensitive information; please leave out details that are unnecessary for your
+            enquiry.
           </p>
           <p>
             Vercel hosts this site and may process request information such as IP addresses and browser
@@ -77,12 +77,11 @@ export default function InfoPage({ kind }) {
       ) : (
         <>
           <p>
-            The contact composer opens a draft in your email app. This website cannot confirm that a draft
-            opened or that your message was sent.
+            Your inquiry has been sent to my inbox. I’ll reply to the email address you provided when I can.
           </p>
           <p>
-            If you came here after preparing a message, return to your email app, review the draft, and press
-            Send. If no app opened, email <a href={`mailto:${site.email}`}>{site.email}</a> directly.
+            If you need to add anything, send another inquiry or email{' '}
+            <a href={`mailto:${site.email}`}>{site.email}</a> directly.
           </p>
           <a className="button button-primary" href="/#contact">
             Back to contact

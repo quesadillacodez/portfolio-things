@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { pages, resolveRoute, siteUrl } from '../src/lib/routes.js';
-import { validateMessage, createMailto } from '../src/lib/contact.js';
+import { validateMessage } from '../src/lib/contact.js';
 
 test('deployment headers have no duplicate names within a route rule', () => {
   const config = JSON.parse(readFileSync('vercel.json', 'utf8'));
@@ -30,17 +30,11 @@ test('composer rejects missing, malformed, and oversized input', () => {
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
 });
 
-test('email content cannot add mailto header parameters', () => {
-  const url = new URL(
-    createMailto('hadi@example.com', {
-      name: 'A & B',
-      email: 'a@b.com',
-      message: 'Hello &bcc=other@example.com # hi?',
-    }),
-  );
-  assert.equal(url.searchParams.has('bcc'), false);
-  assert.equal(url.hash, '');
-  assert.match(url.searchParams.get('body'), /&bcc=other@example.com/);
+test('contact endpoint is present and keeps its email credentials server-side', () => {
+  const endpoint = readFileSync('api/contact.js', 'utf8');
+  assert.match(endpoint, /process\.env\.RESEND_API_KEY/);
+  assert.match(endpoint, /reply_to: email\.trim\(\)/);
+  assert.ok(!endpoint.includes('VITE_RESEND'));
 });
 
 test('build emits crawler-visible metadata and only real URLs in the sitemap', () => {

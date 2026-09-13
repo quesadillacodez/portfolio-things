@@ -1,24 +1,45 @@
 import { useRef, useState } from 'react';
 import { site } from '../data/site';
-import { createMailto, validateMessage } from '../lib/contact';
+import { validateMessage } from '../lib/contact';
 
 const empty = { name: '', email: '', message: '' };
 export default function ContactComposer() {
   const [values, setValues] = useState(empty);
   const [errors, setErrors] = useState({});
-  const [ready, setReady] = useState(false);
+  const [status, setStatus] = useState('');
+  const [isSending, setIsSending] = useState(false);
   const [copyStatus, setCopyStatus] = useState('');
   const discard = useRef(null);
-  const prepare = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
     const next = validateMessage(values);
     setErrors(next);
-    setReady(Object.keys(next).length === 0);
-    if (Object.keys(next).length) document.getElementById(`contact-${Object.keys(next)[0]}`)?.focus();
+    if (Object.keys(next).length) {
+      document.getElementById(`contact-${Object.keys(next)[0]}`)?.focus();
+      return;
+    }
+    setIsSending(true);
+    setStatus('');
+    try {
+      const result = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+      const data = await result.json();
+      if (!result.ok) throw new Error(data.error || 'Your inquiry could not be sent.');
+      setValues(empty);
+      setErrors({});
+      setStatus('Thanks — your inquiry has been sent. I’ll get back to you soon.');
+    } catch (error) {
+      setStatus(error.message || 'Your inquiry could not be sent. Please try again.');
+    } finally {
+      setIsSending(false);
+    }
   };
   const update = (event) => {
     setValues({ ...values, [event.target.name]: event.target.value });
-    setReady(false);
+    setStatus('');
     setCopyStatus('');
   };
   const copy = async () => {
@@ -32,15 +53,25 @@ export default function ContactComposer() {
   return (
     <div className="contact-composer">
       <div>
-        <h3>Write a first hello.</h3>
-        <p>This prepares a draft in your own email app. Nothing is sent or stored by this website.</p>
-        <p>Email me about the opportunity, team, and timing. I’ll reply when I can.</p>
+        <h3>Send an inquiry.</h3>
+        <p>
+          Tell me about the opportunity, team, and timing. Your message will be sent directly to my inbox.
+        </p>
+        <p>I’ll reply to the email address you provide when I can.</p>
         <button type="button" className="copy-link" onClick={copy}>
           Copy email address
         </button>
         <p role="status">{copyStatus}</p>
       </div>
-      <form onSubmit={prepare} noValidate>
+      <form onSubmit={submit} noValidate>
+        <label
+          htmlFor="contact-website"
+          aria-hidden="true"
+          style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}
+        >
+          Website
+          <input id="contact-website" name="website" tabIndex="-1" autoComplete="off" />
+        </label>
         <label htmlFor="contact-name">Your name</label>
         <input
           id="contact-name"
@@ -96,32 +127,25 @@ export default function ContactComposer() {
           {errors.message}
         </p>
         <div className="utility-actions">
-          <button className="button button-primary" type="submit">
-            Prepare email
+          <button className="button button-primary" type="submit" disabled={isSending}>
+            {isSending ? 'Sending…' : 'Send inquiry'}
           </button>
           <button
             className="button button-quiet"
             type="button"
-            disabled={!Object.values(values).some(Boolean)}
+            disabled={isSending || !Object.values(values).some(Boolean)}
             onClick={() => discard.current.showModal()}
           >
             Clear draft
           </button>
         </div>
-        {ready && (
-          <div className="draft-ready" role="status">
-            <p>Your draft is ready. Open your email app, review it, and press Send there.</p>
-            <a className="button button-primary" href={createMailto(site.email, values)}>
-              Open email app
-            </a>
-            <p>
-              <a href="/thank-you">What happens next?</a>
-            </p>
-          </div>
+        {status && (
+          <p className="draft-ready" role="status">
+            {status}
+          </p>
         )}
         <p className="utility-muted">
-          Prefer your own editor? <a href={`mailto:${site.email}`}>{site.email}</a> ·{' '}
-          <a href="/privacy">Privacy</a>
+          Or email <a href={`mailto:${site.email}`}>{site.email}</a> directly · <a href="/privacy">Privacy</a>
         </p>
       </form>
       <dialog className="utility-dialog" ref={discard} aria-labelledby="discard-title">
@@ -137,7 +161,7 @@ export default function ContactComposer() {
             onClick={() => {
               setValues(empty);
               setErrors({});
-              setReady(false);
+              setStatus('');
               discard.current.close();
             }}
           >

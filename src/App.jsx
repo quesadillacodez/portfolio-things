@@ -399,7 +399,7 @@ export default function App() {
             emphasis="and build the tool?"
             reducedMotion={reducedMotion}
           />
-          <a className="button button-primary" href="mailto:hadiqbz@gmail.com" data-reveal>
+          <a className="button button-primary" href="/#contact" data-reveal>
             Start a conversation <Icon name="arrow" />
           </a>
         </div>

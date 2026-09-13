@@ -22,6 +22,6 @@ export const faqs = [
   {
     question: 'How can I contact you or get your résumé?',
     answer:
-      'Use the contact section to write an email, or download the résumé linked from the hero and footer. The email composer opens your own mail app; you finish sending the message there.',
+      'Use the contact form to send an inquiry directly, or download the résumé linked from the hero and footer. You can also email me directly if you prefer.',
   },
 ];

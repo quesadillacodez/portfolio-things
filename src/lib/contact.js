@@ -8,7 +8,3 @@ export function validateMessage({ name, email, message }) {
     errors.message = 'Write between 10 and 1,200 characters.';
   return errors;
 }
-
-export function createMailto(recipient, { name, email, message }) {
-  return `mailto:${recipient}?subject=${encodeURIComponent(`Portfolio enquiry from ${name.trim()}`)}&body=${encodeURIComponent(`${message.trim()}\n\nFrom: ${name.trim()}\nReply to: ${email.trim()}`)}`;
-}

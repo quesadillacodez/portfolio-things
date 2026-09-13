@@ -86,4 +86,4 @@ See [the complete 80-entry implementation record](docs/pdf-launch-checklist.md) 
 
 Run `npm run build` before `npm test`, because metadata tests inspect the generated documents. CI runs lint, formatting, build, tests and a high-severity dependency audit. Dependabot checks weekly.
 
-Contact uses a local email composer and your visitor’s own email app. It does not send a server request or claim delivery. Analytics stays off unless a valid public `VITE_GA_ID` is configured and the visitor opts in. See `.env.example` and the implementation record for the GA stream settings and deployment checks.
+Contact uses Formspree to deliver portfolio inquiries. Analytics stays off unless a valid public `VITE_GA_ID` is configured and the visitor opts in. See `.env.example` and the implementation record for the GA stream settings and deployment checks.

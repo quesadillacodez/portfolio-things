@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { ValidationError, useForm } from '@formspree/react';
 import { site } from '../data/site';
 import { validateMessage } from '../lib/contact';
 
@@ -7,9 +8,10 @@ export default function ContactComposer() {
   const [values, setValues] = useState(empty);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('');
-  const [isSending, setIsSending] = useState(false);
   const [copyStatus, setCopyStatus] = useState('');
+  const [formState, submitToFormspree, resetFormspree] = useForm('xvkojqge');
   const discard = useRef(null);
+
   const submit = async (event) => {
     event.preventDefault();
     const next = validateMessage(values);
@@ -18,26 +20,15 @@ export default function ContactComposer() {
       document.getElementById(`contact-${Object.keys(next)[0]}`)?.focus();
       return;
     }
-    setIsSending(true);
     setStatus('');
     try {
-      const result = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      });
-      const data = await result.json();
-      if (!result.ok) throw new Error(data.error || 'Your inquiry could not be sent.');
-      setValues(empty);
-      setErrors({});
-      setStatus('Thanks — your inquiry has been sent. I’ll get back to you soon.');
+      await submitToFormspree(event);
     } catch (error) {
       setStatus(error.message || 'Your inquiry could not be sent. Please try again.');
-    } finally {
-      setIsSending(false);
     }
   };
   const update = (event) => {
+    if (formState.succeeded) resetFormspree();
     setValues({ ...values, [event.target.name]: event.target.value });
     setStatus('');
     setCopyStatus('');
@@ -127,23 +118,24 @@ export default function ContactComposer() {
           {errors.message}
         </p>
         <div className="utility-actions">
-          <button className="button button-primary" type="submit" disabled={isSending}>
-            {isSending ? 'Sending…' : 'Send inquiry'}
+          <button className="button button-primary" type="submit" disabled={formState.submitting}>
+            {formState.submitting ? 'Sending…' : 'Send inquiry'}
           </button>
           <button
             className="button button-quiet"
             type="button"
-            disabled={isSending || !Object.values(values).some(Boolean)}
+            disabled={formState.submitting || !Object.values(values).some(Boolean)}
             onClick={() => discard.current.showModal()}
           >
             Clear draft
           </button>
         </div>
-        {status && (
+        {(status || formState.succeeded) && (
           <p className="draft-ready" role="status">
-            {status}
+            {status || 'Thanks — your inquiry has been sent. I’ll get back to you soon.'}
           </p>
         )}
+        <ValidationError className="form-error" prefix="Inquiry" errors={formState.errors} />
         <p className="utility-muted">
           Or email <a href={`mailto:${site.email}`}>{site.email}</a> directly · <a href="/privacy">Privacy</a>
         </p>
@@ -162,6 +154,7 @@ export default function ContactComposer() {
               setValues(empty);
               setErrors({});
               setStatus('');
+              resetFormspree();
               discard.current.close();
             }}
           >

@@ -30,11 +30,12 @@ test('composer rejects missing, malformed, and oversized input', () => {
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
 });
 
-test('contact endpoint is present and keeps its email credentials server-side', () => {
-  const endpoint = readFileSync('api/contact.js', 'utf8');
-  assert.match(endpoint, /process\.env\.RESEND_API_KEY/);
-  assert.match(endpoint, /reply_to: email\.trim\(\)/);
-  assert.ok(!endpoint.includes('VITE_RESEND'));
+test('contact form uses the configured Formspree form', () => {
+  const composer = readFileSync('src/components/ContactComposer.jsx', 'utf8');
+  const config = JSON.parse(readFileSync('vercel.json', 'utf8'));
+  assert.match(composer, /useForm\('xvkojqge'\)/);
+  assert.ok(!composer.includes('/api/contact'));
+  assert.match(JSON.stringify(config), /https:\/\/formspree\.io/);
 });
 
 test('build emits crawler-visible metadata and only real URLs in the sitemap', () => {

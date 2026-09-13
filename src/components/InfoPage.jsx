@@ -39,7 +39,7 @@ export default function InfoPage({ kind }) {
           </p>
           <h2>Contact and hosting</h2>
           <p>
-            Contact form submissions are sent through Resend, an email delivery provider, to my inbox. The
+            Contact form submissions are sent through Formspree, a form-delivery provider, to my inbox. The
             form is not for sensitive information; please leave out details that are unnecessary for your
             enquiry.
           </p>

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { projects } from '../data/projects';
 import { notes } from '../data/notes';
 import { faqs } from '../data/faqs';
@@ -36,11 +36,29 @@ export default function SiteSearch() {
         words.every((word) => `${entry.title} ${entry.body}`.toLowerCase().includes(word)),
       )
     : [];
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault();
+        if (dialog.current?.open) {
+          dialog.current.close();
+        } else {
+          dialog.current?.showModal();
+          input.current?.focus();
+        }
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   return (
     <>
       <button
         className="search-toggle"
         type="button"
+        aria-keyshortcuts="Control+k Meta+k"
         onClick={() => {
           dialog.current.showModal();
           input.current.focus();
@@ -69,17 +87,21 @@ export default function SiteSearch() {
             ? `${results.length} result${results.length === 1 ? '' : 's'}`
             : 'Try “roster”, “NETS”, or “internships”.'}
         </p>
-        <ul className="search-results">
-          {results.map((entry) => (
-            <li key={entry.title}>
-              <a href={entry.href} onClick={() => dialog.current.close()}>
-                <span>{entry.type}</span>
-                <strong>{entry.title}</strong>
-                <p>{entry.body}</p>
-              </a>
-            </li>
-          ))}
-        </ul>
+        {words.length > 0 && results.length === 0 ? (
+          <p className="search-no-results utility-muted">No matching results for “{query.trim()}”.</p>
+        ) : (
+          <ul className="search-results">
+            {results.map((entry) => (
+              <li key={entry.title}>
+                <a href={entry.href} onClick={() => dialog.current.close()}>
+                  <span>{entry.type}</span>
+                  <strong>{entry.title}</strong>
+                  <p>{entry.body}</p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </dialog>
     </>
   );

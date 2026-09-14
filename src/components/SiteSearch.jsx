@@ -48,7 +48,12 @@ export default function SiteSearch() {
       >
         Search
       </button>
-      <dialog className="utility-dialog search-dialog" ref={dialog} aria-labelledby="search-title">
+      <dialog
+        className="utility-dialog search-dialog"
+        ref={dialog}
+        aria-labelledby="search-title"
+        onClose={() => setQuery('')}
+      >
         <div className="utility-dialog-head">
           <h2 id="search-title">Find something</h2>
           <button type="button" onClick={() => dialog.current.close()} aria-label="Close search">

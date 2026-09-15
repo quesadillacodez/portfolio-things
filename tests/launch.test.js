@@ -28,6 +28,8 @@ test('composer rejects missing, malformed, and oversized input', () => {
   assert.ok(validateMessage({ name: 'A\nBcc: x', email: 'a@b.com', message: 'Hello about a role' }).name);
   assert.ok(validateMessage({ name: 'A', email: 'a@b.com', message: 'x'.repeat(1201) }).message);
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
+  assert.equal(Object.keys(validateMessage(null)).length, 3);
+  assert.equal(Object.keys(validateMessage({ name: null, email: undefined, message: 123 })).length, 3);
 });
 
 test('contact form uses the configured Formspree form', () => {

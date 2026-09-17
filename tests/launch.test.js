@@ -34,9 +34,12 @@ test('all target="_blank" links specify rel="noopener noreferrer"', () => {
   const files = ['src/App.jsx', 'src/components/CaseStudy.jsx', 'src/components/InfoPage.jsx', 'src/components/ProjectCard.jsx'];
   for (const file of files) {
     const content = readFileSync(file, 'utf8');
-    const targetMatches = content.match(/target="_blank"/g) || [];
-    const relMatches = content.match(/rel="noopener noreferrer"/g) || [];
-    assert.equal(targetMatches.length, relMatches.length, `Mismatch in ${file}`);
+    const linkRegex = /<a\s+[^>]*target="_blank"[^>]*>/g;
+    let match;
+    while ((match = linkRegex.exec(content)) !== null) {
+      const tag = match[0];
+      assert.ok(tag.includes('rel="') && tag.includes('noopener') && tag.includes('noreferrer'), `Missing rel noopener noreferrer in ${file}: ${tag}`);
+    }
   }
 });
 

@@ -30,6 +30,26 @@ test('composer rejects missing, malformed, and oversized input', () => {
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
 });
 
+test('composer rejects honeypot spam and safely handles invalid data types', () => {
+  // Honeypot detection
+  assert.ok(
+    validateMessage({
+      name: 'A',
+      email: 'a@b.com',
+      message: 'Hello about a role',
+      website: 'http://spam.com',
+    }).website,
+  );
+
+  // Type safety with non-string inputs
+  assert.doesNotThrow(() => {
+    const errors = validateMessage({ name: null, email: undefined, message: 12345, website: {} });
+    assert.ok(errors.name);
+    assert.ok(errors.email);
+    assert.ok(errors.message);
+  });
+});
+
 test('contact form uses the configured Formspree form', () => {
   const composer = readFileSync('src/components/ContactComposer.jsx', 'utf8');
   const config = JSON.parse(readFileSync('vercel.json', 'utf8'));

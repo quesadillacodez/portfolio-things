@@ -3647,6 +3647,19 @@ footer h2,
   padding: 0.6rem;
   min-height: 44px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.search-kbd {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 5px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--surface-muted, rgba(0, 0, 0, 0.05));
+  color: var(--ink);
+  line-height: 1;
 }
 .search-results {
   list-style: none;

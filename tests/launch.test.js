@@ -30,6 +30,19 @@ test('composer rejects missing, malformed, and oversized input', () => {
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
 });
 
+test('composer rejects ASCII control characters and newline injection in email', () => {
+  assert.ok(validateMessage({ name: 'User\x00Name', email: 'a@b.com', message: 'Hello about a role' }).name);
+  assert.ok(
+    validateMessage({
+      name: 'User',
+      email: 'a@b.com\r\nBcc: evil@attacker.com',
+      message: 'Hello about a role',
+    }).email,
+  );
+  assert.ok(validateMessage({ name: 'User', email: 'a\x00@b.com', message: 'Hello about a role' }).email);
+  assert.ok(validateMessage({ name: 'User', email: 'a@b.com', message: 'Hello\x00 about a role' }).message);
+});
+
 test('contact form uses the configured Formspree form', () => {
   const composer = readFileSync('src/components/ContactComposer.jsx', 'utf8');
   const config = JSON.parse(readFileSync('vercel.json', 'utf8'));

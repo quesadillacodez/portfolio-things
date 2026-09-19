@@ -6,32 +6,48 @@ import Icon from './Icon';
 // reader can send to someone else without hunting in the address bar.
 export default function CopyLink({ label = 'Copy link' }) {
   const [copied, setCopied] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    if (!copied) return undefined;
-    const timer = setTimeout(() => setCopied(false), 2000);
+    if (!copied && !failed) return undefined;
+    const timer = setTimeout(() => {
+      setCopied(false);
+      setFailed(false);
+    }, 2000);
     return () => clearTimeout(timer);
-  }, [copied]);
+  }, [copied, failed]);
 
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
+      setFailed(false);
       setCopied(true);
     } catch {
-      // Clipboard access can be refused (insecure context, denied permission).
-      // Selecting the address bar is the fallback, so say nothing rather than lying.
       setCopied(false);
+      setFailed(true);
     }
+  };
+
+  const getButtonLabel = () => {
+    if (copied) return 'Copied';
+    if (failed) return 'Failed to copy';
+    return label;
+  };
+
+  const getLiveMessage = () => {
+    if (copied) return 'Link copied';
+    if (failed) return 'Failed to copy link';
+    return '';
   };
 
   return (
     <>
       <button type="button" className="copy-link" onClick={copy}>
         <Icon name={copied ? 'check' : 'arrow'} size={14} />
-        {copied ? 'Copied' : label}
+        {getButtonLabel()}
       </button>
       <span className="sr-only" aria-live="polite" aria-atomic="true">
-        {copied ? 'Link copied' : ''}
+        {getLiveMessage()}
       </span>
     </>
   );

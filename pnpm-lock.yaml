@@ -10,16 +10,16 @@ importers:
     dependencies:
       '@formspree/react':
         specifier: ^3.0.0
-        version: 3.0.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 3.0.0(react-dom@19.2.7(react@19.3.0))(react@19.3.0)
       gsap:
         specifier: ^3.15.0
         version: 3.15.0
       react:
-        specifier: 19.2.7
-        version: 19.2.7
+        specifier: 19.3.0
+        version: 19.3.0
       react-dom:
         specifier: 19.2.7
-        version: 19.2.7(react@19.2.7)
+        version: 19.2.7(react@19.3.0)
     devDependencies:
       '@eslint/js':
         specifier: 9.39.1
@@ -1314,8 +1314,8 @@ packages:
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
-  react@19.2.7:
-    resolution: {integrity: sha512-HNe9WslTbXmFK8o8cmwgAeJFSBvt1bPdHCVKtaaV+WlAN36mpT4hcRpwbf3fY56ar2oIXzsBpOAiIRHAdY0OlQ==}
+  react@19.3.0:
+    resolution: {integrity: sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog==}
     engines: {node: '>=0.10.0'}
 
   reflect.getprototypeof@1.0.10:
@@ -1749,13 +1749,13 @@ snapshots:
     dependencies:
       '@stripe/stripe-js': 5.10.0
 
-  '@formspree/react@3.0.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@formspree/react@3.0.0(react-dom@19.2.7(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@formspree/core': 4.0.0
-      '@stripe/react-stripe-js': 3.11.0(@stripe/stripe-js@5.10.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@stripe/react-stripe-js': 3.11.0(@stripe/stripe-js@5.10.0)(react-dom@19.2.7(react@19.3.0))(react@19.3.0)
       '@stripe/stripe-js': 5.10.0
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
+      react: 19.3.0
+      react-dom: 19.2.7(react@19.3.0)
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -1958,12 +1958,12 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.1': {}
 
-  '@stripe/react-stripe-js@3.11.0(@stripe/stripe-js@5.10.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@stripe/react-stripe-js@3.11.0(@stripe/stripe-js@5.10.0)(react-dom@19.2.7(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@stripe/stripe-js': 5.10.0
       prop-types: 15.8.1
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
+      react: 19.3.0
+      react-dom: 19.2.7(react@19.3.0)
 
   '@stripe/stripe-js@5.10.0': {}
 
@@ -2895,14 +2895,14 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  react-dom@19.2.7(react@19.2.7):
+  react-dom@19.2.7(react@19.3.0):
     dependencies:
-      react: 19.2.7
+      react: 19.3.0
       scheduler: 0.27.0
 
   react-is@16.13.1: {}
 
-  react@19.2.7: {}
+  react@19.3.0: {}
 
   reflect.getprototypeof@1.0.10:
     dependencies:

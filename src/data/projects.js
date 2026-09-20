@@ -398,55 +398,30 @@ export const projects = [
 
   {
     number: '05',
-    slug: 'clinic-digitalisation',
-    // Item: three projects with no demo, no repo and no case study were costing 25%
-    // of the mobile page at full card weight. They keep their claim and their stack;
-    // they lose the visual, the stat row and the prose blocks.
+    slug: 'nets-portal-system',
     compact: true,
-    year: '2024',
-    title: 'Clinic Digitalisation Concept',
-    eyebrow: 'Python 3.5 web concept',
+    year: '2026',
+    title: 'NETS App: XP Store & Multi-Portal System',
+    eyebrow: 'FinTech prototype · XP rewards, merchant & admin portals',
     summary:
-      'A simple operational concept for moving clinic bookings, records, queues, and staff coordination out of disconnected manual processes.',
+      'A multi-portal FinTech feature set built around role-based authentication, an XP Rewards Store economy, a Merchant campaign dashboard, and an Admin audit console.',
     problem:
-      'Manual clinic workflows create repeated handoffs across appointment booking, patient records, queues, and staff coordination.',
+      'Traditional banking loyalty systems are siloed and slow to reflect rewards, while merchants lack self-serve campaign tools and administrators lack granular audit visibility.',
     approach:
-      'Mapped the current and proposed workflows, then designed patient and staff views around a clearer queue and record-management flow.',
+      'Engineered a connected multi-surface experience: streamlined role-based login (Customer, Merchant, Admin), an XP Rewards Store with real-time distance sorting and voucher redemption, a merchant portal for campaign creation and analytics, and an admin console for ledger inspection.',
     outcome:
-      'Shared the concept with several doctors. They responded positively to the simplicity of the application and its workflow design.',
+      'Enabled end-to-end simulation of the payment loyalty lifecycle — from customer XP redemption to merchant voucher fulfillment and administrative ledger monitoring.',
 
     stats: [
-      { value: '4', label: 'handoffs removed' },
-      { value: '2', label: 'user views designed' },
+      { value: '3', label: 'role portals (User, Merchant, Admin)' },
+      { value: '100%', label: 'traceable XP ledger' },
+      { value: '0', label: 'balance drift' },
     ],
 
-    // Item 16 + 22: this project's own stated deliverable was a workflow map, so the
-    // map is the honest visual for it — drawn here from the documented before/after.
-    visual: {
-      kind: 'flow',
-      caption: 'The workflow map this concept was built from.',
-      before: {
-        label: 'Manual today',
-        steps: [
-          'Phone booking',
-          'Paper record pulled',
-          'Queue called by hand',
-          'Staff asks around',
-          'Notes filed back',
-        ],
-      },
-      after: {
-        label: 'Proposed',
-        steps: [
-          'Self-serve booking',
-          'Record opens with the booking',
-          'Queue updates itself',
-          'Staff view is shared',
-        ],
-      },
-    },
+    demo: 'https://nets-grp-prototype.vercel.app/',
+    demoNote: 'Open the prototype',
 
-    stack: ['Python 3.5', 'Workflow mapping', 'Interface design', 'User feedback'],
+    stack: ['React', 'TypeScript', 'Vite', 'Tailwind CSS', 'SQLite (WASM)', 'Role-Based Access'],
     artifacts: [],
   },
 ];

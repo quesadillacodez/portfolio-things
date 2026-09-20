@@ -123,11 +123,11 @@ export default function Colophon() {
         <h2>Still on the list</h2>
         <ul className="colophon-todo">
           <li>
-            Get a named quote from one of the doctors who saw the clinic concept. The current one is an honest
-            paraphrase, which is not the same thing, and no amount of typography fixes that.
+            Test merchant campaign metrics with real hawker center owners to refine self-serve campaign
+            creation.
           </li>
           <li>
-            Three of the five projects have nothing you can click. They are here because they happened, not
+            Two of the five projects have nothing you can click. They are here because they happened, not
             because they are linkable, and I would rather leave the gap visible than pad it.
           </li>
           <li>

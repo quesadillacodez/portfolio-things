@@ -32,6 +32,20 @@ export default function ProjectCard({ project, onOpenImage, reducedMotion }) {
             <li key={item}>{item}</li>
           ))}
         </ul>
+        {(project.demo || project.caseStudy) && (
+          <div className="project-links project-compact-links">
+            {project.caseStudy && (
+              <a className="link-strong" href={`/case/${project.slug}`}>
+                Read case study <Icon name="arrow" />
+              </a>
+            )}
+            {project.demo && (
+              <a href={project.demo} target="_blank" rel="noopener noreferrer">
+                {project.demoNote || 'Live demo'} <Icon name="arrow" />
+              </a>
+            )}
+          </div>
+        )}
       </article>
     );
   }

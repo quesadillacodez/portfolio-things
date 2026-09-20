@@ -52,10 +52,13 @@ export default function About() {
       </div>
 
       <figure className="pullquote">
-        <blockquote>They responded to its simplicity — the workflow, not the interface.</blockquote>
+        <blockquote>
+          A rewards store only works when the merchant sees real lift and the customer watches their balance
+          move instantly.
+        </blockquote>
         <figcaption>
-          <b>Clinic Digitalisation concept</b>
-          Paraphrased feedback from practising doctors shown the concept.
+          <b>NETS XP Rewards & Portals</b>
+          Core design principle across the customer, merchant, and admin surfaces.
         </figcaption>
       </figure>
     </section>

@@ -78,11 +78,11 @@ portfolio-things/
 
 Handled by `useHashRoute`. Plain fragments like `#work` stay ordinary in-page anchors.
 
-| Route           | Renders     | Slugs                                                                                        |
-| --------------- | ----------- | -------------------------------------------------------------------------------------------- |
-| `#/case/<slug>` | `CaseStudy` | `nets-pay-together`, `pulseops`, `food-insecurity`, `fairprice-sim`, `clinic-digitalisation` |
-| `#/note/<slug>` | `NotePage`  | `cpf-edge-cases`, `first-roster-ui`, `rewards-loophole`                                      |
-| `#/colophon`    | `Colophon`  | —                                                                                            |
+| Route           | Renders     | Slugs                                                                                     |
+| --------------- | ----------- | ----------------------------------------------------------------------------------------- |
+| `#/case/<slug>` | `CaseStudy` | `nets-pay-together`, `pulseops`, `food-insecurity`, `fairprice-sim`, `nets-portal-system` |
+| `#/note/<slug>` | `NotePage`  | `cpf-edge-cases`, `first-roster-ui`, `rewards-loophole`                                   |
+| `#/colophon`    | `Colophon`  | —                                                                                         |
 
 ## Design tokens
 

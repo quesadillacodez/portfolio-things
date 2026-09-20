@@ -11,7 +11,7 @@ Live: <https://portfolio-things-eight.vercel.app/>
 - **PulseOps EMS Command Center** — Distinction Presentation — [case study](/#/case/pulseops)
 - Global Food Insecurity Dashboard
 - FairPrice Shopping Simulation
-- Clinic Digitalisation Concept
+- NETS App: XP Store & Multi-Portal System (Customer, Merchant & Admin)
 
 ## Run locally
 

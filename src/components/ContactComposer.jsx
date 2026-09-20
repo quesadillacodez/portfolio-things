@@ -109,14 +109,17 @@ export default function ContactComposer() {
           value={values.message}
           onChange={update}
           aria-invalid={!!errors.message}
-          aria-describedby="message-help error-message"
+          aria-describedby={errors.message ? 'message-help error-message' : 'message-help'}
         />
         <p id="message-help" className="utility-muted">
-          10–1,200 characters. Please leave out sensitive details.
+          10–1,200 characters ({values.message.length.toLocaleString()}/1,200). Please leave out sensitive
+          details.
         </p>
-        <p id="error-message" className="form-error" role="alert">
-          {errors.message}
-        </p>
+        {errors.message && (
+          <p id="error-message" className="form-error" role="alert">
+            {errors.message}
+          </p>
+        )}
         <div className="utility-actions">
           <button className="button button-primary" type="submit" disabled={formState.submitting}>
             {formState.submitting ? 'Sending…' : 'Send inquiry'}

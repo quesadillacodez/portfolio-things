@@ -428,7 +428,7 @@ export default function App() {
             <a href="https://github.com/quesadillacodez" target="_blank" rel="noopener noreferrer">
               GitHub
             </a>
-            <a href="/Hadi-Qusyairi-Resume.pdf" download>
+            <a href="/Hadi-Qusyairi-Resume.docx" download>
               Résumé
             </a>
             {/* Item 22 */}

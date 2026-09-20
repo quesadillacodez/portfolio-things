@@ -116,7 +116,7 @@ export default function Hero({ onOpenProof }) {
           </div>
           <p className="hero-aside" data-hero="aside">
             or{' '}
-            <a href="/Hadi-Qusyairi-Resume-NETS.pdf" download>
+            <a href="/Hadi-Qusyairi-Resume.pdf" download>
               download my résumé
             </a>
           </p>

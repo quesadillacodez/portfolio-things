@@ -41,6 +41,8 @@ export default function SiteSearch() {
       <button
         className="search-toggle"
         type="button"
+        aria-haspopup="dialog"
+        aria-label="Open search dialog"
         onClick={() => {
           dialog.current.showModal();
           input.current.focus();
@@ -66,12 +68,16 @@ export default function SiteSearch() {
           ref={input}
           type="search"
           maxLength={120}
+          placeholder="e.g. NETS, roster, internships…"
+          aria-describedby="search-status"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
-        <p role="status" className="utility-muted">
+        <p role="status" id="search-status" className="utility-muted">
           {words.length
-            ? `${results.length} result${results.length === 1 ? '' : 's'}`
+            ? results.length > 0
+              ? `${results.length} result${results.length === 1 ? '' : 's'}`
+              : `No results for “${query}”. Try searching for “roster”, “NETS”, or “internships”.`
             : 'Try “roster”, “NETS”, or “internships”.'}
         </p>
         <ul className="search-results">

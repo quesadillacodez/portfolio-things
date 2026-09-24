@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import Icon from './Icon';
 import { projects } from '../data/projects';
 import { notes } from '../data/notes';
 import { faqs } from '../data/faqs';
@@ -41,12 +42,14 @@ export default function SiteSearch() {
       <button
         className="search-toggle"
         type="button"
+        aria-label="Search site"
         onClick={() => {
           dialog.current.showModal();
           input.current.focus();
         }}
       >
-        Search
+        <Icon name="search" size={16} />
+        <span>Search</span>
       </button>
       <dialog
         className="utility-dialog search-dialog"

@@ -1,5 +1,9 @@
-export function validateMessage({ name, email, message }) {
+export function validateMessage(input = {}) {
   const errors = {};
+  const name = typeof input?.name === 'string' ? input.name : '';
+  const email = typeof input?.email === 'string' ? input.email : '';
+  const message = typeof input?.message === 'string' ? input.message : '';
+
   if (!name.trim() || name.trim().length > 80 || /[\r\n]/.test(name))
     errors.name = 'Enter your name (up to 80 characters).';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254)

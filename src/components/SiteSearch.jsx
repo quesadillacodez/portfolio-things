@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { projects } from '../data/projects';
 import { notes } from '../data/notes';
 import { faqs } from '../data/faqs';
@@ -36,17 +36,42 @@ export default function SiteSearch() {
         words.every((word) => `${entry.title} ${entry.body}`.toLowerCase().includes(word)),
       )
     : [];
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        if (dialog.current?.open) {
+          dialog.current.close();
+        } else {
+          dialog.current?.showModal();
+          input.current?.focus();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const getStatusText = () => {
+    if (!words.length) return 'Try “roster”, “NETS”, or “internships”.';
+    if (!results.length)
+      return `No matching results for “${query}”. Try searching for “roster”, “NETS”, or “internships”.`;
+    return `${results.length} result${results.length === 1 ? '' : 's'}`;
+  };
+
   return (
     <>
       <button
         className="search-toggle"
         type="button"
+        aria-label="Search site (⌘K)"
         onClick={() => {
           dialog.current.showModal();
           input.current.focus();
         }}
       >
-        Search
+        Search <kbd className="search-kbd">⌘K</kbd>
       </button>
       <dialog
         className="utility-dialog search-dialog"
@@ -70,9 +95,7 @@ export default function SiteSearch() {
           onChange={(event) => setQuery(event.target.value)}
         />
         <p role="status" className="utility-muted">
-          {words.length
-            ? `${results.length} result${results.length === 1 ? '' : 's'}`
-            : 'Try “roster”, “NETS”, or “internships”.'}
+          {getStatusText()}
         </p>
         <ul className="search-results">
           {results.map((entry) => (

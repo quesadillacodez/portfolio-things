@@ -14,9 +14,15 @@ export default function ContactComposer() {
 
   const submit = async (event) => {
     event.preventDefault();
-    const next = validateMessage(values);
+    const formData = new FormData(event.currentTarget);
+    const honeypot = formData.get('website');
+    const next = validateMessage({ ...values, website: honeypot });
     setErrors(next);
     if (Object.keys(next).length) {
+      if (next.website) {
+        setStatus('Your inquiry could not be sent. Please try again.');
+        return;
+      }
       document.getElementById(`contact-${Object.keys(next)[0]}`)?.focus();
       return;
     }
@@ -61,7 +67,7 @@ export default function ContactComposer() {
           style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}
         >
           Website
-          <input id="contact-website" name="website" tabIndex="-1" autoComplete="off" />
+          <input id="contact-website" name="website" tabIndex="-1" autoComplete="off" onChange={update} />
         </label>
         <label htmlFor="contact-name">Your name</label>
         <input

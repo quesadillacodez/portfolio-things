@@ -25,8 +25,14 @@ test('every content page resolves from its real URL and its legacy hash', () => 
 
 test('composer rejects missing, malformed, and oversized input', () => {
   assert.equal(Object.keys(validateMessage({ name: '', email: 'bad', message: 'short' })).length, 3);
+  assert.equal(Object.keys(validateMessage(null)).length, 3);
+  assert.equal(Object.keys(validateMessage({})).length, 3);
   assert.ok(validateMessage({ name: 'A\nBcc: x', email: 'a@b.com', message: 'Hello about a role' }).name);
   assert.ok(validateMessage({ name: 'A', email: 'a@b.com', message: 'x'.repeat(1201) }).message);
+  assert.ok(
+    validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role', website: 'bot-input' })
+      .website,
+  );
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
 });
 

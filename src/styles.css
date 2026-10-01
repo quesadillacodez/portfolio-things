@@ -3648,6 +3648,15 @@ footer h2,
   min-height: 44px;
   cursor: pointer;
 }
+.search-key-hint {
+  font-family: var(--mono);
+  font-size: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  padding: 1px 4px;
+  margin-left: 4px;
+  color: var(--muted);
+}
 .search-results {
   list-style: none;
   padding: 0;

@@ -32,7 +32,7 @@ export default function InfoPage({ kind }) {
             You can change your choice using “Privacy choices” in the footer. Rejecting analytics stops
             collection and removes accessible analytics cookies on this site. Your browser’s privacy controls
             can also clear site data. Google’s processing is described in its{' '}
-            <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">
               privacy policy
             </a>
             .

@@ -30,7 +30,7 @@ export default function ContactComposer() {
     }
   };
   useEffect(() => {
-    if (!copied && !copyFailed) return undefined;
+    if (!copied && !copyFailed) return;
     const timer = setTimeout(() => {
       setCopied(false);
       setCopyFailed(false);
@@ -56,11 +56,6 @@ export default function ContactComposer() {
     }
   };
 
-  const getCopyLabel = () => {
-    if (copied) return 'Email address copied';
-    if (copyFailed) return `Failed to copy. Email: ${site.email}`;
-    return 'Copy email address';
-  };
   return (
     <div className="contact-composer">
       <div>
@@ -69,17 +64,14 @@ export default function ContactComposer() {
           Tell me about the opportunity, team, and timing. Your message will be sent directly to my inbox.
         </p>
         <p>I’ll reply to the email address you provide when I can.</p>
-        <button type="button" className="copy-link" onClick={copy} aria-label={getCopyLabel()}>
+        <button type="button" className="copy-link" onClick={copy}>
           <Icon name={copied ? 'check' : 'arrow'} size={14} />
-          {copied ? 'Email address copied' : copyFailed ? 'Failed to copy' : 'Copy email address'}
+          Copy email address
         </button>
-        <span className="sr-only" aria-live="polite" aria-atomic="true">
-          {copied
-            ? 'Email address copied to clipboard.'
-            : copyFailed
-              ? `Could not copy email. Address is ${site.email}`
-              : ''}
-        </span>
+        <p role="status">
+          {copied && 'Email address copied.'}
+          {copyFailed && `Copy manually: ${site.email}`}
+        </p>
       </div>
       <form onSubmit={submit} noValidate>
         <label

@@ -1,14 +1,16 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ValidationError, useForm } from '@formspree/react';
 import { site } from '../data/site';
 import { validateMessage } from '../lib/contact';
+import Icon from './Icon';
 
 const empty = { name: '', email: '', message: '' };
 export default function ContactComposer() {
   const [values, setValues] = useState(empty);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('');
-  const [copyStatus, setCopyStatus] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
   const [formState, submitToFormspree, resetFormspree] = useForm('xvkojqge');
   const discard = useRef(null);
 
@@ -27,19 +29,37 @@ export default function ContactComposer() {
       setStatus(error.message || 'Your inquiry could not be sent. Please try again.');
     }
   };
+  useEffect(() => {
+    if (!copied && !copyFailed) return undefined;
+    const timer = setTimeout(() => {
+      setCopied(false);
+      setCopyFailed(false);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [copied, copyFailed]);
+
   const update = (event) => {
     if (formState.succeeded) resetFormspree();
     setValues({ ...values, [event.target.name]: event.target.value });
     setStatus('');
-    setCopyStatus('');
+    setCopied(false);
+    setCopyFailed(false);
   };
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(site.email);
-      setCopyStatus('Email address copied.');
+      setCopyFailed(false);
+      setCopied(true);
     } catch {
-      setCopyStatus(`Copy manually: ${site.email}`);
+      setCopied(false);
+      setCopyFailed(true);
     }
+  };
+
+  const getCopyLabel = () => {
+    if (copied) return 'Email address copied';
+    if (copyFailed) return `Failed to copy. Email: ${site.email}`;
+    return 'Copy email address';
   };
   return (
     <div className="contact-composer">
@@ -49,10 +69,17 @@ export default function ContactComposer() {
           Tell me about the opportunity, team, and timing. Your message will be sent directly to my inbox.
         </p>
         <p>I’ll reply to the email address you provide when I can.</p>
-        <button type="button" className="copy-link" onClick={copy}>
-          Copy email address
+        <button type="button" className="copy-link" onClick={copy} aria-label={getCopyLabel()}>
+          <Icon name={copied ? 'check' : 'arrow'} size={14} />
+          {copied ? 'Email address copied' : copyFailed ? 'Failed to copy' : 'Copy email address'}
         </button>
-        <p role="status">{copyStatus}</p>
+        <span className="sr-only" aria-live="polite" aria-atomic="true">
+          {copied
+            ? 'Email address copied to clipboard.'
+            : copyFailed
+              ? `Could not copy email. Address is ${site.email}`
+              : ''}
+        </span>
       </div>
       <form onSubmit={submit} noValidate>
         <label

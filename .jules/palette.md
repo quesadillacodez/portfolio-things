@@ -1,4 +1,4 @@
 ## 2025-05-18 - Copy Button Visual and Assistive Technology Consistency
 
-**Learning:** Copy-to-clipboard buttons in form sections benefit from clear visual icon state transitions (`check` mark when copied) and auto-reset timers. Keeping the button's accessible name constant avoids disrupting screen reader focus while updates are announced cleanly via an associated `role="status"` element.
-**Action:** When enhancing copy buttons, pair an icon state indicator with an auto-clearing timer (e.g. 2.5s) and rely on `<p role="status">` for screen reader status updates without modifying the button's accessible name mid-interaction.
+**Learning:** Copy-to-clipboard buttons in forms should share the same visual icon indicator, polite live-region announcements, and dynamic aria-labels as standalone permalink copy buttons. Having an inline text status without icon state changes can feel inconsistent across different sections of the same site.
+**Action:** When adding copy-to-clipboard buttons, always include visual feedback (icon swap to check mark), a dynamic aria-label, an auto-clearing timer, and an polite aria-live region for screen readers.

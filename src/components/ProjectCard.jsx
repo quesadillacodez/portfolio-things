@@ -1,5 +1,6 @@
 import Icon from './Icon';
 import Picture from './Picture';
+import { sanitizeUrl } from '../lib/contact';
 import TiltFrame from './TiltFrame';
 import Walkthrough from './Walkthrough';
 import TerminalVisual from './TerminalVisual';
@@ -181,7 +182,7 @@ export default function ProjectCard({ project, onOpenImage, reducedMotion }) {
             </a>
           )}
           {project.demo && (
-            <a href={project.demo} target="_blank" rel="noopener noreferrer">
+            <a href={sanitizeUrl(project.demo)} target="_blank" rel="noopener noreferrer">
               {project.demoNote || 'Live demo'} <Icon name="arrow" />
             </a>
           )}

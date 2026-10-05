@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { pages, resolveRoute, siteUrl } from '../src/lib/routes.js';
-import { validateMessage } from '../src/lib/contact.js';
+import { validateMessage, sanitizeUrl } from '../src/lib/contact.js';
 
 test('deployment headers have no duplicate names within a route rule', () => {
   const config = JSON.parse(readFileSync('vercel.json', 'utf8'));
@@ -27,7 +27,23 @@ test('composer rejects missing, malformed, and oversized input', () => {
   assert.equal(Object.keys(validateMessage({ name: '', email: 'bad', message: 'short' })).length, 3);
   assert.ok(validateMessage({ name: 'A\nBcc: x', email: 'a@b.com', message: 'Hello about a role' }).name);
   assert.ok(validateMessage({ name: 'A', email: 'a@b.com', message: 'x'.repeat(1201) }).message);
+  assert.ok(
+    validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role', website: 'spam.com' })
+      .website,
+  );
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
+});
+
+test('sanitizeUrl allows safe protocols and rejects unsafe ones', () => {
+  assert.equal(sanitizeUrl('https://example.com'), 'https://example.com');
+  assert.equal(sanitizeUrl('http://example.com'), 'http://example.com');
+  assert.equal(sanitizeUrl('mailto:hadi@example.com'), 'mailto:hadi@example.com');
+  assert.equal(sanitizeUrl('/case/pulseops'), '/case/pulseops');
+  assert.equal(sanitizeUrl('#work'), '#work');
+  assert.equal(sanitizeUrl('javascript:alert(1)'), '#');
+  assert.equal(sanitizeUrl('data:text/html,<script>alert(1)</script>'), '#');
+  assert.equal(sanitizeUrl(''), '#');
+  assert.equal(sanitizeUrl(null), '#');
 });
 
 test('contact form uses the configured Formspree form', () => {

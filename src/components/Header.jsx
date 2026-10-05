@@ -121,6 +121,7 @@ export default function Header({ theme, onToggleTheme }) {
             type="button"
             onClick={onToggleTheme}
             aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           >
             <Icon name={theme === 'light' ? 'moon' : 'sun'} />
           </button>

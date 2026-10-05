@@ -33,6 +33,7 @@ export default function ToTop({ reducedMotion }) {
       aria-hidden={shown ? undefined : 'true'}
       onClick={() => window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })}
       aria-label="Back to top"
+      title="Back to top"
     >
       <svg
         width="18"

@@ -49,3 +49,15 @@ test('build emits crawler-visible metadata and only real URLs in the sitemap', (
   assert.ok(!sitemap.includes('#'));
   assert.ok(existsSync('dist/404.html'));
 });
+
+test('all external links opening in new tabs include secure rel attributes', () => {
+  const files = ['src/App.jsx', 'src/components/CaseStudy.jsx', 'src/components/ProjectCard.jsx', 'src/components/InfoPage.jsx'];
+  for (const file of files) {
+    const content = readFileSync(file, 'utf8');
+    const matches = content.matchAll(/<a\s+[^>]*target="_blank"[^>]*>/g);
+    for (const match of matches) {
+      assert.match(match[0], /rel="[^"]*noopener[^"]*"/);
+      assert.match(match[0], /rel="[^"]*noreferrer[^"]*"/);
+    }
+  }
+});

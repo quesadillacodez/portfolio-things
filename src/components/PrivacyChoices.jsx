@@ -102,7 +102,15 @@ export default function PrivacyChoices({ path }) {
           {controls}
         </aside>
       )}
-      <dialog className="utility-dialog" ref={dialog} aria-labelledby="privacy-choices-title">
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
+      <dialog
+        className="utility-dialog"
+        ref={dialog}
+        aria-labelledby="privacy-choices-title"
+        onClick={(event) => {
+          if (event.target === dialog.current) dialog.current.close();
+        }}
+      >
         <div className="utility-dialog-head">
           <h2 id="privacy-choices-title">Privacy choices</h2>
           <button type="button" onClick={() => dialog.current.close()}>

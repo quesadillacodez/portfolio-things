@@ -141,7 +141,12 @@ export default function Header({ theme, onToggleTheme }) {
           aria-label="Mobile navigation"
           onCancel={() => setMenuOpen(false)}
         >
-          <button className="mobile-nav-close" type="button" onClick={() => setMenuOpen(false)}>
+          <button
+            className="mobile-nav-close"
+            type="button"
+            onClick={() => setMenuOpen(false)}
+            aria-label="Close menu"
+          >
             Close menu
           </button>
           {links.map(({ id, label, number }) => (

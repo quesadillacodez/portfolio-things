@@ -38,6 +38,12 @@ test('contact form uses the configured Formspree form', () => {
   assert.match(JSON.stringify(config), /https:\/\/formspree\.io/);
 });
 
+test('all target="_blank" links include rel="noopener noreferrer"', () => {
+  const infoPage = readFileSync('src/components/InfoPage.jsx', 'utf8');
+  assert.ok(infoPage.includes('target="_blank"'));
+  assert.ok(infoPage.includes('rel="noopener noreferrer"'));
+});
+
 test('build emits crawler-visible metadata and only real URLs in the sitemap', () => {
   const sitemap = readFileSync('dist/sitemap.xml', 'utf8');
   for (const page of pages) {

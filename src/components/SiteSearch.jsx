@@ -41,6 +41,7 @@ export default function SiteSearch() {
       <button
         className="search-toggle"
         type="button"
+        aria-label="Search site content"
         onClick={() => {
           dialog.current.showModal();
           input.current.focus();

@@ -54,7 +54,8 @@ export const pages = [
 ];
 
 export function resolveRoute(pathname, hash = '') {
-  const path = (hash.startsWith('#/') ? hash.slice(1) : pathname).replace(/\/$/, '') || '/';
+  const rawPath = (hash.startsWith('#/') ? hash.slice(1) : pathname).replace(/\/$/, '') || '/';
+  const path = rawPath.startsWith('/') ? rawPath.replace(/^\/+/, '/') : `/${rawPath}`;
   if (path === '/' || path === '/index.html') return null;
   const page = pages.find((entry) => entry.path === path);
   return (

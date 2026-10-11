@@ -66,6 +66,7 @@ export default function SiteSearch() {
           ref={input}
           type="search"
           maxLength={120}
+          placeholder="e.g. roster, NETS, internships"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />

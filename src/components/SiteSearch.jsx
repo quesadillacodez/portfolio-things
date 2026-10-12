@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { projects } from '../data/projects';
 import { notes } from '../data/notes';
 import { faqs } from '../data/faqs';
@@ -36,14 +36,39 @@ export default function SiteSearch() {
         words.every((word) => `${entry.title} ${entry.body}`.toLowerCase().includes(word)),
       )
     : [];
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      const isCmdK = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';
+      const isSlash =
+        event.key === '/' &&
+        !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName) &&
+        !document.activeElement?.isContentEditable;
+
+      if (isCmdK || isSlash) {
+        event.preventDefault();
+        if (dialog.current?.open) {
+          dialog.current.close();
+        } else {
+          dialog.current?.showModal();
+          input.current?.focus();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   return (
     <>
       <button
         className="search-toggle"
         type="button"
+        aria-label="Search site (Cmd+K or /)"
         onClick={() => {
-          dialog.current.showModal();
-          input.current.focus();
+          dialog.current?.showModal();
+          input.current?.focus();
         }}
       >
         Search
@@ -75,15 +100,21 @@ export default function SiteSearch() {
             : 'Try “roster”, “NETS”, or “internships”.'}
         </p>
         <ul className="search-results">
-          {results.map((entry) => (
-            <li key={entry.title}>
-              <a href={entry.href} onClick={() => dialog.current.close()}>
-                <span>{entry.type}</span>
-                <strong>{entry.title}</strong>
-                <p>{entry.body}</p>
-              </a>
+          {words.length > 0 && results.length === 0 ? (
+            <li className="search-empty">
+              <p>No results matching “{query.trim()}”</p>
             </li>
-          ))}
+          ) : (
+            results.map((entry) => (
+              <li key={entry.title}>
+                <a href={entry.href} onClick={() => dialog.current?.close()}>
+                  <span>{entry.type}</span>
+                  <strong>{entry.title}</strong>
+                  <p>{entry.body}</p>
+                </a>
+              </li>
+            ))
+          )}
         </ul>
       </dialog>
     </>

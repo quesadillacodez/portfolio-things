@@ -14,6 +14,12 @@ export default function ContactComposer() {
 
   const submit = async (event) => {
     event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    if (formData.get('website')) {
+      /* Silently drop spambot submission without triggering third-party service */
+      setStatus('Thanks — your inquiry has been sent. I’ll get back to you soon.');
+      return;
+    }
     const next = validateMessage(values);
     setErrors(next);
     if (Object.keys(next).length) {
@@ -23,8 +29,9 @@ export default function ContactComposer() {
     setStatus('');
     try {
       await submitToFormspree(event);
-    } catch (error) {
-      setStatus(error.message || 'Your inquiry could not be sent. Please try again.');
+    } catch {
+      /* Generic error message prevents leaking internal error or stack details */
+      setStatus('Your inquiry could not be sent. Please try again.');
     }
   };
   const update = (event) => {

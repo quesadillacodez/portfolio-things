@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { projects } from '../data/projects';
 import { notes } from '../data/notes';
 import { faqs } from '../data/faqs';
@@ -36,15 +36,52 @@ export default function SiteSearch() {
         words.every((word) => `${entry.title} ${entry.body}`.toLowerCase().includes(word)),
       )
     : [];
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        if (dialog.current) {
+          if (dialog.current.open) {
+            dialog.current.close();
+          } else {
+            dialog.current.showModal();
+            input.current?.focus();
+          }
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    const currentDialog = dialog.current;
+    if (!currentDialog) return undefined;
+
+    const handleDialogClick = (event) => {
+      if (event.target === currentDialog) {
+        currentDialog.close();
+      }
+    };
+
+    currentDialog.addEventListener('click', handleDialogClick);
+    return () => currentDialog.removeEventListener('click', handleDialogClick);
+  }, []);
+
+  const openSearch = () => {
+    dialog.current?.showModal();
+    input.current?.focus();
+  };
+
   return (
     <>
       <button
         className="search-toggle"
         type="button"
-        onClick={() => {
-          dialog.current.showModal();
-          input.current.focus();
-        }}
+        onClick={openSearch}
+        title="Search site (⌘K / Ctrl+K)"
+        aria-label="Search site (⌘K)"
       >
         Search
       </button>
@@ -66,6 +103,7 @@ export default function SiteSearch() {
           ref={input}
           type="search"
           maxLength={120}
+          placeholder="e.g. roster, NETS, internships…"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />

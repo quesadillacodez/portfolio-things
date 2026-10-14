@@ -27,6 +27,9 @@ test('composer rejects missing, malformed, and oversized input', () => {
   assert.equal(Object.keys(validateMessage({ name: '', email: 'bad', message: 'short' })).length, 3);
   assert.ok(validateMessage({ name: 'A\nBcc: x', email: 'a@b.com', message: 'Hello about a role' }).name);
   assert.ok(validateMessage({ name: 'A', email: 'a@b.com', message: 'x'.repeat(1201) }).message);
+  assert.ok(
+    validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role', _gotcha: 'spam' }).name,
+  );
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
 });
 
@@ -36,6 +39,9 @@ test('contact form uses the configured Formspree form', () => {
   assert.match(composer, /useForm\('xvkojqge'\)/);
   assert.ok(!composer.includes('/api/contact'));
   assert.match(JSON.stringify(config), /https:\/\/formspree\.io/);
+  const csp = config.headers.find((rule) => rule.headers.some((h) => h.key === 'Content-Security-Policy'));
+  const cspHeader = csp.headers.find((h) => h.key === 'Content-Security-Policy').value;
+  assert.match(cspHeader, /form-action[^;]*https:\/\/formspree\.io/);
 });
 
 test('build emits crawler-visible metadata and only real URLs in the sitemap', () => {

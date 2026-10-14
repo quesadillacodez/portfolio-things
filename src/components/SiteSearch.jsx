@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { projects } from '../data/projects';
 import { notes } from '../data/notes';
 import { faqs } from '../data/faqs';
@@ -30,6 +30,23 @@ export default function SiteSearch() {
   const dialog = useRef(null);
   const input = useRef(null);
   const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        if (dialog.current?.open) {
+          dialog.current.close();
+        } else {
+          dialog.current?.showModal();
+          input.current?.focus();
+        }
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const results = words.length
     ? entries.filter((entry) =>
@@ -45,8 +62,13 @@ export default function SiteSearch() {
           dialog.current.showModal();
           input.current.focus();
         }}
+        aria-keyshortcuts="Control+K Meta+K"
+        aria-label="Search projects, notes, and FAQs"
       >
-        Search
+        Search{' '}
+        <kbd className="search-kbd" aria-hidden="true">
+          ⌘K
+        </kbd>
       </button>
       <dialog
         className="utility-dialog search-dialog"

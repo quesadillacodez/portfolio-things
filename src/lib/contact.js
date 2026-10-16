@@ -1,4 +1,10 @@
-export function validateMessage({ name, email, message }) {
+// Defensive input validation: ensure input fields are strings before processing
+// to prevent unhandled TypeError exceptions and fail securely on malformed payloads.
+export function validateMessage(input = {}) {
+  const name = typeof input?.name === 'string' ? input.name : '';
+  const email = typeof input?.email === 'string' ? input.email : '';
+  const message = typeof input?.message === 'string' ? input.message : '';
+
   const errors = {};
   if (!name.trim() || name.trim().length > 80 || /[\r\n]/.test(name))
     errors.name = 'Enter your name (up to 80 characters).';

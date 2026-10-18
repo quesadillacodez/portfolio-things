@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { projects } from '../data/projects';
 import { notes } from '../data/notes';
 import { faqs } from '../data/faqs';
@@ -30,6 +30,23 @@ export default function SiteSearch() {
   const dialog = useRef(null);
   const input = useRef(null);
   const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        if (dialog.current?.open) {
+          dialog.current.close();
+        } else {
+          dialog.current?.showModal();
+          input.current?.focus();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const results = words.length
     ? entries.filter((entry) =>
@@ -45,8 +62,12 @@ export default function SiteSearch() {
           dialog.current.showModal();
           input.current.focus();
         }}
+        aria-label="Search site (Cmd+K)"
       >
-        Search
+        <span>Search</span>
+        <kbd className="search-key-hint" aria-hidden="true">
+          ⌘K
+        </kbd>
       </button>
       <dialog
         className="utility-dialog search-dialog"
@@ -66,6 +87,7 @@ export default function SiteSearch() {
           ref={input}
           type="search"
           maxLength={120}
+          placeholder="Search projects, notes, and FAQs…"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
@@ -74,6 +96,9 @@ export default function SiteSearch() {
             ? `${results.length} result${results.length === 1 ? '' : 's'}`
             : 'Try “roster”, “NETS”, or “internships”.'}
         </p>
+        {words.length > 0 && results.length === 0 && (
+          <p className="utility-muted">No matching results found for &ldquo;{query.trim()}&rdquo;.</p>
+        )}
         <ul className="search-results">
           {results.map((entry) => (
             <li key={entry.title}>

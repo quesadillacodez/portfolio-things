@@ -3647,6 +3647,16 @@ footer h2,
   padding: 0.6rem;
   min-height: 44px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.search-key-hint {
+  font: 10px var(--mono);
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--line-interactive);
+  border-radius: 3px;
+  color: var(--muted);
 }
 .search-results {
   list-style: none;

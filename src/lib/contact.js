@@ -1,10 +1,15 @@
-export function validateMessage({ name, email, message }) {
+export function validateMessage(input = {}) {
+  const { name = '', email = '', message = '' } = input || {};
+  const safeName = typeof name === 'string' ? name : String(name ?? '');
+  const safeEmail = typeof email === 'string' ? email : String(email ?? '');
+  const safeMessage = typeof message === 'string' ? message : String(message ?? '');
+
   const errors = {};
-  if (!name.trim() || name.trim().length > 80 || /[\r\n]/.test(name))
+  if (!safeName.trim() || safeName.trim().length > 80 || /[\r\n]/.test(safeName))
     errors.name = 'Enter your name (up to 80 characters).';
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254)
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(safeEmail) || safeEmail.length > 254)
     errors.email = 'Enter a valid email address.';
-  if (message.trim().length < 10 || message.length > 1200)
+  if (safeMessage.trim().length < 10 || safeMessage.length > 1200)
     errors.message = 'Write between 10 and 1,200 characters.';
   return errors;
 }

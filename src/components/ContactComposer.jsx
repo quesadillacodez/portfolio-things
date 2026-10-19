@@ -112,7 +112,7 @@ export default function ContactComposer() {
           aria-describedby="message-help error-message"
         />
         <p id="message-help" className="utility-muted">
-          10–1,200 characters. Please leave out sensitive details.
+          {values.message.length}/1,200 characters (min. 10). Please leave out sensitive details.
         </p>
         <p id="error-message" className="form-error" role="alert">
           {errors.message}

@@ -1,5 +1,10 @@
-export function validateMessage({ name, email, message }) {
+export function validateMessage({ name = '', email = '', message = '', website = '' }) {
   const errors = {};
+  if (website && website.trim() !== '') {
+    // Honeypot field filled by automated spambots
+    errors.website = 'Spam detected.';
+    return errors;
+  }
   if (!name.trim() || name.trim().length > 80 || /[\r\n]/.test(name))
     errors.name = 'Enter your name (up to 80 characters).';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254)

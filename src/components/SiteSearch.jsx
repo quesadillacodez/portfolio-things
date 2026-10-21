@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { projects } from '../data/projects';
 import { notes } from '../data/notes';
 import { faqs } from '../data/faqs';
@@ -36,14 +36,32 @@ export default function SiteSearch() {
         words.every((word) => `${entry.title} ${entry.body}`.toLowerCase().includes(word)),
       )
     : [];
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        if (dialog.current?.open) {
+          dialog.current.close();
+        } else {
+          dialog.current?.showModal();
+          input.current?.focus();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <>
       <button
         className="search-toggle"
         type="button"
+        aria-label="Open site search (Cmd+K)"
         onClick={() => {
-          dialog.current.showModal();
-          input.current.focus();
+          dialog.current?.showModal();
+          input.current?.focus();
         }}
       >
         Search
@@ -68,6 +86,7 @@ export default function SiteSearch() {
           maxLength={120}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search projects, notes, and FAQs…"
         />
         <p role="status" className="utility-muted">
           {words.length

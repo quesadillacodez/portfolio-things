@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ValidationError, useForm } from '@formspree/react';
+import Icon from './Icon';
 import { site } from '../data/site';
 import { validateMessage } from '../lib/contact';
 
@@ -9,8 +10,18 @@ export default function ContactComposer() {
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState('');
   const [copyStatus, setCopyStatus] = useState('');
+  const [copied, setCopied] = useState(false);
   const [formState, submitToFormspree, resetFormspree] = useForm('xvkojqge');
   const discard = useRef(null);
+
+  useEffect(() => {
+    if (!copied) return undefined;
+    const timer = setTimeout(() => {
+      setCopied(false);
+      setCopyStatus('');
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [copied]);
 
   const submit = async (event) => {
     event.preventDefault();
@@ -31,13 +42,16 @@ export default function ContactComposer() {
     if (formState.succeeded) resetFormspree();
     setValues({ ...values, [event.target.name]: event.target.value });
     setStatus('');
+    setCopied(false);
     setCopyStatus('');
   };
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(site.email);
+      setCopied(true);
       setCopyStatus('Email address copied.');
     } catch {
+      setCopied(false);
       setCopyStatus(`Copy manually: ${site.email}`);
     }
   };
@@ -49,10 +63,16 @@ export default function ContactComposer() {
           Tell me about the opportunity, team, and timing. Your message will be sent directly to my inbox.
         </p>
         <p>I’ll reply to the email address you provide when I can.</p>
-        <button type="button" className="copy-link" onClick={copy}>
-          Copy email address
+        <button
+          type="button"
+          className="copy-link"
+          onClick={copy}
+          aria-label={copied ? 'Email address copied to clipboard' : 'Copy email address'}
+        >
+          <Icon name={copied ? 'check' : 'arrow'} size={14} />
+          {copied ? 'Copied' : 'Copy email address'}
         </button>
-        <p role="status">{copyStatus}</p>
+        <p role="status" aria-live="polite">{copyStatus}</p>
       </div>
       <form onSubmit={submit} noValidate>
         <label

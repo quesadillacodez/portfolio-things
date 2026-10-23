@@ -72,7 +72,9 @@ export default function ContactComposer() {
           <Icon name={copied ? 'check' : 'arrow'} size={14} />
           {copied ? 'Copied' : 'Copy email address'}
         </button>
-        <p role="status" aria-live="polite">{copyStatus}</p>
+        <p role="status" aria-live="polite">
+          {copyStatus}
+        </p>
       </div>
       <form onSubmit={submit} noValidate>
         <label

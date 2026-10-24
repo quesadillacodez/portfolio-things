@@ -3648,6 +3648,18 @@ footer h2,
   min-height: 44px;
   cursor: pointer;
 }
+.search-kbd {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  padding: 0.1rem 0.35rem;
+  margin-left: 0.35rem;
+  border: 1px solid var(--line-interactive);
+  border-radius: 2px;
+  color: var(--muted);
+  background: var(--surface);
+  vertical-align: baseline;
+}
 .search-results {
   list-style: none;
   padding: 0;

@@ -14,7 +14,10 @@ export default function ContactComposer() {
 
   const submit = async (event) => {
     event.preventDefault();
-    const next = validateMessage(values);
+    const next = validateMessage({
+      ...values,
+      website: event.target.elements.website?.value,
+    });
     setErrors(next);
     if (Object.keys(next).length) {
       document.getElementById(`contact-${Object.keys(next)[0]}`)?.focus();

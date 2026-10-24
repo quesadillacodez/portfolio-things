@@ -6,6 +6,7 @@ import Picture from './Picture';
 import RosterDemo from './RosterDemo';
 import SectionLabel from './SectionLabel';
 import { readingMinutes } from '../lib/readingTime';
+import { sanitizeUrl } from '../lib/contact';
 
 // Item 17: a project with six interface screens and CPF-aware payroll logic was
 // compressed into three short paragraphs on a shared index. This is the page it earned:
@@ -64,7 +65,7 @@ export default function CaseStudy({ project, onOpenImage, reducedMotion }) {
           {project.demo && (
             <a
               className="button button-primary"
-              href={project.demo}
+              href={sanitizeUrl(project.demo)}
               target="_blank"
               rel="noopener noreferrer"
             >

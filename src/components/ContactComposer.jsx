@@ -140,7 +140,15 @@ export default function ContactComposer() {
           Or email <a href={`mailto:${site.email}`}>{site.email}</a> directly · <a href="/privacy">Privacy</a>
         </p>
       </form>
-      <dialog className="utility-dialog" ref={discard} aria-labelledby="discard-title">
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
+      <dialog
+        className="utility-dialog"
+        ref={discard}
+        aria-labelledby="discard-title"
+        onClick={(event) => {
+          if (event.target === discard.current) discard.current.close();
+        }}
+      >
         <h2 id="discard-title">Clear this draft?</h2>
         <p>Your unsent text will be removed from this page.</p>
         <div className="utility-actions">

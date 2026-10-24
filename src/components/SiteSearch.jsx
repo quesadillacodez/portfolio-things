@@ -48,11 +48,15 @@ export default function SiteSearch() {
       >
         Search
       </button>
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
       <dialog
         className="utility-dialog search-dialog"
         ref={dialog}
         aria-labelledby="search-title"
         onClose={() => setQuery('')}
+        onClick={(event) => {
+          if (event.target === dialog.current) dialog.current.close();
+        }}
       >
         <div className="utility-dialog-head">
           <h2 id="search-title">Find something</h2>

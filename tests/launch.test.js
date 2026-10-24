@@ -30,6 +30,24 @@ test('composer rejects missing, malformed, and oversized input', () => {
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
 });
 
+test('all target="_blank" links specify rel="noopener noreferrer"', () => {
+  const jsxFiles = [
+    'src/App.jsx',
+    'src/components/CaseStudy.jsx',
+    'src/components/InfoPage.jsx',
+    'src/components/ProjectCard.jsx',
+  ];
+  for (const file of jsxFiles) {
+    const content = readFileSync(file, 'utf8');
+    if (content.includes('target="_blank"')) {
+      assert.ok(
+        content.includes('rel="noopener noreferrer"'),
+        `${file} has target="_blank" without rel="noopener noreferrer"`,
+      );
+    }
+  }
+});
+
 test('contact form uses the configured Formspree form', () => {
   const composer = readFileSync('src/components/ContactComposer.jsx', 'utf8');
   const config = JSON.parse(readFileSync('vercel.json', 'utf8'));

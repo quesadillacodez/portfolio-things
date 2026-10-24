@@ -1,5 +1,6 @@
-export function validateMessage({ name, email, message }) {
+export function validateMessage({ name, email, message, website }) {
   const errors = {};
+  if (website) errors.website = 'Invalid submission.';
   if (!name.trim() || name.trim().length > 80 || /[\r\n]/.test(name))
     errors.name = 'Enter your name (up to 80 characters).';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254)

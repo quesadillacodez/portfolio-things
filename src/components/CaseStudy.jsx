@@ -67,6 +67,7 @@ export default function CaseStudy({ project, onOpenImage, reducedMotion }) {
               href={project.demo}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`${project.demoNote || 'Live demo'} (opens in a new tab)`}
             >
               {project.demoNote || 'Live demo'} <Icon name="arrow" />
             </a>

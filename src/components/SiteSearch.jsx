@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { projects } from '../data/projects';
 import { notes } from '../data/notes';
 import { faqs } from '../data/faqs';
@@ -30,6 +30,48 @@ export default function SiteSearch() {
   const dialog = useRef(null);
   const input = useRef(null);
   const [query, setQuery] = useState('');
+  const [isMac] = useState(() => {
+    if (typeof navigator !== 'undefined') {
+      return /Mac|iPod|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+    }
+    return true;
+  });
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if ((event.key === 'k' || event.key === 'K') && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        if (dialog.current && !dialog.current.open) {
+          dialog.current.showModal();
+          input.current?.focus();
+        } else if (dialog.current?.open) {
+          dialog.current.close();
+        }
+        return;
+      }
+
+      if (event.key === '/') {
+        const activeTag = document.activeElement?.tagName.toLowerCase();
+        const isEditable =
+          activeTag === 'input' ||
+          activeTag === 'textarea' ||
+          activeTag === 'select' ||
+          document.activeElement?.isContentEditable;
+
+        if (!isEditable) {
+          event.preventDefault();
+          if (dialog.current && !dialog.current.open) {
+            dialog.current.showModal();
+            input.current?.focus();
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const results = words.length
     ? entries.filter((entry) =>
@@ -41,12 +83,14 @@ export default function SiteSearch() {
       <button
         className="search-toggle"
         type="button"
+        aria-keyshortcuts="Control+k Meta+k /"
         onClick={() => {
           dialog.current.showModal();
           input.current.focus();
         }}
       >
-        Search
+        <span>Search</span>
+        <kbd className="search-shortcut">{isMac ? '⌘K' : 'Ctrl+K'}</kbd>
       </button>
       <dialog
         className="utility-dialog search-dialog"

@@ -1,4 +1,10 @@
-export function validateMessage({ name, email, message }) {
+// Security: Defensively validate and sanitize input fields to ensure non-string
+// or missing properties do not cause unhandled runtime exceptions.
+export function validateMessage(input = {}) {
+  const name = typeof input?.name === 'string' ? input.name : '';
+  const email = typeof input?.email === 'string' ? input.email : '';
+  const message = typeof input?.message === 'string' ? input.message : '';
+
   const errors = {};
   if (!name.trim() || name.trim().length > 80 || /[\r\n]/.test(name))
     errors.name = 'Enter your name (up to 80 characters).';

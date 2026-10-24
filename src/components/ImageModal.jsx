@@ -110,6 +110,7 @@ export default function ImageModal({ gallery, initialIndex, originRect, onClose,
           onClick={onClose}
           ref={closeRef}
           aria-label="Close image viewer"
+          title="Close (Esc)"
         >
           <Icon name="close" size={22} />
         </button>
@@ -137,13 +138,22 @@ export default function ImageModal({ gallery, initialIndex, originRect, onClose,
 
       <div className="modal-foot">
         <p>{caption}</p>
-        <button type="button" onClick={() => go(-1)} disabled={gallery.length < 2}>
+        <button
+          type="button"
+          onClick={() => go(-1)}
+          disabled={gallery.length < 2}
+          aria-label="Previous image"
+        >
           Previous
         </button>
-        <button type="button" onClick={() => setZoomed((on) => !on)}>
+        <button
+          type="button"
+          onClick={() => setZoomed((on) => !on)}
+          aria-label={zoomed ? 'Fit image to screen' : 'Zoom image'}
+        >
           {zoomed ? 'Fit' : 'Zoom'}
         </button>
-        <button type="button" onClick={() => go(1)} disabled={gallery.length < 2}>
+        <button type="button" onClick={() => go(1)} disabled={gallery.length < 2} aria-label="Next image">
           Next
         </button>
       </div>

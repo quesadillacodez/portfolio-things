@@ -23,9 +23,13 @@ test('every content page resolves from its real URL and its legacy hash', () => 
   assert.equal(resolveRoute('/privacy', '#main-content').kind, 'privacy');
 });
 
-test('composer rejects missing, malformed, and oversized input', () => {
+test('composer rejects missing, malformed, non-string, and oversized input', () => {
   assert.equal(Object.keys(validateMessage({ name: '', email: 'bad', message: 'short' })).length, 3);
+  assert.equal(Object.keys(validateMessage({})).length, 3);
+  assert.equal(Object.keys(validateMessage(null)).length, 3);
+  assert.equal(Object.keys(validateMessage({ name: null, email: 123, message: {} })).length, 3);
   assert.ok(validateMessage({ name: 'A\nBcc: x', email: 'a@b.com', message: 'Hello about a role' }).name);
+  assert.ok(validateMessage({ name: 'A', email: 'a\r\nBcc: x@b.com', message: 'Hello about a role' }).email);
   assert.ok(validateMessage({ name: 'A', email: 'a@b.com', message: 'x'.repeat(1201) }).message);
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
 });

@@ -119,7 +119,29 @@ export default function ContactComposer() {
         </p>
         <div className="utility-actions">
           <button className="button button-primary" type="submit" disabled={formState.submitting}>
-            {formState.submitting ? 'Sending…' : 'Send inquiry'}
+            {formState.submitting ? (
+              <>
+                <svg
+                  className="animate-spin"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '0.4em' }}
+                >
+                  <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                  <path d="M12 2a10 10 0 0 1 10 10" />
+                </svg>
+                <span>Sending…</span>
+              </>
+            ) : (
+              'Send inquiry'
+            )}
           </button>
           <button
             className="button button-quiet"

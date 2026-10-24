@@ -30,12 +30,13 @@ test('composer rejects missing, malformed, and oversized input', () => {
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
 });
 
-test('contact form uses the configured Formspree form', () => {
+test('contact form uses the configured Formspree form and honeypot protection', () => {
   const composer = readFileSync('src/components/ContactComposer.jsx', 'utf8');
   const config = JSON.parse(readFileSync('vercel.json', 'utf8'));
   assert.match(composer, /useForm\('xvkojqge'\)/);
   assert.ok(!composer.includes('/api/contact'));
   assert.match(JSON.stringify(config), /https:\/\/formspree\.io/);
+  assert.match(composer, /get\('website'\)/);
 });
 
 test('build emits crawler-visible metadata and only real URLs in the sitemap', () => {

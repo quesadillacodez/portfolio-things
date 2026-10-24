@@ -20,6 +20,12 @@ export default function ContactComposer() {
       document.getElementById(`contact-${Object.keys(next)[0]}`)?.focus();
       return;
     }
+    const honeypot = new FormData(event.currentTarget).get('website');
+    if (honeypot) {
+      // Security: Silently drop honeypot submissions to block automated spam bots
+      setStatus('Thanks — your inquiry has been sent. I’ll get back to you soon.');
+      return;
+    }
     setStatus('');
     try {
       await submitToFormspree(event);

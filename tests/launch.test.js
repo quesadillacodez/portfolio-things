@@ -37,9 +37,11 @@ test('all target="_blank" links specify rel="noopener noreferrer"', () => {
     const content = readFileSync(file, 'utf8');
     const matches = content.match(/<a\s+[^>]*target="_blank"[^>]*>/g) || [];
     for (const match of matches) {
+      const relMatch = match.match(/rel=(?:"([^"]*)"|'([^']*)')/);
+      const relTokens = relMatch ? (relMatch[1] || relMatch[2] || '').split(/\s+/) : [];
       assert.ok(
-        match.includes('rel="noopener noreferrer"'),
-        `Link in ${file} with target="_blank" is missing rel="noopener noreferrer": ${match}`,
+        relTokens.includes('noopener') && relTokens.includes('noreferrer'),
+        `Link in ${file} with target="_blank" missing noopener and noreferrer in rel: ${match}`,
       );
     }
   }

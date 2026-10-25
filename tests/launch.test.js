@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { pages, resolveRoute, siteUrl } from '../src/lib/routes.js';
 import { validateMessage } from '../src/lib/contact.js';
 
@@ -28,6 +28,23 @@ test('composer rejects missing, malformed, and oversized input', () => {
   assert.ok(validateMessage({ name: 'A\nBcc: x', email: 'a@b.com', message: 'Hello about a role' }).name);
   assert.ok(validateMessage({ name: 'A', email: 'a@b.com', message: 'x'.repeat(1201) }).message);
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
+});
+
+test('all target="_blank" links specify rel="noopener noreferrer"', () => {
+  const componentFiles = readdirSync('src/components').map((file) => `src/components/${file}`);
+  componentFiles.push('src/App.jsx');
+  for (const file of componentFiles) {
+    const content = readFileSync(file, 'utf8');
+    const matches = content.match(/<a\s+[^>]*target="_blank"[^>]*>/g) || [];
+    for (const match of matches) {
+      const relMatch = match.match(/rel=(?:"([^"]*)"|'([^']*)')/);
+      const relTokens = relMatch ? (relMatch[1] || relMatch[2] || '').split(/\s+/) : [];
+      assert.ok(
+        relTokens.includes('noopener') && relTokens.includes('noreferrer'),
+        `Link in ${file} with target="_blank" missing noopener and noreferrer in rel: ${match}`,
+      );
+    }
+  }
 });
 
 test('contact form uses the configured Formspree form', () => {

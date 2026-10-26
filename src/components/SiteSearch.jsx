@@ -41,6 +41,7 @@ export default function SiteSearch() {
       <button
         className="search-toggle"
         type="button"
+        aria-label="Open search dialog"
         onClick={() => {
           dialog.current.showModal();
           input.current.focus();
@@ -66,10 +67,13 @@ export default function SiteSearch() {
           ref={input}
           type="search"
           maxLength={120}
+          placeholder="e.g. roster, NETS, internships"
+          autoComplete="off"
+          aria-describedby="search-status"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
-        <p role="status" className="utility-muted">
+        <p id="search-status" role="status" className="utility-muted">
           {words.length
             ? `${results.length} result${results.length === 1 ? '' : 's'}`
             : 'Try “roster”, “NETS”, or “internships”.'}

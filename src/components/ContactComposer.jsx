@@ -61,7 +61,14 @@ export default function ContactComposer() {
           style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}
         >
           Website
-          <input id="contact-website" name="website" tabIndex="-1" autoComplete="off" />
+          <input
+            id="contact-website"
+            name="website"
+            tabIndex="-1"
+            autoComplete="off"
+            value={values.website || ''}
+            onChange={update}
+          />
         </label>
         <label htmlFor="contact-name">Your name</label>
         <input

@@ -14,9 +14,15 @@ export default function ContactComposer() {
 
   const submit = async (event) => {
     event.preventDefault();
-    const next = validateMessage(values);
+    const website = event.target.website?.value || '';
+    const next = validateMessage({ ...values, website });
     setErrors(next);
     if (Object.keys(next).length) {
+      if (next.website) {
+        /* Silently reject honeypot bot submissions without invoking external API. */
+        setStatus('Thanks — your inquiry has been sent. I’ll get back to you soon.');
+        return;
+      }
       document.getElementById(`contact-${Object.keys(next)[0]}`)?.focus();
       return;
     }

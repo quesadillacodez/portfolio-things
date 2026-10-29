@@ -31,12 +31,21 @@ test('composer rejects missing, malformed, and oversized input', () => {
 });
 
 test('all external links with target="_blank" specify rel="noopener noreferrer"', () => {
-  const files = ['src/App.jsx', 'src/components/InfoPage.jsx', 'src/components/CaseStudy.jsx', 'src/components/ProjectCard.jsx'];
+  const files = [
+    'src/App.jsx',
+    'src/components/InfoPage.jsx',
+    'src/components/CaseStudy.jsx',
+    'src/components/ProjectCard.jsx',
+  ];
   for (const file of files) {
     const content = readFileSync(file, 'utf8');
     const matches = content.match(/<a\s+[^>]*target="_blank"[^>]*>/g) || [];
     for (const match of matches) {
-      assert.match(match, /rel="noopener noreferrer"/, `Missing rel="noopener noreferrer" in ${file}: ${match}`);
+      assert.match(
+        match,
+        /rel="noopener noreferrer"/,
+        `Missing rel="noopener noreferrer" in ${file}: ${match}`,
+      );
     }
   }
 });

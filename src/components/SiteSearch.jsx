@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { projects } from '../data/projects';
 import { notes } from '../data/notes';
 import { faqs } from '../data/faqs';
@@ -30,6 +30,32 @@ export default function SiteSearch() {
   const dialog = useRef(null);
   const input = useRef(null);
   const [query, setQuery] = useState('');
+
+  const openSearch = () => {
+    if (dialog.current?.open) return;
+    dialog.current?.showModal();
+    input.current?.focus();
+  };
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      const isInput =
+        ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName) ||
+        document.activeElement?.isContentEditable;
+      if (isInput && !dialog.current?.open) return;
+
+      const isSlash = event.key === '/' && !event.ctrlKey && !event.metaKey && !event.altKey;
+      const isCmdK = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';
+
+      if ((isSlash || isCmdK) && !dialog.current?.open) {
+        event.preventDefault();
+        openSearch();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const results = words.length
     ? entries.filter((entry) =>
@@ -41,12 +67,11 @@ export default function SiteSearch() {
       <button
         className="search-toggle"
         type="button"
-        onClick={() => {
-          dialog.current.showModal();
-          input.current.focus();
-        }}
+        onClick={openSearch}
+        aria-keyshortcuts="/ Control+k Meta+k"
+        aria-label="Search projects, notes, and FAQs (/)"
       >
-        Search
+        Search <kbd aria-hidden="true">/</kbd>
       </button>
       <dialog
         className="utility-dialog search-dialog"
@@ -74,17 +99,23 @@ export default function SiteSearch() {
             ? `${results.length} result${results.length === 1 ? '' : 's'}`
             : 'Try “roster”, “NETS”, or “internships”.'}
         </p>
-        <ul className="search-results">
-          {results.map((entry) => (
-            <li key={entry.title}>
-              <a href={entry.href} onClick={() => dialog.current.close()}>
-                <span>{entry.type}</span>
-                <strong>{entry.title}</strong>
-                <p>{entry.body}</p>
-              </a>
-            </li>
-          ))}
-        </ul>
+        {words.length > 0 && results.length === 0 ? (
+          <p className="search-empty" role="status">
+            No results found for “{query.trim()}”. Try searching for “roster”, “NETS”, or “Tableau”.
+          </p>
+        ) : (
+          <ul className="search-results">
+            {results.map((entry) => (
+              <li key={entry.title}>
+                <a href={entry.href} onClick={() => dialog.current.close()}>
+                  <span>{entry.type}</span>
+                  <strong>{entry.title}</strong>
+                  <p>{entry.body}</p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </dialog>
     </>
   );

@@ -12,6 +12,17 @@ test('deployment headers have no duplicate names within a route rule', () => {
   }
 });
 
+test('deployment headers configure Cross-Origin-Resource-Policy', () => {
+  const config = JSON.parse(readFileSync('vercel.json', 'utf8'));
+  const globalRule = config.headers.find((rule) => rule.source === '/(.*)');
+  assert.ok(globalRule, 'Global header rule found');
+  const corpHeader = globalRule.headers.find(
+    (header) => header.key.toLowerCase() === 'cross-origin-resource-policy',
+  );
+  assert.ok(corpHeader, 'Cross-Origin-Resource-Policy header is configured');
+  assert.equal(corpHeader.value, 'same-origin');
+});
+
 test('every content page resolves from its real URL and its legacy hash', () => {
   for (const page of pages.filter((page) => page.path !== '/')) {
     assert.equal(resolveRoute(page.path)?.path, page.path);

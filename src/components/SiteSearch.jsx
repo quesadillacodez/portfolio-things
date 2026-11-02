@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { projects } from '../data/projects';
 import { notes } from '../data/notes';
 import { faqs } from '../data/faqs';
@@ -6,7 +6,7 @@ import { faqs } from '../data/faqs';
 const entries = [
   ...projects.map((project) => ({
     title: project.title,
-    body: project.summary,
+    body: `${project.summary} ${(project.stack || []).join(' ')}`,
     href: project.caseStudy ? `/case/${project.slug}` : '/#work',
     type: 'Project',
   })),
@@ -29,6 +29,7 @@ const entries = [
 export default function SiteSearch() {
   const dialog = useRef(null);
   const input = useRef(null);
+  const triggerRef = useRef(null);
   const [query, setQuery] = useState('');
   const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const results = words.length
@@ -36,23 +37,53 @@ export default function SiteSearch() {
         words.every((word) => `${entry.title} ${entry.body}`.toLowerCase().includes(word)),
       )
     : [];
+
+  const openSearch = () => {
+    dialog.current?.showModal();
+    input.current?.focus();
+  };
+
+  const handleClose = () => {
+    setQuery('');
+    triggerRef.current?.focus();
+  };
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        dialog.current?.open ? dialog.current.close() : openSearch();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   return (
     <>
       <button
+        ref={triggerRef}
         className="search-toggle"
         type="button"
-        onClick={() => {
-          dialog.current.showModal();
-          input.current.focus();
-        }}
+        onClick={openSearch}
+        aria-haspopup="dialog"
+        aria-keyshortcuts="Control+k Meta+k"
+        title="Search (⌘K)"
       >
-        Search
+        Search{' '}
+        <span
+          className="section-code"
+          style={{ padding: '0.1rem 0.35rem', marginLeft: '0.35rem' }}
+          aria-hidden="true"
+        >
+          ⌘K
+        </span>
       </button>
       <dialog
         className="utility-dialog search-dialog"
         ref={dialog}
         aria-labelledby="search-title"
-        onClose={() => setQuery('')}
+        onClose={handleClose}
       >
         <div className="utility-dialog-head">
           <h2 id="search-title">Find something</h2>
@@ -71,7 +102,9 @@ export default function SiteSearch() {
         />
         <p role="status" className="utility-muted">
           {words.length
-            ? `${results.length} result${results.length === 1 ? '' : 's'}`
+            ? results.length
+              ? `${results.length} result${results.length === 1 ? '' : 's'}`
+              : `No matches for “${query}”. Try another term.`
             : 'Try “roster”, “NETS”, or “internships”.'}
         </p>
         <ul className="search-results">

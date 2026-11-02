@@ -27,6 +27,14 @@ test('composer rejects missing, malformed, and oversized input', () => {
   assert.equal(Object.keys(validateMessage({ name: '', email: 'bad', message: 'short' })).length, 3);
   assert.ok(validateMessage({ name: 'A\nBcc: x', email: 'a@b.com', message: 'Hello about a role' }).name);
   assert.ok(validateMessage({ name: 'A', email: 'a@b.com', message: 'x'.repeat(1201) }).message);
+  assert.ok(
+    validateMessage({
+      name: 'A',
+      email: 'a@b.com',
+      message: 'Hello about a role',
+      website: 'https://spam.com',
+    }).website,
+  );
   assert.deepEqual(validateMessage({ name: 'A', email: 'a@b.com', message: 'Hello about a role' }), {});
 });
 
@@ -36,6 +44,11 @@ test('contact form uses the configured Formspree form', () => {
   assert.match(composer, /useForm\('xvkojqge'\)/);
   assert.ok(!composer.includes('/api/contact'));
   assert.match(JSON.stringify(config), /https:\/\/formspree\.io/);
+});
+
+test('all external target="_blank" links include rel="noopener noreferrer"', () => {
+  const infoPage = readFileSync('src/components/InfoPage.jsx', 'utf8');
+  assert.match(infoPage, /target="_blank"\s+rel="noopener noreferrer"/);
 });
 
 test('build emits crawler-visible metadata and only real URLs in the sitemap', () => {

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { pages, resolveRoute, siteUrl } from '../src/lib/routes.js';
 import { validateMessage } from '../src/lib/contact.js';
 
@@ -36,6 +37,36 @@ test('contact form uses the configured Formspree form', () => {
   assert.match(composer, /useForm\('xvkojqge'\)/);
   assert.ok(!composer.includes('/api/contact'));
   assert.match(JSON.stringify(config), /https:\/\/formspree\.io/);
+});
+
+test('all target="_blank" links include rel="noopener noreferrer" to prevent reverse tabnabbing', () => {
+  function getJsxFiles(dir) {
+    const files = [];
+    for (const entry of readdirSync(dir)) {
+      const fullPath = join(dir, entry);
+      if (statSync(fullPath).isDirectory()) {
+        files.push(...getJsxFiles(fullPath));
+      } else if (fullPath.endsWith('.jsx') || fullPath.endsWith('.js')) {
+        files.push(fullPath);
+      }
+    }
+    return files;
+  }
+
+  const sourceFiles = getJsxFiles('src');
+  for (const file of sourceFiles) {
+    const content = readFileSync(file, 'utf8');
+    const blankRegex = /<a\b[^>]*\btarget=["']_blank["'][^>]*>/gs;
+    let match;
+    while ((match = blankRegex.exec(content)) !== null) {
+      const tag = match[0];
+      assert.match(
+        tag,
+        /\brel=["'][^"']*\bnoopener\b[^"']*\bnoreferrer\b[^"']*["']/,
+        `Missing rel="noopener noreferrer" in ${file}: ${tag}`,
+      );
+    }
+  }
 });
 
 test('build emits crawler-visible metadata and only real URLs in the sitemap', () => {

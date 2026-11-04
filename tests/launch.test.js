@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { pages, resolveRoute, siteUrl } from '../src/lib/routes.js';
 import { validateMessage } from '../src/lib/contact.js';
 
@@ -48,4 +48,19 @@ test('build emits crawler-visible metadata and only real URLs in the sitemap', (
   }
   assert.ok(!sitemap.includes('#'));
   assert.ok(existsSync('dist/404.html'));
+});
+
+test('external links with target="_blank" use rel="noopener noreferrer" to prevent reverse tabnabbing', () => {
+  const files = readdirSync('src', { recursive: true, withFileTypes: true })
+    .filter((entry) => entry.isFile() && /\.(jsx?|html)$/.test(entry.name))
+    .map((entry) => `${entry.parentPath || entry.path}/${entry.name}`);
+
+  for (const file of files) {
+    const content = readFileSync(file, 'utf8');
+    const matches = content.match(/<a\b[^>]*\btarget=["']_blank["'][^>]*>/g) || [];
+    for (const match of matches) {
+      assert.match(match, /\brel=["'][^"']*noopener[^"']*["']/, `Missing noopener in ${file}: ${match}`);
+      assert.match(match, /\brel=["'][^"']*noreferrer[^"']*["']/, `Missing noreferrer in ${file}: ${match}`);
+    }
+  }
 });

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { pages, resolveRoute, siteUrl } from '../src/lib/routes.js';
 import { validateMessage } from '../src/lib/contact.js';
 
@@ -48,4 +48,24 @@ test('build emits crawler-visible metadata and only real URLs in the sitemap', (
   }
   assert.ok(!sitemap.includes('#'));
   assert.ok(existsSync('dist/404.html'));
+});
+
+test('all external links opening in a new tab protect against reverse tabnabbing', () => {
+  const scanDir = (dir) => {
+    let files = [];
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = `${dir}/${entry.name}`;
+      if (entry.isDirectory()) files.push(...scanDir(full));
+      else if (/\.(jsx?|html)$/.test(entry.name)) files.push(full);
+    }
+    return files;
+  };
+  for (const file of scanDir('src')) {
+    const content = readFileSync(file, 'utf8');
+    const tags = content.match(/<a\b[^>]*\btarget=["']_blank["'][^>]*>/gi) || [];
+    for (const tag of tags) {
+      assert.match(tag, /rel=["'][^"']*noopener[^"']*["']/, `${file}: missing noopener in ${tag}`);
+      assert.match(tag, /rel=["'][^"']*noreferrer[^"']*["']/, `${file}: missing noreferrer in ${tag}`);
+    }
+  }
 });

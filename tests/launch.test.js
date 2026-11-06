@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { pages, resolveRoute, siteUrl } from '../src/lib/routes.js';
 import { validateMessage } from '../src/lib/contact.js';
 
@@ -48,4 +49,33 @@ test('build emits crawler-visible metadata and only real URLs in the sitemap', (
   }
   assert.ok(!sitemap.includes('#'));
   assert.ok(existsSync('dist/404.html'));
+});
+
+test('external links with target="_blank" include rel="noopener noreferrer" to prevent reverse tabnabbing', () => {
+  function getFiles(dir) {
+    const files = [];
+    for (const item of readdirSync(dir)) {
+      const fullPath = join(dir, item);
+      if (statSync(fullPath).isDirectory()) {
+        files.push(...getFiles(fullPath));
+      } else if (/\.(jsx?|html)$/.test(item)) {
+        files.push(fullPath);
+      }
+    }
+    return files;
+  }
+
+  const files = getFiles('src');
+  for (const file of files) {
+    const content = readFileSync(file, 'utf8');
+    const anchorMatches = content.match(/<a\b[^>]*>/gs) || [];
+    for (const tag of anchorMatches) {
+      if (tag.includes('target="_blank"')) {
+        assert.ok(
+          tag.includes('rel="noopener noreferrer"'),
+          `File ${file} contains target="_blank" without rel="noopener noreferrer": ${tag}`,
+        );
+      }
+    }
+  }
 });

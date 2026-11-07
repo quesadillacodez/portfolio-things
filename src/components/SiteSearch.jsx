@@ -70,21 +70,25 @@ export default function SiteSearch() {
           onChange={(event) => setQuery(event.target.value)}
         />
         <p role="status" className="utility-muted">
-          {words.length
-            ? `${results.length} result${results.length === 1 ? '' : 's'}`
-            : 'Try “roster”, “NETS”, or “internships”.'}
+          {!words.length
+            ? 'Try “roster”, “NETS”, or “internships”.'
+            : results.length === 0
+              ? 'No matching results found. Try searching for “roster”, “NETS”, or “internships”.'
+              : `${results.length} result${results.length === 1 ? '' : 's'}`}
         </p>
-        <ul className="search-results">
-          {results.map((entry) => (
-            <li key={entry.title}>
-              <a href={entry.href} onClick={() => dialog.current.close()}>
-                <span>{entry.type}</span>
-                <strong>{entry.title}</strong>
-                <p>{entry.body}</p>
-              </a>
-            </li>
-          ))}
-        </ul>
+        {results.length > 0 && (
+          <ul className="search-results">
+            {results.map((entry) => (
+              <li key={entry.title}>
+                <a href={entry.href} onClick={() => dialog.current.close()}>
+                  <span>{entry.type}</span>
+                  <strong>{entry.title}</strong>
+                  <p>{entry.body}</p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </dialog>
     </>
   );

@@ -70,15 +70,13 @@ export default function SiteSearch() {
           onChange={(event) => setQuery(event.target.value)}
         />
         <p role="status" className="utility-muted">
-          {words.length
-            ? `${results.length} result${results.length === 1 ? '' : 's'}`
-            : 'Try “roster”, “NETS”, or “internships”.'}
+          {!words.length
+            ? 'Try “roster”, “NETS”, or “internships”.'
+            : results.length === 0
+              ? 'No matching results found. Try searching for “roster”, “NETS”, or “internships”.'
+              : `${results.length} result${results.length === 1 ? '' : 's'}`}
         </p>
-        {words.length > 0 && results.length === 0 ? (
-          <p className="utility-muted">
-            No matching results found. Try searching for “roster”, “NETS”, or “internships”.
-          </p>
-        ) : (
+        {results.length > 0 && (
           <ul className="search-results">
             {results.map((entry) => (
               <li key={entry.title}>

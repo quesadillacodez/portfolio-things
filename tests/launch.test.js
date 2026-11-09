@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { pages, resolveRoute, siteUrl } from '../src/lib/routes.js';
 import { validateMessage } from '../src/lib/contact.js';
 
@@ -36,6 +37,36 @@ test('contact form uses the configured Formspree form', () => {
   assert.match(composer, /useForm\('xvkojqge'\)/);
   assert.ok(!composer.includes('/api/contact'));
   assert.match(JSON.stringify(config), /https:\/\/formspree\.io/);
+});
+
+test('all target="_blank" links include rel="noopener noreferrer"', () => {
+  const getFiles = (dir) => {
+    let results = [];
+    for (const file of readdirSync(dir)) {
+      const fullPath = join(dir, file);
+      if (statSync(fullPath).isDirectory()) {
+        results = results.concat(getFiles(fullPath));
+      } else if (file.endsWith('.jsx') || file.endsWith('.js') || file.endsWith('.html')) {
+        results.push(fullPath);
+      }
+    }
+    return results;
+  };
+
+  const files = [...getFiles('src'), ...getFiles('public')];
+  const blankLinkRegex = /<a\b[^>]*\btarget=["']_blank["'][^>]*>/g;
+
+  for (const file of files) {
+    const content = readFileSync(file, 'utf8');
+    const matches = content.match(blankLinkRegex) || [];
+    for (const match of matches) {
+      assert.match(
+        match,
+        /rel=["']noopener noreferrer["']/,
+        `File ${file} has a target="_blank" link missing rel="noopener noreferrer": ${match}`,
+      );
+    }
+  }
 });
 
 test('build emits crawler-visible metadata and only real URLs in the sitemap', () => {

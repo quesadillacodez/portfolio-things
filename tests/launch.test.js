@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { pages, resolveRoute, siteUrl } from '../src/lib/routes.js';
 import { validateMessage } from '../src/lib/contact.js';
 
@@ -48,4 +49,30 @@ test('build emits crawler-visible metadata and only real URLs in the sitemap', (
   }
   assert.ok(!sitemap.includes('#'));
   assert.ok(existsSync('dist/404.html'));
+});
+
+test('external target="_blank" links include rel="noopener noreferrer"', () => {
+  const getFiles = (dir) => {
+    const entries = readdirSync(dir, { withFileTypes: true });
+    return entries.flatMap((entry) => {
+      const fullPath = join(dir, entry.name);
+      return entry.isDirectory() ? getFiles(fullPath) : fullPath;
+    });
+  };
+
+  const jsxFiles = getFiles('src').filter((file) => file.endsWith('.jsx'));
+  const anchorRegex = /<a\b[^>]*>/gi;
+
+  for (const file of jsxFiles) {
+    const content = readFileSync(file, 'utf8');
+    const matches = content.match(anchorRegex) || [];
+    for (const tag of matches) {
+      if (tag.includes('target="_blank"')) {
+        assert.ok(
+          tag.includes('rel="noopener noreferrer"'),
+          `${file} has target="_blank" missing rel="noopener noreferrer": ${tag}`,
+        );
+      }
+    }
+  }
 });

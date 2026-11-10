@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { projects } from '../data/projects';
 import { notes } from '../data/notes';
 import { faqs } from '../data/faqs';
@@ -36,17 +36,59 @@ export default function SiteSearch() {
         words.every((word) => `${entry.title} ${entry.body}`.toLowerCase().includes(word)),
       )
     : [];
+
+  const openSearch = useCallback(() => {
+    if (!dialog.current?.open) {
+      dialog.current?.showModal();
+      input.current?.focus();
+    }
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      const activeTag = document.activeElement?.tagName?.toLowerCase();
+      const isEditable =
+        activeTag === 'input' ||
+        activeTag === 'textarea' ||
+        activeTag === 'select' ||
+        document.activeElement?.isContentEditable;
+
+      if ((event.key === '/' && !isEditable) || ((event.metaKey || event.ctrlKey) && event.key === 'k')) {
+        event.preventDefault();
+        openSearch();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [openSearch]);
+
+  useEffect(() => {
+    const dialogNode = dialog.current;
+    if (!dialogNode) return undefined;
+
+    const onDialogClick = (event) => {
+      if (event.target === dialogNode) {
+        dialogNode.close();
+      }
+    };
+
+    dialogNode.addEventListener('click', onDialogClick);
+    return () => dialogNode.removeEventListener('click', onDialogClick);
+  }, []);
+
   return (
     <>
       <button
         className="search-toggle"
         type="button"
-        onClick={() => {
-          dialog.current.showModal();
-          input.current.focus();
-        }}
+        onClick={openSearch}
+        aria-label="Search site (press /)"
+        aria-keyshortcuts="/"
       >
-        Search
+        <span>Search</span>
+        <kbd className="search-kbd" aria-hidden="true">
+          /
+        </kbd>
       </button>
       <dialog
         className="utility-dialog search-dialog"
